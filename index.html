@@ -4,1069 +4,820 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ CLICKER SUPREMO</title>
+<title>⚡ CLICKER MASTER</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;900&display=swap');
-
-:root {
-  --bg: #0a0010;
-  --bg2: #110022;
-  --card: #130020;
-  --border: #3a0060;
-  --accent: #cc00ff;
-  --accent2: #ff00cc;
-  --yellow: #ffdd00;
-  --green: #00ffaa;
-  --orange: #ff6600;
-  --red: #ff2244;
-  --blue: #00ccff;
-  --text: #f0d0ff;
-  --sub: #886699;
+:root{
+  --bg:#060010;--bg2:#0d0020;--card:#0f001a;--border:#2a0050;
+  --accent:#cc00ff;--accent2:#ff00cc;--yellow:#ffdd00;--green:#00ffaa;
+  --orange:#ff6600;--red:#ff2244;--blue:#00ccff;--teal:#00ffdd;
+  --text:#f0d0ff;--sub:#775588;
 }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;color:var(--text);overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(var(--border)22 1px,transparent 1px),linear-gradient(90deg,var(--border)22 1px,transparent 1px);
+  background-size:48px 48px;animation:gridPulse 6s ease-in-out infinite;}
+@keyframes gridPulse{0%,100%{opacity:.3}50%{opacity:.8}}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,#00000014 3px,#00000014 4px);}
 
-* { margin:0; padding:0; box-sizing:border-box; }
-body {
-  font-family: 'Nunito', sans-serif;
-  background: var(--bg);
-  min-height: 100vh;
-  color: var(--text);
-  overflow-x: hidden;
-  cursor: default;
-}
-
-/* ── BG GRID ── */
-body::before {
-  content: '';
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background-image:
-    linear-gradient(var(--border)22 1px, transparent 1px),
-    linear-gradient(90deg, var(--border)22 1px, transparent 1px);
-  background-size: 48px 48px;
-  animation: gridPulse 6s ease-in-out infinite;
-}
-@keyframes gridPulse { 0%,100%{opacity:.4} 50%{opacity:.9} }
-
-/* ── SCANLINE ── */
-body::after {
-  content: '';
-  position: fixed; inset: 0; z-index: 1; pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom, transparent 0, transparent 3px, #00000018 3px, #00000018 4px
-  );
-}
-
-.wrap { position: relative; z-index: 2; max-width: 900px; margin: 0 auto; padding: 1rem; }
+.wrap{position:relative;z-index:2;max-width:1000px;margin:0 auto;padding:.8rem;}
 
 /* ── HEADER ── */
-header {
-  text-align: center;
-  padding: 1.2rem 0 .5rem;
-}
-header h1 {
-  font-family: 'Boogaloo', cursive;
-  font-size: clamp(2rem, 7vw, 3.8rem);
-  color: var(--accent);
-  text-shadow: 0 0 30px var(--accent), 0 0 60px var(--accent2), 4px 4px 0 #330044;
-  letter-spacing: 3px;
-  animation: titleWobble 3s ease-in-out infinite;
-}
-@keyframes titleWobble { 0%,100%{transform:rotate(-1deg)} 50%{transform:rotate(1deg)} }
-header p { font-size: .75rem; color: var(--sub); letter-spacing: 3px; margin-top: .3rem; }
+header{text-align:center;padding:1rem 0 .4rem;}
+header h1{font-family:'Boogaloo',cursive;font-size:clamp(2rem,7vw,3.5rem);color:var(--accent);
+  text-shadow:0 0 30px var(--accent),0 0 60px var(--accent2),4px 4px 0 #220033;
+  letter-spacing:3px;animation:titleW 3s ease-in-out infinite;}
+@keyframes titleW{0%,100%{transform:rotate(-.8deg)}50%{transform:rotate(.8deg)}}
+header p{font-size:.7rem;color:var(--sub);letter-spacing:3px;}
 
-/* ── SCORE DISPLAY ── */
-.score-area {
-  text-align: center;
-  margin: .8rem 0;
-  position: relative;
-}
-.score-num {
-  font-family: 'Boogaloo', cursive;
-  font-size: clamp(3rem, 12vw, 6rem);
-  color: var(--yellow);
-  text-shadow: 0 0 20px var(--yellow)88, 3px 3px 0 #665500;
-  line-height: 1;
-  transition: transform .08s;
-  display: inline-block;
-}
-.score-num.pop { animation: scorePop .15s cubic-bezier(.34,1.56,.64,1); }
-@keyframes scorePop { 0%{transform:scale(1)} 50%{transform:scale(1.18)} 100%{transform:scale(1)} }
-.score-label { font-size: .7rem; color: var(--sub); letter-spacing: 4px; margin-top: .1rem; }
-.cps-display {
-  font-size: .65rem; color: var(--accent); letter-spacing: 2px;
-  margin-top: .2rem; font-weight: 700;
-}
+/* LINKS BTNs */
+.header-links{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem;}
+.btn-video{display:inline-flex;align-items:center;gap:.5rem;font-family:'Boogaloo',cursive;font-size:.95rem;
+  padding:.45rem 1.2rem;background:linear-gradient(135deg,#ff2200,#ff7700);color:#fff;
+  border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;text-decoration:none;
+  box-shadow:0 0 20px #ff440055,0 4px 0 #991100;transition:.12s;animation:wenG 2s ease-in-out infinite;}
+@keyframes wenG{0%,100%{box-shadow:0 0 20px #ff440055,0 4px 0 #991100}50%{box-shadow:0 0 35px #ff4400aa,0 4px 0 #991100}}
+.btn-video:hover{transform:scale(1.06) translateY(-2px);filter:brightness(1.15);}
+.btn-video:active{transform:translateY(4px);box-shadow:none;}
+.play-tri{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:12px solid #fff;flex-shrink:0;}
+.btn-planta{display:inline-flex;align-items:center;gap:.5rem;font-family:'Boogaloo',cursive;font-size:.95rem;
+  padding:.45rem 1.2rem;background:linear-gradient(135deg,#006622,#00cc44);color:#fff;
+  border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;text-decoration:none;
+  box-shadow:0 0 20px #00ff4444,0 4px 0 #003311;transition:.12s;}
+.btn-planta:hover{transform:scale(1.06) translateY(-2px);filter:brightness(1.15);}
+.btn-planta:active{transform:translateY(4px);box-shadow:none;}
 
-/* ── ACTIVE BOOSTS STRIP ── */
-.active-strip {
-  display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center;
-  min-height: 32px; margin: .4rem 0;
-}
-.active-chip {
-  font-size: .55rem; font-weight: 700;
-  padding: .2rem .6rem; border-radius: 20px;
-  border: 2px solid; letter-spacing: 1px;
-  animation: chipIn .3s cubic-bezier(.34,1.56,.64,1);
-  white-space: nowrap;
-}
-@keyframes chipIn { from{transform:scale(0)} to{transform:scale(1)} }
+/* ── STATS ROW ── */
+.stats-row{display:flex;gap:.45rem;flex-wrap:wrap;justify-content:center;margin:.6rem 0;}
+.stat-chip{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:.3rem .65rem;text-align:center;min-width:72px;}
+.stat-val{font-family:'Boogaloo',cursive;font-size:.95rem;}
+.stat-label{font-size:.38rem;color:var(--sub);letter-spacing:1px;}
 
-/* ── MAIN CLICK BUTTON ── */
-.clicker-zone {
-  display: flex; justify-content: center; margin: .8rem 0 1rem;
-}
-.big-btn {
-  width: clamp(160px, 35vw, 220px);
-  height: clamp(160px, 35vw, 220px);
-  border-radius: 50%;
-  background: radial-gradient(circle at 38% 32%, #ff44ff, #880088);
-  border: 6px solid var(--accent);
-  box-shadow: 0 0 40px var(--accent)88, 0 0 80px var(--accent2)44, inset 0 0 30px #00000044;
-  cursor: pointer;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  transition: transform .08s, box-shadow .08s;
-  position: relative; overflow: hidden;
-  user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
-.big-btn::before {
-  content: '';
-  position: absolute; top: 12%; left: 18%; width: 35%; height: 20%;
-  background: #ffffff33; border-radius: 50%; transform: rotate(-20deg);
-  pointer-events: none;
-}
-.big-btn:hover { box-shadow: 0 0 60px var(--accent), 0 0 100px var(--accent2)66, inset 0 0 30px #00000044; }
-.big-btn:active { transform: scale(.92); box-shadow: 0 0 20px var(--accent)44; }
-.big-btn .btn-emoji { font-size: clamp(3rem, 8vw, 4.5rem); pointer-events: none; transition: transform .1s; }
-.big-btn:active .btn-emoji { transform: scale(.85); }
-.big-btn .btn-label {
-  font-family: 'Boogaloo', cursive; font-size: clamp(.8rem, 2.5vw, 1.1rem);
-  color: #fff; letter-spacing: 2px; pointer-events: none;
-  text-shadow: 0 0 10px #fff;
-}
-.big-btn .per-click {
-  font-size: .6rem; color: #ffaaff; letter-spacing: 1px; pointer-events: none;
-}
+/* ── PRESTIGE ── */
+.prestige-bar{background:var(--card);border:2px solid #660033;border-radius:12px;padding:.6rem 1rem;
+  text-align:center;margin:.4rem 0;position:relative;overflow:hidden;}
+.prestige-fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#440022,#cc0066);
+  transition:width .5s;border-radius:10px;opacity:.35;}
+.prestige-label{position:relative;font-size:.55rem;color:#ff44aa;letter-spacing:2px;font-weight:700;}
+.prestige-btn{font-family:'Boogaloo',cursive;font-size:.75rem;padding:.3rem .9rem;
+  background:linear-gradient(135deg,#880033,#cc0066);color:#fff;border:none;border-radius:8px;
+  cursor:pointer;letter-spacing:2px;margin-left:.7rem;box-shadow:0 0 12px #cc006644;transition:.12s;}
+.prestige-btn:hover{filter:brightness(1.3);transform:scale(1.05);}
+.prestige-btn:disabled{opacity:.35;cursor:not-allowed;transform:none;}
 
-/* ── CLICK EFFECT ── */
-.click-fx {
-  position: fixed; pointer-events: none; z-index: 200;
-  font-family: 'Boogaloo', cursive; font-weight: 700;
-  animation: fxFly .7s ease-out forwards;
-}
-@keyframes fxFly {
-  0%   { opacity: 1; transform: translateY(0) scale(1); }
-  100% { opacity: 0; transform: translateY(-80px) scale(1.5); }
-}
-
-/* ── BOOST GRID ── */
-.section-title {
-  font-family: 'Boogaloo', cursive; font-size: 1.2rem;
-  color: var(--accent2); letter-spacing: 3px;
-  text-align: center; margin: .8rem 0 .5rem;
-  text-shadow: 0 0 15px var(--accent2);
-  display: flex; align-items: center; justify-content: center; gap: .5rem;
-}
-.section-title::before, .section-title::after {
-  content: ''; flex: 1; height: 2px;
-  background: linear-gradient(to right, transparent, var(--accent2)88, transparent);
-}
-
-.boost-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
-  gap: .6rem;
-}
-.boost-card {
-  background: var(--card);
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  padding: .75rem .7rem;
-  cursor: pointer;
-  transition: all .15s;
-  position: relative;
-  overflow: hidden;
-}
-.boost-card::before {
-  content: ''; position: absolute; inset: 0;
-  background: radial-gradient(circle at 50% 0%, #ffffff08, transparent 60%);
-  pointer-events: none;
-}
-.boost-card:hover:not(.locked) {
-  border-color: var(--accent);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 6px 20px var(--accent)44;
-}
-.boost-card:active:not(.locked) { transform: scale(.96); }
-.boost-card.locked { opacity: .4; cursor: not-allowed; filter: grayscale(.5); }
-.boost-card.owned { border-color: var(--green); background: #001a0e; }
-.boost-card.owned::after {
-  content: 'ATIVO';
-  position: absolute; top: 6px; right: 8px;
-  font-size: .38rem; color: var(--green); font-weight: 700; letter-spacing: 2px;
-}
-
-.boost-icon { font-size: 1.8rem; margin-bottom: .3rem; display: block; }
-.boost-name { font-size: .62rem; font-weight: 900; color: var(--text); margin-bottom: .15rem; letter-spacing: 1px; }
-.boost-desc { font-size: .52rem; color: var(--sub); line-height: 1.4; margin-bottom: .35rem; }
-.boost-cost {
-  font-size: .65rem; font-weight: 700;
-  display: inline-flex; align-items: center; gap: .25rem;
-}
-.boost-mult {
-  position: absolute; top: 7px; left: 8px;
-  font-size: .38rem; font-weight: 700; letter-spacing: 1px;
-  background: var(--accent)33; padding: .1rem .4rem; border-radius: 8px;
-}
-
-/* ── MILESTONES ── */
-.milestone-list {
-  display: flex; flex-direction: column; gap: .4rem; margin-top: .5rem;
-}
-.milestone-row {
-  display: flex; align-items: center; gap: .7rem;
-  background: var(--card); border: 2px solid var(--border);
-  border-radius: 10px; padding: .45rem .75rem;
-  transition: border-color .3s;
-}
-.milestone-row.done { border-color: var(--green); background: #001a0e; }
-.milestone-icon { font-size: 1.2rem; }
-.milestone-text { flex: 1; font-size: .58rem; color: var(--sub); }
-.milestone-text strong { color: var(--text); }
-.milestone-reward { font-size: .58rem; color: var(--yellow); font-weight: 700; }
-.milestone-check { font-size: 1rem; }
-
-/* ── STATS BAR ── */
-.stats-row {
-  display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center;
-  margin: .6rem 0;
-}
-.stat-chip {
-  background: var(--card); border: 2px solid var(--border); border-radius: 10px;
-  padding: .35rem .7rem; text-align: center;
-}
-.stat-val { font-family: 'Boogaloo', cursive; font-size: 1rem; }
-.stat-label { font-size: .42rem; color: var(--sub); letter-spacing: 1px; }
-
-/* ── NOTIF TOAST ── */
-.toast {
-  position: fixed; bottom: 24px; right: 20px; z-index: 300;
-  background: var(--card); border: 2px solid var(--accent);
-  font-size: .65rem; font-weight: 700; color: var(--accent);
-  padding: .55rem 1rem; border-radius: 12px;
-  box-shadow: 0 0 20px var(--accent)44;
-  transform: translateX(calc(100% + 30px));
-  transition: transform .35s cubic-bezier(.34,1.56,.64,1);
-  max-width: 220px; letter-spacing: 1px;
-}
-.toast.show { transform: translateX(0); }
+/* ── SCORE ── */
+.score-area{text-align:center;margin:.5rem 0;}
+.score-num{font-family:'Boogaloo',cursive;font-size:clamp(2.8rem,11vw,5.5rem);color:var(--yellow);
+  text-shadow:0 0 20px var(--yellow)88,3px 3px 0 #554400;line-height:1;display:inline-block;transition:transform .08s;}
+.score-num.pop{animation:sPop .14s cubic-bezier(.34,1.56,.64,1);}
+@keyframes sPop{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(1)}}
+.score-label{font-size:.65rem;color:var(--sub);letter-spacing:4px;}
+.cps-line{font-size:.62rem;color:var(--accent);letter-spacing:2px;margin-top:.15rem;font-weight:700;}
 
 /* ── COMBO ── */
-.combo-display {
-  text-align: center; font-family: 'Boogaloo', cursive;
-  font-size: 1rem; height: 28px;
-  letter-spacing: 2px;
-}
-.combo-display.active { color: var(--orange); text-shadow: 0 0 15px var(--orange); animation: comboPulse .3s ease-in-out; }
-@keyframes comboPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+.combo-display{text-align:center;font-family:'Boogaloo',cursive;font-size:.95rem;height:26px;letter-spacing:2px;}
+.combo-display.active{color:var(--orange);text-shadow:0 0 12px var(--orange);animation:cPulse .3s ease-in-out;}
+@keyframes cPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 
-footer { text-align: center; padding: 1.5rem; font-size: .58rem; color: var(--border); letter-spacing: 2px; position: relative; z-index: 2; }
+/* ── ACTIVE STRIP ── */
+.active-strip{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center;min-height:28px;margin:.3rem 0;}
+.active-chip{font-size:.5rem;font-weight:700;padding:.18rem .55rem;border-radius:20px;border:2px solid;letter-spacing:1px;
+  animation:chipIn .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;}
+@keyframes chipIn{from{transform:scale(0)}to{transform:scale(1)}}
 
-/* ── ASSISTIR VÍDEO BTN ── */
-.btn-video {
-  display: inline-flex; align-items: center; gap: .5rem;
-  font-family: 'Boogaloo', cursive; font-size: 1rem;
-  padding: .55rem 1.4rem;
-  background: linear-gradient(135deg, #ff2200, #ff7700);
-  color: #fff; border: none; border-radius: 12px;
-  cursor: pointer; letter-spacing: 2px;
-  box-shadow: 0 0 24px #ff440066, 0 5px 0 #991100;
-  text-decoration: none;
-  transition: all .12s;
-  animation: videoBtnPulse 2s ease-in-out infinite;
-  position: relative; overflow: hidden;
-  margin-top: .5rem;
-}
-.btn-video::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(90deg, transparent 0%, #ffffff22 50%, transparent 100%);
-  transform: translateX(-100%);
-  animation: videoShine 3s ease-in-out infinite;
-}
-@keyframes videoShine { 0%,70%{transform:translateX(-100%)} 100%{transform:translateX(200%)} }
-@keyframes videoBtnPulse {
-  0%,100%{ box-shadow: 0 0 24px #ff440066, 0 5px 0 #991100; }
-  50%    { box-shadow: 0 0 40px #ff4400bb, 0 5px 0 #991100; }
-}
-.btn-video:hover { transform: scale(1.07) translateY(-3px); filter: brightness(1.15); }
-.btn-video:active { transform: translateY(5px); box-shadow: 0 0 10px #ff440033, 0 0px 0 #991100; }
-.btn-video .play-tri {
-  width: 0; height: 0;
-  border-top: 8px solid transparent;
-  border-bottom: 8px solid transparent;
-  border-left: 14px solid #fff;
-  flex-shrink: 0;
-}
+/* ── BIG BUTTON ── */
+.clicker-zone{display:flex;justify-content:center;margin:.7rem 0;}
+.big-btn{width:clamp(140px,30vw,200px);height:clamp(140px,30vw,200px);border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#ff44ff,#660088);
+  border:6px solid var(--accent);
+  box-shadow:0 0 40px var(--accent)88,0 0 80px var(--accent2)33,inset 0 0 30px #00000044;
+  cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  transition:transform .08s,box-shadow .08s;position:relative;overflow:hidden;user-select:none;
+  -webkit-tap-highlight-color:transparent;}
+.big-btn::before{content:'';position:absolute;top:12%;left:18%;width:35%;height:20%;
+  background:#ffffff33;border-radius:50%;transform:rotate(-20deg);pointer-events:none;}
+.big-btn:hover{box-shadow:0 0 60px var(--accent),0 0 100px var(--accent2)55,inset 0 0 30px #00000044;}
+.big-btn:active{transform:scale(.9);box-shadow:0 0 15px var(--accent)44;}
+.btn-emoji{font-size:clamp(2.5rem,7vw,4rem);pointer-events:none;transition:transform .1s;}
+.big-btn:active .btn-emoji{transform:scale(.85);}
+.btn-label{font-family:'Boogaloo',cursive;font-size:clamp(.75rem,2.5vw,1rem);color:#fff;letter-spacing:2px;pointer-events:none;}
+.per-click{font-size:.55rem;color:#ffaaff;letter-spacing:1px;pointer-events:none;}
 
-/* ── PLANTA LINK ── */
-.btn-planta {
-  display: inline-flex; align-items: center; gap: .5rem;
-  font-family: 'Boogaloo', cursive; font-size: 1rem;
-  padding: .55rem 1.4rem;
-  background: linear-gradient(135deg, #006622, #00cc44);
-  color: #fff; border: none; border-radius: 12px;
-  cursor: pointer; letter-spacing: 2px;
-  box-shadow: 0 0 24px #00ff4466, 0 5px 0 #003311;
-  text-decoration: none;
-  transition: all .12s;
-  margin-top: .5rem;
-}
-.btn-planta:hover { transform: scale(1.07) translateY(-3px); filter: brightness(1.15); }
-.btn-planta:active { transform: translateY(5px); box-shadow: 0 0 10px #00ff4422, 0 0px 0 #003311; }
+/* ── FX ── */
+.click-fx{position:fixed;pointer-events:none;z-index:200;font-family:'Boogaloo',cursive;font-weight:700;
+  animation:fxFly .7s ease-out forwards;}
+@keyframes fxFly{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
 
+/* ── TABS ── */
+.tab-bar{display:flex;gap:.35rem;flex-wrap:wrap;justify-content:center;margin:.6rem 0;}
+.tab-btn{font-family:'Boogaloo',cursive;font-size:.75rem;padding:.35rem .8rem;border:2px solid var(--border);
+  background:var(--card);color:var(--sub);border-radius:10px;cursor:pointer;letter-spacing:1px;transition:.12s;}
+.tab-btn:hover{border-color:var(--accent);color:var(--text);}
+.tab-btn.active{border-color:var(--accent);color:var(--accent);background:#1a0030;
+  box-shadow:0 0 12px var(--accent)44;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ── SECTION TITLE ── */
+.sec-title{font-family:'Boogaloo',cursive;font-size:1.1rem;color:var(--accent2);letter-spacing:3px;
+  text-align:center;margin:.6rem 0 .4rem;text-shadow:0 0 12px var(--accent2);
+  display:flex;align-items:center;justify-content:center;gap:.5rem;}
+.sec-title::before,.sec-title::after{content:'';flex:1;height:2px;
+  background:linear-gradient(to right,transparent,var(--accent2)88,transparent);}
+
+/* ── UPGRADE GRID ── */
+.up-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:.5rem;}
+.up-card{background:var(--card);border:2px solid var(--border);border-radius:12px;
+  padding:.65rem .6rem;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.up-card::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 0%,#ffffff07,transparent 60%);pointer-events:none;}
+.up-card:hover:not(.locked):not(.maxed){border-color:var(--accent);transform:translateY(-3px) scale(1.02);
+  box-shadow:0 6px 18px var(--accent)33;}
+.up-card:active:not(.locked):not(.maxed){transform:scale(.96);}
+.up-card.locked{opacity:.35;cursor:not-allowed;filter:grayscale(.6);}
+.up-card.owned{border-color:var(--green);background:#001a0e;}
+.up-card.owned::after{content:'✓';position:absolute;top:5px;right:7px;font-size:.7rem;color:var(--green);}
+.up-card.maxed{border-color:#ffd700;background:#1a1400;cursor:default;}
+.up-card.maxed::after{content:'MAX';position:absolute;top:5px;right:6px;font-size:.38rem;color:#ffd700;font-family:'Boogaloo',cursive;letter-spacing:2px;}
+.up-lv{position:absolute;top:5px;left:7px;font-size:.38rem;letter-spacing:1px;
+  background:var(--accent)33;padding:.08rem .35rem;border-radius:6px;font-weight:700;}
+.up-icon{font-size:1.7rem;margin-bottom:.25rem;display:block;}
+.up-name{font-size:.58rem;font-weight:900;color:var(--text);margin-bottom:.12rem;letter-spacing:.5px;}
+.up-desc{font-size:.48rem;color:var(--sub);line-height:1.4;margin-bottom:.3rem;}
+.up-cost{font-size:.6rem;font-weight:700;display:flex;align-items:center;gap:.2rem;}
+
+/* ── MILESTONES ── */
+.ms-list{display:flex;flex-direction:column;gap:.4rem;}
+.ms-row{display:flex;align-items:center;gap:.65rem;background:var(--card);
+  border:2px solid var(--border);border-radius:10px;padding:.42rem .7rem;transition:border-color .3s;}
+.ms-row.done{border-color:var(--green);background:#001a0e;}
+.ms-icon{font-size:1.1rem;}
+.ms-text{flex:1;font-size:.55rem;color:var(--sub);}
+.ms-text strong{color:var(--text);}
+.ms-reward{font-size:.55rem;color:var(--yellow);font-weight:700;}
+.ms-bar-wrap{height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;}
+.ms-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--green));border-radius:2px;transition:width .4s;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:16px;z-index:300;
+  background:var(--card);border:2px solid var(--accent);
+  font-size:.62rem;font-weight:700;color:var(--accent);
+  padding:.5rem .95rem;border-radius:12px;
+  box-shadow:0 0 18px var(--accent)44;letter-spacing:1px;
+  transform:translateX(calc(100% + 30px));transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  max-width:240px;}
+.toast.show{transform:translateX(0);}
+.toast.gold{border-color:var(--yellow);color:var(--yellow);}
+.toast.green{border-color:var(--green);color:var(--green);}
+.toast.red{border-color:var(--red);color:var(--red);}
+
+footer{text-align:center;padding:1.2rem;font-size:.55rem;color:var(--border);letter-spacing:2px;position:relative;z-index:2;}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <header>
-    <h1>⚡ CLICKER SUPREMO</h1>
-    <p>CLIQUE • COLETE • DOMINE</p>
-    <div style="display:flex;gap:.7rem;justify-content:center;flex-wrap:wrap;margin-top:.7rem;">
-      <a class="btn-video"
-         href="https://www.youtube.com/watch?v=WEJlgXznwcI"
-         target="_blank"
-         onclick="sfx('wen')">
-        <span class="play-tri"></span>
-        ASSISTIR VÍDEO
-      </a>
-      <a class="btn-planta"
-         href="./planta-maluca-v7.html"
-         onclick="sfx('planta')">
-        🌿 ABRIR PLANTA
-      </a>
-    </div>
-  </header>
-
-  <!-- STATS -->
-  <div class="stats-row">
-    <div class="stat-chip">
-      <div class="stat-val" style="color:var(--yellow)" id="statTotal">0</div>
-      <div class="stat-label">TOTAL CLIQUES</div>
-    </div>
-    <div class="stat-chip">
-      <div class="stat-val" style="color:var(--accent)" id="statBoosts">0</div>
-      <div class="stat-label">BOOSTS ATIVOS</div>
-    </div>
-    <div class="stat-chip">
-      <div class="stat-val" style="color:var(--green)" id="statMulti">×1</div>
-      <div class="stat-label">MULTIPLICADOR</div>
-    </div>
-    <div class="stat-chip">
-      <div class="stat-val" style="color:var(--orange)" id="statCps">0</div>
-      <div class="stat-label">PONTOS/SEG</div>
-    </div>
+<header>
+  <h1>⚡ CLICKER MASTER</h1>
+  <p>CLIQUE • EVOLUA • DOMINE O UNIVERSO</p>
+  <div class="header-links">
+    <a class="btn-video" href="https://www.youtube.com/watch?v=WEJlgXznwcI" target="_blank" onclick="sfx('wen')">
+      <span class="play-tri"></span>ASSISTIR VÍDEO
+    </a>
+    <a class="btn-planta" href="./planta-maluca-v7.html" onclick="sfx('planta')">🌿 ABRIR PLANTA</a>
   </div>
+</header>
 
-  <!-- SCORE -->
-  <div class="score-area">
-    <div class="score-num" id="scoreNum">0</div>
-    <div class="score-label">PONTOS</div>
-    <div class="cps-display" id="cpsDisplay">+1 por clique</div>
-  </div>
-
-  <!-- COMBO -->
-  <div class="combo-display" id="comboDisplay"></div>
-
-  <!-- ACTIVE BOOSTS STRIP -->
-  <div class="active-strip" id="activeStrip"></div>
-
-  <!-- CLICK BUTTON -->
-  <div class="clicker-zone">
-    <button class="big-btn" id="bigBtn" onclick="doClick(event)">
-      <span class="btn-emoji" id="btnEmoji">👆</span>
-      <span class="btn-label">CLIQUE!</span>
-      <span class="per-click" id="perClickLabel">+1 por clique</span>
-    </button>
-  </div>
-
-  <!-- BOOSTS -->
-  <div class="section-title">🚀 BOOSTS</div>
-  <div class="boost-grid" id="boostGrid"></div>
-
-  <!-- MILESTONES -->
-  <div class="section-title" style="margin-top:1.2rem">🏆 CONQUISTAS</div>
-  <div class="milestone-list" id="milestoneList"></div>
-
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-chip"><div class="stat-val" style="color:var(--yellow)" id="sTotal">0</div><div class="stat-label">PONTOS</div></div>
+  <div class="stat-chip"><div class="stat-val" style="color:var(--orange)" id="sCps">0</div><div class="stat-label">PTS/SEG</div></div>
+  <div class="stat-chip"><div class="stat-val" style="color:var(--accent)" id="sClick">1</div><div class="stat-label">PTS/CLIQUE</div></div>
+  <div class="stat-chip"><div class="stat-val" style="color:var(--green)" id="sMult">×1</div><div class="stat-label">MULT</div></div>
+  <div class="stat-chip"><div class="stat-val" style="color:var(--blue)" id="sTClicks">0</div><div class="stat-label">CLIQUES</div></div>
+  <div class="stat-chip"><div class="stat-val" style="color:var(--teal)" id="sPrestige">0</div><div class="stat-label">PRESTÍGIO</div></div>
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast">toast</div>
+<!-- PRESTIGE -->
+<div class="prestige-bar">
+  <div class="prestige-fill" id="prestigeFill" style="width:0%"></div>
+  <span class="prestige-label">PRESTÍGIO — <span id="prestigeGoalLabel">1.000.000 pts para prestigiar</span></span>
+  <button class="prestige-btn" id="prestigeBtn" onclick="doPrestige()" disabled>⭐ PRESTIGIAR</button>
+</div>
+
+<!-- SCORE -->
+<div class="score-area">
+  <div class="score-num" id="scoreNum">0</div>
+  <div class="score-label">PONTOS</div>
+  <div class="cps-line" id="cpsLine">+1 por clique</div>
+</div>
+<div class="combo-display" id="comboDisplay"></div>
+<div class="active-strip" id="activeStrip"></div>
+
+<!-- CLICKER -->
+<div class="clicker-zone">
+  <button class="big-btn" onclick="doClick(event)">
+    <span class="btn-emoji" id="btnEmoji">👆</span>
+    <span class="btn-label">CLIQUE!</span>
+    <span class="per-click" id="perClickLabel">+1</span>
+  </button>
+</div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('click')">👆 CLIQUE</button>
+  <button class="tab-btn" onclick="showTab('auto')">🤖 AUTO</button>
+  <button class="tab-btn" onclick="showTab('mult')">✖️ MULT</button>
+  <button class="tab-btn" onclick="showTab('special')">⚡ ESPECIAL</button>
+  <button class="tab-btn" onclick="showTab('crazy')">🌀 LOUCO</button>
+  <button class="tab-btn" onclick="showTab('prestige')">⭐ PRESTÍGIO</button>
+  <button class="tab-btn" onclick="showTab('milestones')">🏆 CONQUISTAS</button>
+</div>
+
+<!-- PANELS -->
+<div class="tab-panel active" id="tab-click">
+  <div class="sec-title">👆 UPGRADES DE CLIQUE</div>
+  <div class="up-grid" id="grid-click"></div>
+</div>
+<div class="tab-panel" id="tab-auto">
+  <div class="sec-title">🤖 AUTO-CLIQUE & PRODUÇÃO</div>
+  <div class="up-grid" id="grid-auto"></div>
+</div>
+<div class="tab-panel" id="tab-mult">
+  <div class="sec-title">✖️ MULTIPLICADORES</div>
+  <div class="up-grid" id="grid-mult"></div>
+</div>
+<div class="tab-panel" id="tab-special">
+  <div class="sec-title">⚡ UPGRADES ESPECIAIS</div>
+  <div class="up-grid" id="grid-special"></div>
+</div>
+<div class="tab-panel" id="tab-crazy">
+  <div class="sec-title">🌀 UPGRADES LOUCOS</div>
+  <div class="up-grid" id="grid-crazy"></div>
+</div>
+<div class="tab-panel" id="tab-prestige">
+  <div class="sec-title">⭐ UPGRADES DE PRESTÍGIO</div>
+  <div class="up-grid" id="grid-prestige"></div>
+</div>
+<div class="tab-panel" id="tab-milestones">
+  <div class="sec-title">🏆 CONQUISTAS</div>
+  <div class="ms-list" id="msList"></div>
+</div>
+
+</div><!-- .wrap -->
+<div class="toast" id="toast">ok</div>
 
 <script>
-// ════════════════════════════════
+// ═══════════════════════════════════════
 // STATE
-// ════════════════════════════════
-let score = 0;
-let totalClicks = 0;
-let clickPower = 1;          // points per click
-let autoPerSec = 0;          // auto points per second
-let globalMult = 1;          // global multiplier
-let activeBoosts = {};       // id → expiry timestamp (0 = permanent)
-let comboCount = 0;
-let comboTimer = null;
-let lastClickTime = 0;
+// ═══════════════════════════════════════
+let score=0, totalClicks=0, totalEarned=0;
+let clickPower=1, autoPerSec=0, globalMult=1;
+let prestigeCount=0, prestigeStars=0;
+let tempMult=1, tempMultExp=0;
+let comboCount=0, comboTimer=null, lastClick=0;
+let ghostIv=null, factoryIv=null;
+let rainbowBonus=0;
+const owned=new Set();
+const upLevels={};   // upgrades multi-level: id -> current level
 
-// ════════════════════════════════
-// BOOST DEFINITIONS  (17+)
-// ════════════════════════════════
-const BOOSTS = [
-  // PERMANENT UPGRADES
-  {
-    id: 'double_click', name: 'CLIQUE DUPLO', icon: '✌️',
-    desc: '+1 ponto extra por clique, para sempre.',
-    cost: 10, type: 'perm',
-    color: '#ff44cc', borderColor: '#880055',
-    effect: () => { clickPower += 1; },
-    label: '+1/CLIQUE',
-  },
-  {
-    id: 'triple_click', name: 'CLIQUE TRIPLO', icon: '🤟',
-    desc: '+2 pontos extras por clique.',
-    cost: 50, type: 'perm', requires: 'double_click',
-    color: '#ff44cc', borderColor: '#880055',
-    effect: () => { clickPower += 2; },
-    label: '+2/CLIQUE',
-  },
-  {
-    id: 'power_fist', name: 'PUNHO SAGRADO', icon: '👊',
-    desc: '+5 pontos por clique. BOM DEMAIS.',
-    cost: 200, type: 'perm', requires: 'triple_click',
-    color: '#ff6600', borderColor: '#883300',
-    effect: () => { clickPower += 5; },
-    label: '+5/CLIQUE',
-  },
-  {
-    id: 'mega_fist', name: 'MEGA PUNHO', icon: '🦾',
-    desc: '+15 pontos por clique. ABSURDO.',
-    cost: 1000, type: 'perm', requires: 'power_fist',
-    color: '#ff6600', borderColor: '#883300',
-    effect: () => { clickPower += 15; },
-    label: '+15/CLIQUE',
-  },
-  {
-    id: 'ultra_fist', name: 'ULTRA PUNHO ∞', icon: '🔥',
-    desc: '+50 pontos por clique. INFINITO.',
-    cost: 5000, type: 'perm', requires: 'mega_fist',
-    color: '#ff2200', borderColor: '#880000',
-    effect: () => { clickPower += 50; },
-    label: '+50/CLIQUE',
-  },
-  // AUTO-CLICKERS
-  {
-    id: 'auto1', name: 'AUTO-CLIQUE I', icon: '🤖',
-    desc: '+1 ponto por segundo automaticamente.',
-    cost: 30, type: 'perm',
-    color: '#00ccff', borderColor: '#006688',
-    effect: () => { autoPerSec += 1; },
-    label: '+1/SEG',
-  },
-  {
-    id: 'auto2', name: 'AUTO-CLIQUE II', icon: '🤖🤖',
-    desc: '+5 pontos por segundo.',
-    cost: 150, type: 'perm', requires: 'auto1',
-    color: '#00ccff', borderColor: '#006688',
-    effect: () => { autoPerSec += 5; },
-    label: '+5/SEG',
-  },
-  {
-    id: 'auto3', name: 'FÁBRICA DE CLIQUES', icon: '🏭',
-    desc: '+20 pontos por segundo.',
-    cost: 800, type: 'perm', requires: 'auto2',
-    color: '#00ccff', borderColor: '#006688',
-    effect: () => { autoPerSec += 20; },
-    label: '+20/SEG',
-  },
-  {
-    id: 'auto4', name: 'SERVIDOR QUÂNTICO', icon: '🌀',
-    desc: '+100 pontos por segundo.',
-    cost: 5000, type: 'perm', requires: 'auto3',
-    color: '#00ccff', borderColor: '#006688',
-    effect: () => { autoPerSec += 100; },
-    label: '+100/SEG',
-  },
-  // MULTIPLIERS
-  {
-    id: 'mult2', name: 'MULTIPLICADOR ×2', icon: '✖️',
-    desc: 'Dobra todos os pontos por 30 segundos.',
-    cost: 100, type: 'temp', duration: 30,
-    color: '#ffdd00', borderColor: '#886600',
-    effect: () => { applyTempMult(2, 30); },
-    label: '×2 / 30s',
-  },
-  {
-    id: 'mult3', name: 'MULTIPLICADOR ×3', icon: '🔢',
-    desc: 'Triplica todos os pontos por 20 segundos.',
-    cost: 300, type: 'temp', duration: 20,
-    color: '#ffdd00', borderColor: '#886600',
-    effect: () => { applyTempMult(3, 20); },
-    label: '×3 / 20s',
-  },
-  {
-    id: 'mult5', name: 'MULTIPLICADOR ×5', icon: '💥',
-    desc: '×5 em tudo por 15 segundos.',
-    cost: 800, type: 'temp', duration: 15,
-    color: '#ffdd00', borderColor: '#886600',
-    effect: () => { applyTempMult(5, 15); },
-    label: '×5 / 15s',
-  },
-  {
-    id: 'mult10', name: 'MODO DEUS ×10', icon: '👑',
-    desc: '×10 por 10 segundos. LOUCO.',
-    cost: 3000, type: 'temp', duration: 10,
-    color: '#ff4400', borderColor: '#881100',
-    effect: () => { applyTempMult(10, 10); },
-    label: '×10 / 10s',
-  },
-  // SPECIAL / FUNNY
-  {
-    id: 'coffee', name: 'CAFÉ TURBO', icon: '☕',
-    desc: 'Clique 2× mais rápido por 20 segundos.',
-    cost: 80, type: 'temp', duration: 20,
-    color: '#cc6600', borderColor: '#663300',
-    effect: () => { startTempEffect('coffee', 20, 'CAFÉ TURBO ativo! Clique mais rápido!'); },
-    label: 'SPEED 20s',
-  },
-  {
-    id: 'lucky', name: 'DADO DA SORTE', icon: '🎲',
-    desc: '10% de chance de ganhar 10× por clique.',
-    cost: 150, type: 'perm',
-    color: '#00ff88', borderColor: '#006633',
-    effect: () => { /* handled in doClick */ },
-    label: '10% LUCKY',
-  },
-  {
-    id: 'critical', name: 'CLIQUE CRÍTICO', icon: '💢',
-    desc: '15% de chance de +100 pontos de uma vez.',
-    cost: 400, type: 'perm',
-    color: '#ff2244', borderColor: '#880011',
-    effect: () => { /* handled in doClick */ },
-    label: '15% CRIT',
-  },
-  {
-    id: 'combo', name: 'SISTEMA COMBO', icon: '🔥',
-    desc: 'Cliques rápidos acumulam combo multiplicador.',
-    cost: 250, type: 'perm',
-    color: '#ff8800', borderColor: '#884400',
-    effect: () => { /* handled in doClick */ },
-    label: 'COMBO+',
-  },
-  {
-    id: 'bank', name: 'BANCO DE PONTOS', icon: '🏦',
-    desc: 'Ganha 50 pontos imediatamente. Boa?',
-    cost: 25, type: 'instant',
-    color: '#88ff44', borderColor: '#336600',
-    effect: () => { addScore(50); toast('🏦 +50 pontos do banco!'); },
-    label: '+50 AGORA',
-  },
-  {
-    id: 'jackpot', name: 'JACKPOT!', icon: '🎰',
-    desc: 'Ganhe entre 100 e 500 pontos aleatórios!',
-    cost: 200, type: 'instant',
-    color: '#ff4488', borderColor: '#881133',
-    effect: () => {
-      const v = 100 + Math.floor(Math.random() * 401);
-      addScore(v); toast(`🎰 JACKPOT! +${v} pontos!`);
-    },
-    label: '100-500 PTS',
-  },
-  {
-    id: 'storm', name: 'TEMPESTADE', icon: '⛈️',
-    desc: '+10/seg por 15 segundos. A chuva caiu.',
-    cost: 350, type: 'temp', duration: 15,
-    color: '#4466ff', borderColor: '#112288',
-    effect: () => { startTempAuto(10, 15); },
-    label: '+10/seg 15s',
-  },
-  {
-    id: 'rainbow', name: 'ARCO-ÍRIS', icon: '🌈',
-    desc: 'Todos os efeitos temporários +5s de duração.',
-    cost: 500, type: 'perm',
-    color: '#ff44ff', borderColor: '#881188',
-    effect: () => { RAINBOW_BONUS += 5; toast('🌈 +5s em todos os boosts temporários!'); },
-    label: '+5s DURAÇÃO',
-  },
-  {
-    id: 'ghost', name: 'CLIQUE FANTASMA', icon: '👻',
-    desc: 'Auto-clique secreto a cada 2 segundos.',
-    cost: 600, type: 'perm',
-    color: '#aaaaff', borderColor: '#444488',
-    effect: () => { startGhostClick(); },
-    label: 'AUTO 2s',
-  },
-];
-
-let RAINBOW_BONUS = 0;
-let tempMultExpiry = 0;
-let tempMultVal = 1;
-let tempAutoIv = null;
-let ghostIv = null;
-let owned = new Set();
-
-// ════════════════════════════════
-// MILESTONES
-// ════════════════════════════════
-const MILESTONES = [
-  { id: 'm10',    goal: 10,     label: '<strong>10 pontos</strong>',       reward: '+5 pontos bônus',    bonus: () => addScore(5) },
-  { id: 'm50',    goal: 50,     label: '<strong>50 pontos</strong>',       reward: '+20 pontos bônus',   bonus: () => addScore(20) },
-  { id: 'm100',   goal: 100,    label: '<strong>100 pontos</strong>',      reward: '+50 pontos bônus',   bonus: () => addScore(50) },
-  { id: 'm500',   goal: 500,    label: '<strong>500 pontos</strong>',      reward: 'Clique +2 permanente', bonus: () => { clickPower += 2; } },
-  { id: 'm1k',    goal: 1000,   label: '<strong>1.000 pontos</strong>',    reward: '+200 pontos bônus',  bonus: () => addScore(200) },
-  { id: 'm5k',    goal: 5000,   label: '<strong>5.000 pontos</strong>',    reward: '+500 pontos bônus',  bonus: () => addScore(500) },
-  { id: 'm10k',   goal: 10000,  label: '<strong>10.000 pontos</strong>',   reward: 'Multiplicador ×2 de 30s', bonus: () => applyTempMult(2, 30) },
-  { id: 'm50k',   goal: 50000,  label: '<strong>50.000 pontos</strong>',   reward: '+5.000 pontos bônus', bonus: () => addScore(5000) },
-  { id: 'c100',   goal: 100,    label: '<strong>100 cliques</strong> totais', reward: '+30 pontos',    bonus: () => addScore(30), clicker: true },
-  { id: 'c500',   goal: 500,    label: '<strong>500 cliques</strong> totais', reward: '+100 pontos',   bonus: () => addScore(100), clicker: true },
-  { id: 'c1k',    goal: 1000,   label: '<strong>1.000 cliques</strong> totais', reward: '+300 pontos', bonus: () => addScore(300), clicker: true },
-];
-
-const doneMilestones = new Set();
-
-// ════════════════════════════════
-// CORE CLICK
-// ════════════════════════════════
-function doClick(e) {
-  const now = Date.now();
-  let pts = clickPower;
-
-  // Lucky
-  if (owned.has('lucky') && Math.random() < 0.10) {
-    pts *= 10;
-    spawnFx(e, `LUCKY! ×10`, '#00ff88', e.clientX, e.clientY - 20);
-  }
-  // Critical
-  if (owned.has('critical') && Math.random() < 0.15) {
-    pts += 100;
-    spawnFx(e, `CRÍTICO! +100`, '#ff2244', e.clientX, e.clientY - 30);
-  }
-  // Combo
-  if (owned.has('combo')) {
-    if (now - lastClickTime < 600) {
-      comboCount = Math.min(comboCount + 1, 20);
-    } else {
-      comboCount = 1;
-    }
-    clearTimeout(comboTimer);
-    comboTimer = setTimeout(() => {
-      comboCount = 0;
-      updateComboDisplay();
-    }, 1200);
-    pts = Math.floor(pts * (1 + comboCount * 0.1));
-    updateComboDisplay();
-  }
-
-  // Apply global multiplier
-  const mult = globalMult * (tempMultVal > 1 && Date.now() < tempMultExpiry ? tempMultVal : 1);
-  pts = Math.floor(pts * mult);
-
-  addScore(pts);
-  totalClicks++;
-  lastClickTime = now;
-
-  // Floating text
-  const color = pts > clickPower * 5 ? '#ff4400' : pts > clickPower * 2 ? '#ffdd00' : '#ffffff';
-  spawnFx(e, `+${pts}`, color, e.clientX, e.clientY);
-
-  // Button pop
-  const btn = document.getElementById('scoreNum');
-  btn.classList.remove('pop');
-  void btn.offsetWidth;
-  btn.classList.add('pop');
-
-  // Button emoji cycle
-  const emojis = ['👆','✊','🤜','⚡','👊','🫳','☝️'];
-  document.getElementById('btnEmoji').textContent = emojis[totalClicks % emojis.length];
-
-  updateUI();
-  checkMilestones();
-}
-
-function addScore(pts) {
-  score += pts;
-  if (score < 0) score = 0;
-}
-
-function spawnFx(e, text, color, x, y) {
-  const el = document.createElement('div');
-  el.className = 'click-fx';
-  el.textContent = text;
-  el.style.cssText = `left:${x - 20}px;top:${y - 10}px;color:${color};font-size:${Math.min(1.2, .7 + text.length * .02)}rem;font-family:'Boogaloo',cursive;`;
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 750);
-}
-
-// ════════════════════════════════
-// AUTO PER SECOND
-// ════════════════════════════════
-setInterval(() => {
-  if (autoPerSec > 0) {
-    const mult = globalMult * (tempMultVal > 1 && Date.now() < tempMultExpiry ? tempMultVal : 1);
-    addScore(Math.floor(autoPerSec * mult));
-    updateUI();
-    checkMilestones();
-  }
-}, 1000);
-
-// ════════════════════════════════
-// TEMP EFFECTS
-// ════════════════════════════════
-function applyTempMult(val, secs) {
-  const dur = secs + RAINBOW_BONUS;
-  tempMultVal = Math.max(tempMultVal, val);
-  tempMultExpiry = Date.now() + dur * 1000;
-  toast(`💥 ×${val} ativado por ${dur}s!`);
-  renderActiveStrip();
-  setTimeout(() => {
-    tempMultVal = 1;
-    renderActiveStrip();
-    updateUI();
-  }, dur * 1000);
-}
-
-function startTempEffect(id, secs, msg) {
-  const dur = secs + RAINBOW_BONUS;
-  activeBoosts[id] = Date.now() + dur * 1000;
-  toast(msg);
-  renderActiveStrip();
-  setTimeout(() => { delete activeBoosts[id]; renderActiveStrip(); }, dur * 1000);
-}
-
-function startTempAuto(perSec, secs) {
-  const dur = secs + RAINBOW_BONUS;
-  autoPerSec += perSec;
-  toast(`⛈️ +${perSec}/seg por ${dur}s!`);
-  setTimeout(() => { autoPerSec = Math.max(0, autoPerSec - perSec); updateUI(); }, dur * 1000);
-}
-
-function startGhostClick() {
-  if (ghostIv) return;
-  ghostIv = setInterval(() => {
-    const pts = Math.floor(clickPower * globalMult);
-    addScore(pts);
-    updateUI();
-    checkMilestones();
-  }, 2000);
-}
-
-// ════════════════════════════════
-// BUY BOOST
-// ════════════════════════════════
-function buyBoost(id) {
-  const boost = BOOSTS.find(b => b.id === id);
-  if (!boost) return;
-  if (owned.has(id) && boost.type !== 'instant' && boost.type !== 'temp') {
-    toast('✅ Já comprado!'); return;
-  }
-  if (boost.requires && !owned.has(boost.requires)) {
-    toast('🔒 Desbloqueie o anterior primeiro!'); return;
-  }
-  if (score < boost.cost) {
-    toast(`❌ Precisa de ${boost.cost} pontos!`); return;
-  }
-  score -= boost.cost;
-  if (boost.type !== 'instant') owned.add(id);
-  boost.effect();
-  updateUI();
-  renderBoosts();
-  checkMilestones();
-  toast(`✨ ${boost.name} ativado!`);
-}
-
-// ════════════════════════════════
-// TEMP MULT DISPLAY COUNTDOWN
-// ════════════════════════════════
-setInterval(() => {
-  renderActiveStrip();
-  updateUI();
-}, 1000);
-
-// ════════════════════════════════
-// UI RENDERS
-// ════════════════════════════════
-function updateUI() {
-  document.getElementById('scoreNum').textContent = formatNum(score);
-  document.getElementById('statTotal').textContent = formatNum(totalClicks);
-  document.getElementById('statBoosts').textContent = owned.size;
-  const mult = globalMult * (tempMultVal > 1 && Date.now() < tempMultExpiry ? tempMultVal : 1);
-  document.getElementById('statMulti').textContent = '×' + (mult % 1 === 0 ? mult : mult.toFixed(1));
-  document.getElementById('statCps').textContent = formatNum(autoPerSec);
-  document.getElementById('cpsDisplay').textContent = `+${clickPower} por clique${autoPerSec > 0 ? ` • +${autoPerSec}/seg` : ''}`;
-  document.getElementById('perClickLabel').textContent = `+${clickPower} por clique`;
-}
-
-function formatNum(n) {
-  if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
-  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+const clamp=(v,a=0,b=100)=>Math.max(a,Math.min(b,v));
+const fmt=n=>{
+  if(n>=1e15)return(n/1e15).toFixed(2)+'Q';
+  if(n>=1e12)return(n/1e12).toFixed(2)+'T';
+  if(n>=1e9) return(n/1e9).toFixed(2)+'B';
+  if(n>=1e6) return(n/1e6).toFixed(2)+'M';
+  if(n>=1e3) return(n/1e3).toFixed(1)+'K';
   return Math.floor(n).toString();
+};
+const rand=arr=>arr[Math.floor(Math.random()*arr.length)];
+const PRESTIGE_GOAL=()=>1000000*Math.pow(10,prestigeCount);
+
+// ═══════════════════════════════════════
+// UPGRADE DEFINITIONS  (100 upgrades)
+// ═══════════════════════════════════════
+
+// ── CLICK UPGRADES (25) ──
+const CLICK_UPS=[
+  {id:'c1',  name:'DEDO RÁPIDO',    icon:'👆', desc:'+2 por clique',          cost:10,    effect:()=>{clickPower+=2;},          color:'#ff44cc'},
+  {id:'c2',  name:'DEDO DUPLO',     icon:'✌️', desc:'+5 por clique',          cost:40,    requires:'c1', effect:()=>{clickPower+=5;},  color:'#ff44cc'},
+  {id:'c3',  name:'TRIPLO TOQUE',   icon:'🤟', desc:'+10 por clique',         cost:120,   requires:'c2', effect:()=>{clickPower+=10;}, color:'#ff44cc'},
+  {id:'c4',  name:'PUNHO BÁSICO',   icon:'✊', desc:'+20 por clique',         cost:400,   requires:'c3', effect:()=>{clickPower+=20;}, color:'#ff6600'},
+  {id:'c5',  name:'SOCO FORTE',     icon:'👊', desc:'+50 por clique',         cost:1200,  requires:'c4', effect:()=>{clickPower+=50;}, color:'#ff6600'},
+  {id:'c6',  name:'SUPERPUNHO',     icon:'🦾', desc:'+100 por clique',        cost:4000,  requires:'c5', effect:()=>{clickPower+=100;},color:'#ff4400'},
+  {id:'c7',  name:'MEGAPUNHO',      icon:'⚡', desc:'+250 por clique',        cost:15000, requires:'c6', effect:()=>{clickPower+=250;},color:'#ff4400'},
+  {id:'c8',  name:'ULTRAPUNHO',     icon:'🔥', desc:'+500 por clique',        cost:60000, requires:'c7', effect:()=>{clickPower+=500;},color:'#ff2200'},
+  {id:'c9',  name:'DIVINO',         icon:'✨', desc:'+1.000 por clique',      cost:250000,requires:'c8', effect:()=>{clickPower+=1000;},color:'#ff2200'},
+  {id:'c10', name:'CÓSMICO',        icon:'🌌', desc:'+5.000 por clique',      cost:1e6,   requires:'c9', effect:()=>{clickPower+=5000;},color:'#cc00ff'},
+  {id:'c11', name:'LUVAS DE BOXE',  icon:'🥊', desc:'+3 por clique',          cost:25,    effect:()=>{clickPower+=3;},           color:'#ff8800'},
+  {id:'c12', name:'MARTELO',        icon:'🔨', desc:'+15 por clique',         cost:200,   requires:'c11',effect:()=>{clickPower+=15;}, color:'#ff8800'},
+  {id:'c13', name:'MARRETA',        icon:'🪚', desc:'+40 por clique',         cost:700,   requires:'c12',effect:()=>{clickPower+=40;}, color:'#ff8800'},
+  {id:'c14', name:'ESPADA',         icon:'⚔️', desc:'+80 por clique',         cost:2500,  requires:'c13',effect:()=>{clickPower+=80;}, color:'#ff8800'},
+  {id:'c15', name:'RAIO',           icon:'⚡', desc:'+200 por clique',        cost:8000,  requires:'c14',effect:()=>{clickPower+=200;},color:'#ffdd00'},
+  {id:'c16', name:'LASER',          icon:'🔫', desc:'+400 por clique',        cost:30000, requires:'c15',effect:()=>{clickPower+=400;},color:'#00ccff'},
+  {id:'c17', name:'BOMBA',          icon:'💣', desc:'+1.000 por clique',      cost:100000,requires:'c16',effect:()=>{clickPower+=1000;},color:'#ff4400'},
+  {id:'c18', name:'FOGUETE',        icon:'🚀', desc:'+3.000 por clique',      cost:400000,requires:'c17',effect:()=>{clickPower+=3000;},color:'#00ccff'},
+  {id:'c19', name:'CLICK CRÍTICO',  icon:'💢', desc:'15% de +500 extras',     cost:500,   effect:()=>{},                        color:'#ff2244',special:'crit'},
+  {id:'c20', name:'CLICK SORTUDO',  icon:'🍀', desc:'10% de ×10',             cost:1000,  effect:()=>{},                        color:'#00ff88',special:'lucky'},
+  {id:'c21', name:'CLICK DUPLO',    icon:'🎯', desc:'5% de +2× pontos',       cost:2000,  effect:()=>{},                        color:'#ff44cc',special:'double'},
+  {id:'c22', name:'CLIQUE SAGRADO', icon:'🙏', desc:'+10.000 por clique',     cost:2e6,   requires:'c10',effect:()=>{clickPower+=10000;},color:'#ffffaa'},
+  {id:'c23', name:'CLIQUE NUCLEAR', icon:'☢️', desc:'+50.000 por clique',     cost:1e7,   requires:'c22',effect:()=>{clickPower+=50000;},color:'#ffffaa'},
+  {id:'c24', name:'CLIQUE OMEGA',   icon:'🌀', desc:'+200.000 por clique',    cost:5e7,   requires:'c23',effect:()=>{clickPower+=200000;},color:'#cc00ff'},
+  {id:'c25', name:'GOD CLICK',      icon:'👁️', desc:'+1.000.000 por clique',  cost:5e8,   requires:'c24',effect:()=>{clickPower+=1000000;},color:'#ffffff'},
+];
+
+// ── AUTO UPGRADES (20) ──
+const AUTO_UPS=[
+  {id:'a1',  name:'ROBOZINHO',      icon:'🤖', desc:'+1/seg',          cost:30,     effect:()=>{autoPerSec+=1;},         color:'#00ccff'},
+  {id:'a2',  name:'ROBÔ II',        icon:'🦿', desc:'+5/seg',          cost:150,    requires:'a1',effect:()=>{autoPerSec+=5;},  color:'#00ccff'},
+  {id:'a3',  name:'FÁBRICA I',      icon:'🏭', desc:'+20/seg',         cost:600,    requires:'a2',effect:()=>{autoPerSec+=20;}, color:'#00aaff'},
+  {id:'a4',  name:'FÁBRICA II',     icon:'🏗️', desc:'+75/seg',         cost:2500,   requires:'a3',effect:()=>{autoPerSec+=75;}, color:'#00aaff'},
+  {id:'a5',  name:'FÁBRICA III',    icon:'⚙️', desc:'+200/seg',        cost:10000,  requires:'a4',effect:()=>{autoPerSec+=200;},color:'#0088ff'},
+  {id:'a6',  name:'SERVIDOR',       icon:'🖥️', desc:'+500/seg',        cost:40000,  requires:'a5',effect:()=>{autoPerSec+=500;},color:'#0066ff'},
+  {id:'a7',  name:'DATACENTER',     icon:'🌐', desc:'+1.500/seg',      cost:150000, requires:'a6',effect:()=>{autoPerSec+=1500;},color:'#4488ff'},
+  {id:'a8',  name:'IA BÁSICA',      icon:'🧠', desc:'+5.000/seg',      cost:600000, requires:'a7',effect:()=>{autoPerSec+=5000;},color:'#8844ff'},
+  {id:'a9',  name:'IA AVANÇADA',    icon:'🤯', desc:'+20.000/seg',     cost:3e6,    requires:'a8',effect:()=>{autoPerSec+=20000;},color:'#8844ff'},
+  {id:'a10', name:'IA SUPREMA',     icon:'👾', desc:'+100.000/seg',    cost:2e7,    requires:'a9',effect:()=>{autoPerSec+=100000;},color:'#cc44ff'},
+  {id:'a11', name:'HAMSTER',        icon:'🐹', desc:'+2/seg',          cost:50,     effect:()=>{autoPerSec+=2;},         color:'#ff8844'},
+  {id:'a12', name:'FAZENDA',        icon:'🌾', desc:'+10/seg',         cost:300,    requires:'a11',effect:()=>{autoPerSec+=10;}, color:'#88cc44'},
+  {id:'a13', name:'MINA',           icon:'⛏️', desc:'+40/seg',         cost:1200,   requires:'a12',effect:()=>{autoPerSec+=40;}, color:'#aa8844'},
+  {id:'a14', name:'USINA SOLAR',    icon:'☀️', desc:'+150/seg',        cost:5000,   requires:'a13',effect:()=>{autoPerSec+=150;},color:'#ffcc00'},
+  {id:'a15', name:'USINA NUCLEAR',  icon:'⚛️', desc:'+600/seg',        cost:20000,  requires:'a14',effect:()=>{autoPerSec+=600;},color:'#44ffaa'},
+  {id:'a16', name:'ANTIMÁTERIA',    icon:'🌀', desc:'+3.000/seg',      cost:80000,  requires:'a15',effect:()=>{autoPerSec+=3000;},color:'#cc00ff'},
+  {id:'a17', name:'BURACO NEGRO',   icon:'🕳️', desc:'+15.000/seg',     cost:350000, requires:'a16',effect:()=>{autoPerSec+=15000;},color:'#330033'},
+  {id:'a18', name:'ESTRELA NÊUTRON',icon:'💫', desc:'+60.000/seg',     cost:2e6,    requires:'a17',effect:()=>{autoPerSec+=60000;},color:'#ffffaa'},
+  {id:'a19', name:'GALÁXIA',        icon:'🌌', desc:'+300.000/seg',    cost:1e7,    requires:'a18',effect:()=>{autoPerSec+=300000;},color:'#4444ff'},
+  {id:'a20', name:'UNIVERSO',       icon:'🌍', desc:'+2.000.000/seg',  cost:1e8,    requires:'a19',effect:()=>{autoPerSec+=2000000;},color:'#ffffff'},
+];
+
+// ── MULTIPLIER UPGRADES (20) ──
+const MULT_UPS=[
+  {id:'m1',  name:'×2 TEMPORÁRIO',  icon:'✖️', desc:'×2 por 30s',    cost:100,   type:'temp',dur:30, effect:()=>applyTempMult(2,30),      color:'#ffdd00'},
+  {id:'m2',  name:'×3 TEMPORÁRIO',  icon:'🔢', desc:'×3 por 20s',    cost:300,   type:'temp',dur:20, effect:()=>applyTempMult(3,20),      color:'#ffdd00'},
+  {id:'m3',  name:'×5 TEMPORÁRIO',  icon:'💥', desc:'×5 por 15s',    cost:800,   type:'temp',dur:15, effect:()=>applyTempMult(5,15),      color:'#ff8800'},
+  {id:'m4',  name:'×10 MODO DEUS',  icon:'👑', desc:'×10 por 10s',   cost:3000,  type:'temp',dur:10, effect:()=>applyTempMult(10,10),     color:'#ff4400'},
+  {id:'m5',  name:'×25 LENDÁRIO',   icon:'🌟', desc:'×25 por 8s',    cost:12000, type:'temp',dur:8,  effect:()=>applyTempMult(25,8),      color:'#ff2200'},
+  {id:'m6',  name:'×50 ÉPICO',      icon:'🔥', desc:'×50 por 5s',    cost:50000, type:'temp',dur:5,  effect:()=>applyTempMult(50,5),      color:'#ff0000'},
+  {id:'m7',  name:'×100 MÍTICO',    icon:'💀', desc:'×100 por 3s',   cost:200000,type:'temp',dur:3,  effect:()=>applyTempMult(100,3),     color:'#aa00ff'},
+  {id:'m8',  name:'MULT GLOBAL +1', icon:'🎯', desc:'Mult perma +1', cost:5000,  perm:true,  effect:()=>{globalMult+=1;},              color:'#00ff88'},
+  {id:'m9',  name:'MULT GLOBAL +2', icon:'🎰', desc:'Mult perma +2', cost:25000, requires:'m8',perm:true,effect:()=>{globalMult+=2;},   color:'#00ff88'},
+  {id:'m10', name:'MULT GLOBAL +5', icon:'🏆', desc:'Mult perma +5', cost:150000,requires:'m9',perm:true,effect:()=>{globalMult+=5;},   color:'#00ff88'},
+  {id:'m11', name:'MULT GLOBAL ×2', icon:'💎', desc:'Dobra mult total',cost:500000,requires:'m10',perm:true,effect:()=>{globalMult*=2;},color:'#00ccff'},
+  {id:'m12', name:'BOOST DUPLO',    icon:'⚡', desc:'+1 click e auto dobram',cost:2000,perm:true,effect:()=>{clickPower*=2;autoPerSec*=2;},color:'#ffdd00'},
+  {id:'m13', name:'TURBINADO',      icon:'🚀', desc:'Click ×3 permanente',cost:8000,requires:'m12',perm:true,effect:()=>{clickPower*=3;},color:'#ffdd00'},
+  {id:'m14', name:'OVERCLOCKED',    icon:'🖥️', desc:'Auto ×3 permanente',cost:30000,requires:'m13',perm:true,effect:()=>{autoPerSec*=3;},color:'#00ccff'},
+  {id:'m15', name:'HIPER',          icon:'🌀', desc:'Click ×5 permanente',cost:150000,requires:'m14',perm:true,effect:()=>{clickPower*=5;},color:'#cc00ff'},
+  {id:'m16', name:'ULTRA',          icon:'🌟', desc:'Auto ×5 permanente', cost:600000,requires:'m15',perm:true,effect:()=>{autoPerSec*=5;},color:'#cc00ff'},
+  {id:'m17', name:'MEGA',           icon:'💫', desc:'Tudo ×2 perma',       cost:2e6,requires:'m16',perm:true,effect:()=>{clickPower*=2;autoPerSec*=2;globalMult*=2;},color:'#ffaaff'},
+  {id:'m18', name:'GIGA',           icon:'🌌', desc:'Click +10.000 e auto +1000/s',cost:1e7,requires:'m17',perm:true,effect:()=>{clickPower+=10000;autoPerSec+=1000;},color:'#ffaaff'},
+  {id:'m19', name:'TERA',           icon:'✨', desc:'Tudo ×10 perma',       cost:1e8,requires:'m18',perm:true,effect:()=>{clickPower*=10;autoPerSec*=10;globalMult*=10;},color:'#ffffff'},
+  {id:'m20', name:'OMEGA',          icon:'👁️', desc:'Mult total ×100',       cost:1e9,requires:'m19',perm:true,effect:()=>{globalMult*=100;},color:'#ffffff'},
+];
+
+// ── SPECIAL UPGRADES (20) ──
+const SPECIAL_UPS=[
+  {id:'s1',  name:'BANCO',          icon:'🏦', desc:'+50 pts agora',          cost:25,    instant:true, effect:()=>{score+=50;toast('+50 pts do banco!');},              color:'#88ff44'},
+  {id:'s2',  name:'JACKPOT',        icon:'🎰', desc:'100-500 pts aleatório',  cost:200,   instant:true, effect:()=>{const v=100+Math.floor(Math.random()*401);score+=v;toast(`🎰 JACKPOT! +${v}!`,'gold');sfx('jackpot');},color:'#ff44aa'},
+  {id:'s3',  name:'MEGA JACKPOT',   icon:'💰', desc:'1K-10K pts aleatório',   cost:2000,  requires:'s2',instant:true,effect:()=>{const v=1000+Math.floor(Math.random()*9001);score+=v;toast(`💰 MEGA! +${fmt(v)}!`,'gold');sfx('jackpot');},color:'#ffdd00'},
+  {id:'s4',  name:'CAFÉ',           icon:'☕', desc:'+2 clique por 30s',      cost:80,    temp:true,    effect:()=>{const e=clickPower;clickPower+=2;setTimeout(()=>{clickPower-=2;},30000);toast('☕ +2/clique 30s!');}, color:'#cc6600'},
+  {id:'s5',  name:'ENERGY DRINK',   icon:'🥤', desc:'+10 clique por 20s',     cost:400,   requires:'s4',temp:true,effect:()=>{clickPower+=10;setTimeout(()=>clickPower-=10,20000);toast('🥤 +10/clique 20s!');},color:'#00cc88'},
+  {id:'s6',  name:'VITAMINA',       icon:'💊', desc:'+50 clique por 15s',     cost:2000,  requires:'s5',temp:true,effect:()=>{clickPower+=50;setTimeout(()=>clickPower-=50,15000);toast('💊 +50/clique 15s!');},color:'#ff88aa'},
+  {id:'s7',  name:'TEMPESTADE',     icon:'⛈️', desc:'+10/seg por 15s',        cost:350,   temp:true,    effect:()=>{autoPerSec+=10;setTimeout(()=>autoPerSec-=10,15000+(rainbowBonus*1000));toast('⛈️ +10/seg 15s!');},color:'#4466ff'},
+  {id:'s8',  name:'FURACÃO',        icon:'🌀', desc:'+100/seg por 10s',       cost:3000,  requires:'s7',temp:true,effect:()=>{autoPerSec+=100;setTimeout(()=>autoPerSec-=100,10000+(rainbowBonus*1000));toast('🌀 +100/seg 10s!');},color:'#4466ff'},
+  {id:'s9',  name:'TORNADO',        icon:'🌪️', desc:'+1000/seg por 8s',      cost:25000, requires:'s8',temp:true,effect:()=>{autoPerSec+=1000;setTimeout(()=>autoPerSec-=1000,8000+(rainbowBonus*1000));toast('🌪️ +1000/seg 8s!');},color:'#0088ff'},
+  {id:'s10', name:'FANTASMA',       icon:'👻', desc:'Auto-clique a cada 2s',  cost:600,   perm:true,    effect:()=>startGhost(),                                          color:'#aaaaff'},
+  {id:'s11', name:'CLONE',          icon:'👥', desc:'Auto-clique a cada 1s',  cost:2500,  requires:'s10',perm:true,effect:()=>startClone(),                               color:'#aaaaff'},
+  {id:'s12', name:'EXÉRCITO',       icon:'⚔️', desc:'Auto-clique a cada 0.5s',cost:10000, requires:'s11',perm:true,effect:()=>startArmy(),                               color:'#ff4444'},
+  {id:'s13', name:'ARCO-ÍRIS',      icon:'🌈', desc:'+5s em boosts temp',     cost:500,   perm:true,    effect:()=>{rainbowBonus+=5;toast('🌈 +5s em todos boosts!');},   color:'#ff44ff'},
+  {id:'s14', name:'SORTE SUPREMA',  icon:'🎲', desc:'20% de ×20 por clique',  cost:5000,  perm:true,    effect:()=>{},                                                    color:'#00ff88',special:'megaLucky'},
+  {id:'s15', name:'CRÍTICO ÉPICO',  icon:'💢', desc:'20% de +2000 extras',    cost:8000,  requires:'s14',perm:true,effect:()=>{},                                         color:'#ff2244',special:'megaCrit'},
+  {id:'s16', name:'COMBO MASTER',   icon:'🔥', desc:'Combo máximo 50x',       cost:4000,  perm:true,    effect:()=>{},                                                    color:'#ff8800',special:'megaCombo'},
+  {id:'s17', name:'TESOURO',        icon:'💎', desc:'+1000 pts agora',         cost:500,   instant:true, effect:()=>{score+=1000;toast('💎 +1000 pts!','gold');},          color:'#00ccff'},
+  {id:'s18', name:'COFRE',          icon:'🗄️', desc:'+10.000 pts agora',       cost:4000,  requires:'s17',instant:true,effect:()=>{score+=10000;toast('🗄️ +10K pts!','gold');},color:'#00ccff'},
+  {id:'s19', name:'VAULT',          icon:'🏛️', desc:'+100.000 pts agora',     cost:30000, requires:'s18',instant:true,effect:()=>{score+=100000;toast('🏛️ +100K pts!','gold');},color:'#00ccff'},
+  {id:'s20', name:'INFINITO',       icon:'♾️', desc:'Ganhe todos os auto x10',cost:500000,perm:true,effect:()=>{autoPerSec*=10;toast('♾️ AUTO ×10!','gold');},             color:'#ffffff'},
+];
+
+// ── CRAZY UPGRADES (20) ──
+const CRAZY_UPS=[
+  {id:'z1',  name:'BOLO',           icon:'🎂', desc:'Cada clique = +age do bolo(10)',cost:150,perm:true,effect:()=>{clickPower+=10;},         color:'#ff88cc'},
+  {id:'z2',  name:'PIZZA',          icon:'🍕', desc:'+8 slices = +8/clique',  cost:300,   perm:true, effect:()=>{clickPower+=8;},             color:'#ff8844'},
+  {id:'z3',  name:'HAMBURGUER',     icon:'🍔', desc:'+15/clique e +15/seg',   cost:800,   perm:true, effect:()=>{clickPower+=15;autoPerSec+=15;},color:'#ff6600'},
+  {id:'z4',  name:'SUSHI',          icon:'🍣', desc:'+30/clique',             cost:1500,  perm:true, effect:()=>{clickPower+=30;},            color:'#ff4488'},
+  {id:'z5',  name:'ESPAGUETE',      icon:'🍝', desc:'Auto +30/seg',           cost:2000,  perm:true, effect:()=>{autoPerSec+=30;},            color:'#ffcc44'},
+  {id:'z6',  name:'GATO',           icon:'🐱', desc:'+5/seg (ronron)',        cost:200,   perm:true, effect:()=>{autoPerSec+=5;},             color:'#ff88ff'},
+  {id:'z7',  name:'CACHORRO',       icon:'🐶', desc:'+10/clique (latido)',    cost:500,   requires:'z6',perm:true,effect:()=>{clickPower+=10;},color:'#ffaa44'},
+  {id:'z8',  name:'DINOSSAURO',     icon:'🦕', desc:'+200/clique (roar)',     cost:8000,  requires:'z7',perm:true,effect:()=>{clickPower+=200;},color:'#44ff88'},
+  {id:'z9',  name:'DRAGÃO',         icon:'🐉', desc:'+2000/seg (fogo)',       cost:100000,requires:'z8',perm:true,effect:()=>{autoPerSec+=2000;},color:'#ff4400'},
+  {id:'z10', name:'UNICÓRNIO',      icon:'🦄', desc:'×3 tudo por 5s',        cost:5000,  temp:true, effect:()=>applyTempMult(3,5),           color:'#ff44ff'},
+  {id:'z11', name:'ALIENÍGENA',     icon:'👽', desc:'+500/seg',               cost:50000, perm:true, effect:()=>{autoPerSec+=500;},           color:'#44ffcc'},
+  {id:'z12', name:'ROBÔ GIGANTE',   icon:'🤖', desc:'+5000/seg',              cost:300000,perm:true, effect:()=>{autoPerSec+=5000;},          color:'#0088ff'},
+  {id:'z13', name:'NINJA',          icon:'🥷', desc:'+1000/clique',           cost:200000,perm:true, effect:()=>{clickPower+=1000;},          color:'#333388'},
+  {id:'z14', name:'PIRATA',         icon:'🏴‍☠️',desc:'Rouba 10% da auto/seg', cost:10000, perm:true, effect:()=>{autoPerSec*=1.1;},           color:'#884400'},
+  {id:'z15', name:'MAGO',           icon:'🧙', desc:'+50/clique e ×2 temp',  cost:15000, perm:true, effect:()=>{clickPower+=50;applyTempMult(2,20);},color:'#8844ff'},
+  {id:'z16', name:'SUPER-HERÓI',    icon:'🦸', desc:'+300/clique',            cost:30000, requires:'z13',perm:true,effect:()=>{clickPower+=300;},color:'#4488ff'},
+  {id:'z17', name:'VILÃO',          icon:'🦹', desc:'+600/clique (maldade)',  cost:80000, requires:'z16',perm:true,effect:()=>{clickPower+=600;},color:'#880088'},
+  {id:'z18', name:'CANHÃO',         icon:'💥', desc:'+5000/clique',           cost:500000,requires:'z17',perm:true,effect:()=>{clickPower+=5000;},color:'#ff4400'},
+  {id:'z19', name:'BOMBA ATÔMICA',  icon:'☢️', desc:'Score ×2 imediato!',    cost:1e6,   instant:true,effect:()=>{score*=2;toast('☢️ SCORE DOBRADO!','gold');},          color:'#aaff44'},
+  {id:'z20', name:'BIG BANG',       icon:'🌟', desc:'Tudo ao máximo por 30s', cost:5e6,  temp:true, effect:()=>{applyTempMult(50,30);clickPower*=10;setTimeout(()=>clickPower/=10,30000);toast('🌟 BIG BANG! ×50 por 30s!','gold');},color:'#ffffff'},
+];
+
+// ── PRESTIGE UPGRADES (15) — only available after prestige ──
+const PRESTIGE_UPS=[
+  {id:'p1',  name:'INÍCIO FORTE',   icon:'⭐', desc:'Começa com +100/clique', cost:1,stars:true,perm:true,effect:()=>{clickPower+=100;},       color:'#ffdd00'},
+  {id:'p2',  name:'BOOST INICIAL',  icon:'🌟', desc:'Começa com +100/seg',   cost:1,stars:true,perm:true,effect:()=>{autoPerSec+=100;},        color:'#ffdd00'},
+  {id:'p3',  name:'ESTRELA DUPLA',  icon:'💫', desc:'×2 em tudo permanente', cost:2,stars:true,perm:true,effect:()=>{clickPower*=2;autoPerSec*=2;globalMult*=2;},color:'#ffffaa'},
+  {id:'p4',  name:'AURA DOURADA',   icon:'✨', desc:'×5 em tudo permanente', cost:3,stars:true,requires:'p3',perm:true,effect:()=>{clickPower*=5;autoPerSec*=5;globalMult*=5;},color:'#ffaa00'},
+  {id:'p5',  name:'NEBULOSA',       icon:'🌌', desc:'×10 clique perma',      cost:3,stars:true,requires:'p4',perm:true,effect:()=>{clickPower*=10;},              color:'#aa44ff'},
+  {id:'p6',  name:'QUASAR',         icon:'🌀', desc:'×10 auto perma',        cost:3,stars:true,requires:'p5',perm:true,effect:()=>{autoPerSec*=10;},             color:'#4444ff'},
+  {id:'p7',  name:'SUPERNOVA',      icon:'💥', desc:'×50 clique perma',      cost:5,stars:true,requires:'p6',perm:true,effect:()=>{clickPower*=50;},             color:'#ff4400'},
+  {id:'p8',  name:'SINGULARIDADE',  icon:'⚫', desc:'×100 tudo perma',       cost:8,stars:true,requires:'p7',perm:true,effect:()=>{clickPower*=100;autoPerSec*=100;globalMult*=100;},color:'#ffffff'},
+  {id:'p9',  name:'DIMENSÃO X',     icon:'🔮', desc:'+1000/clique base',      cost:2,stars:true,perm:true,effect:()=>{clickPower+=1000;},       color:'#cc44ff'},
+  {id:'p10', name:'PARADOXO',       icon:'🌐', desc:'+10000/seg base',        cost:4,stars:true,requires:'p9',perm:true,effect:()=>{autoPerSec+=10000;},         color:'#44ccff'},
+  {id:'p11', name:'INFINITO+1',     icon:'♾️', desc:'Mult global +10',        cost:5,stars:true,requires:'p10',perm:true,effect:()=>{globalMult+=10;},           color:'#00ffcc'},
+  {id:'p12', name:'DEUS DO CLICK',  icon:'👁️', desc:'×1000 clique perma',    cost:10,stars:true,requires:'p11',perm:true,effect:()=>{clickPower*=1000;},        color:'#ffffff'},
+  {id:'p13', name:'CRIADOR',        icon:'🌍', desc:'×1000 auto perma',      cost:10,stars:true,requires:'p12',perm:true,effect:()=>{autoPerSec*=1000;},        color:'#ffffff'},
+  {id:'p14', name:'OMNI',           icon:'🌈', desc:'×1000 mult global',     cost:15,stars:true,requires:'p13',perm:true,effect:()=>{globalMult*=1000;},        color:'#ffffff'},
+  {id:'p15', name:'ABSOLUTO',       icon:'🔱', desc:'TUDO ×TUDO',            cost:20,stars:true,requires:'p14',perm:true,effect:()=>{clickPower*=globalMult;autoPerSec*=globalMult;globalMult*=globalMult;},color:'#ffff00'},
+];
+
+const ALL_UPS=[...CLICK_UPS,...AUTO_UPS,...MULT_UPS,...SPECIAL_UPS,...CRAZY_UPS,...PRESTIGE_UPS];
+
+// ═══════════════════════════════════════
+// MILESTONES (30)
+// ═══════════════════════════════════════
+const MILESTONES=[
+  {id:'ms1', label:'<strong>10 pontos</strong>',         goal:10,    bonus:()=>score+=5,    reward:'+5 pts'},
+  {id:'ms2', label:'<strong>100 pontos</strong>',        goal:100,   bonus:()=>score+=20,   reward:'+20 pts'},
+  {id:'ms3', label:'<strong>500 pontos</strong>',        goal:500,   bonus:()=>score+=50,   reward:'+50 pts'},
+  {id:'ms4', label:'<strong>1.000 pontos</strong>',      goal:1000,  bonus:()=>score+=100,  reward:'+100 pts'},
+  {id:'ms5', label:'<strong>5.000 pontos</strong>',      goal:5000,  bonus:()=>score+=500,  reward:'+500 pts'},
+  {id:'ms6', label:'<strong>10.000 pontos</strong>',     goal:10000, bonus:()=>score+=1000, reward:'+1K pts'},
+  {id:'ms7', label:'<strong>50.000 pontos</strong>',     goal:50000, bonus:()=>applyTempMult(3,15),reward:'×3 por 15s'},
+  {id:'ms8', label:'<strong>100.000 pontos</strong>',    goal:1e5,   bonus:()=>score+=10000,reward:'+10K pts'},
+  {id:'ms9', label:'<strong>500.000 pontos</strong>',    goal:5e5,   bonus:()=>score+=50000,reward:'+50K pts'},
+  {id:'ms10',label:'<strong>1 MILHÃO</strong>',          goal:1e6,   bonus:()=>{globalMult*=2;},reward:'×2 global!'},
+  {id:'ms11',label:'<strong>10 MILHÕES</strong>',        goal:1e7,   bonus:()=>{globalMult*=3;},reward:'×3 global!'},
+  {id:'ms12',label:'<strong>100 MILHÕES</strong>',       goal:1e8,   bonus:()=>{clickPower*=5;autoPerSec*=5;},reward:'×5 tudo!'},
+  {id:'ms13',label:'<strong>1 BILHÃO</strong>',          goal:1e9,   bonus:()=>{globalMult*=10;},reward:'×10 global!'},
+  {id:'ms14',label:'<strong>1 TRILHÃO</strong>',         goal:1e12,  bonus:()=>{globalMult*=50;},reward:'×50 global!'},
+  {id:'ms15',label:'<strong>100 cliques</strong>',       goal:100,   clicker:true,bonus:()=>score+=30,  reward:'+30 pts'},
+  {id:'ms16',label:'<strong>500 cliques</strong>',       goal:500,   clicker:true,bonus:()=>score+=150, reward:'+150 pts'},
+  {id:'ms17',label:'<strong>1.000 cliques</strong>',     goal:1000,  clicker:true,bonus:()=>score+=500, reward:'+500 pts'},
+  {id:'ms18',label:'<strong>5.000 cliques</strong>',     goal:5000,  clicker:true,bonus:()=>{clickPower+=50;},reward:'+50/clique'},
+  {id:'ms19',label:'<strong>10.000 cliques</strong>',    goal:10000, clicker:true,bonus:()=>{clickPower+=200;},reward:'+200/clique'},
+  {id:'ms20',label:'<strong>50.000 cliques</strong>',    goal:50000, clicker:true,bonus:()=>{clickPower+=1000;},reward:'+1000/clique'},
+  {id:'ms21',label:'<strong>5 upgrades</strong>',        goal:5,     upgrades:true,bonus:()=>score+=100,reward:'+100 pts'},
+  {id:'ms22',label:'<strong>15 upgrades</strong>',       goal:15,    upgrades:true,bonus:()=>score+=500,reward:'+500 pts'},
+  {id:'ms23',label:'<strong>30 upgrades</strong>',       goal:30,    upgrades:true,bonus:()=>{globalMult+=2;},reward:'Mult +2'},
+  {id:'ms24',label:'<strong>50 upgrades</strong>',       goal:50,    upgrades:true,bonus:()=>{globalMult+=5;},reward:'Mult +5'},
+  {id:'ms25',label:'<strong>75 upgrades</strong>',       goal:75,    upgrades:true,bonus:()=>{globalMult+=10;},reward:'Mult +10'},
+  {id:'ms26',label:'<strong>100 upgrades</strong>',      goal:100,   upgrades:true,bonus:()=>{globalMult*=5;},reward:'×5 global!'},
+  {id:'ms27',label:'Primeiro <strong>PRESTÍGIO</strong>',goal:1,     prestige:true,bonus:()=>{prestigeStars+=2;},reward:'+2 estrelas bônus'},
+  {id:'ms28',label:'<strong>5 prestígios</strong>',      goal:5,     prestige:true,bonus:()=>{prestigeStars+=5;},reward:'+5 estrelas bônus'},
+  {id:'ms29',label:'<strong>10 prestígios</strong>',     goal:10,    prestige:true,bonus:()=>{globalMult*=100;},reward:'×100 global!'},
+  {id:'ms30',label:'<strong>1 QUADRILHÃO</strong>',      goal:1e15,  bonus:()=>{globalMult*=1000;},reward:'×1000 global!'},
+];
+const doneMilestones=new Set();
+
+// ═══════════════════════════════════════
+// CLICK
+// ═══════════════════════════════════════
+let ghostIv2=null,armyIv=null;
+
+function doClick(e){
+  sfx('click');
+  const now=Date.now();
+  let pts=clickPower;
+
+  // special procs
+  if(owned.has('c19')&&Math.random()<.15){pts+=500;spawnFx(e,'CRÍTICO! +500','#ff2244',e.clientX,e.clientY-20);}
+  if(owned.has('c20')&&Math.random()<.10){pts*=10;spawnFx(e,'LUCKY ×10!','#00ff88',e.clientX,e.clientY-35);}
+  if(owned.has('c21')&&Math.random()<.05){pts*=2;spawnFx(e,'DUPLO!','#ff44cc',e.clientX,e.clientY-25);}
+  if(owned.has('s14')&&Math.random()<.20){pts*=20;spawnFx(e,'MEGA LUCKY ×20!','#00ff88',e.clientX,e.clientY-40);}
+  if(owned.has('s15')&&Math.random()<.20){pts+=2000;spawnFx(e,'ÉPICO! +2000','#ff2244',e.clientX,e.clientY-30);}
+
+  // combo
+  if(owned.has('s16')||owned.has('s10')){
+    if(now-lastClick<500){comboCount=Math.min(comboCount+1,owned.has('s16')?50:20);}
+    else comboCount=1;
+    clearTimeout(comboTimer);
+    comboTimer=setTimeout(()=>{comboCount=0;updateCombo();},1000);
+    pts=Math.floor(pts*(1+comboCount*.1));
+    updateCombo();
+  }
+
+  // apply mult
+  const mult=getCurrentMult();
+  pts=Math.floor(pts*mult);
+  score+=pts; totalClicks++; totalEarned+=pts; lastClick=now;
+
+  spawnFx(e,'+'+fmt(pts),pts>clickPower*mult*5?'#ff4400':pts>clickPower*mult*2?'#ffdd00':'#ffffff',e.clientX,e.clientY);
+  document.getElementById('scoreNum').classList.remove('pop');
+  void document.getElementById('scoreNum').offsetWidth;
+  document.getElementById('scoreNum').classList.add('pop');
+
+  const emojis=['👆','✊','🤜','⚡','👊','🫳','☝️','🖐️','🤙','🤟'];
+  document.getElementById('btnEmoji').textContent=emojis[totalClicks%emojis.length];
+
+  updateUI(); checkMilestones(); checkPrestige();
 }
 
-function renderBoosts() {
-  const grid = document.getElementById('boostGrid');
-  grid.innerHTML = '';
-  BOOSTS.forEach(b => {
-    const isOwned = owned.has(b.id);
-    const locked = b.requires && !owned.has(b.requires);
-    const canBuy = !locked && (score >= b.cost || isOwned);
+function getCurrentMult(){
+  return globalMult*(tempMult>1&&Date.now()<tempMultExp?tempMult:1);
+}
 
-    const d = document.createElement('div');
-    d.className = 'boost-card' + (locked ? ' locked' : '') + (isOwned && b.type === 'perm' ? ' owned' : '');
-    d.style.borderColor = isOwned && b.type === 'perm' ? 'var(--green)' : (canBuy ? b.borderColor : 'var(--border)');
-    d.innerHTML = `
-      <div class="boost-mult" style="color:${b.color}">${b.label}</div>
-      <span class="boost-icon">${b.icon}</span>
-      <div class="boost-name">${b.name}</div>
-      <div class="boost-desc">${b.desc}</div>
-      <div class="boost-cost" style="color:${canBuy || isOwned ? b.color : 'var(--sub)'}">
-        ${isOwned && b.type === 'perm' ? '<span style="color:var(--green)">✓ ATIVO</span>' : `⚡ ${b.cost} pts`}
+function spawnFx(e,text,color,x,y){
+  const el=document.createElement('div');
+  el.className='click-fx';
+  el.textContent=text;
+  el.style.cssText=`left:${x-20}px;top:${y-10}px;color:${color};font-size:.85rem;`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),750);
+}
+
+// ═══════════════════════════════════════
+// AUTO + GHOST
+// ═══════════════════════════════════════
+setInterval(()=>{
+  if(autoPerSec>0){
+    const pts=Math.floor(autoPerSec*getCurrentMult());
+    score+=pts; totalEarned+=pts;
+    updateUI(); checkMilestones(); checkPrestige();
+  }
+},1000);
+
+function startGhost(){
+  if(ghostIv) return;
+  ghostIv=setInterval(()=>{
+    const pts=Math.floor(clickPower*getCurrentMult());
+    score+=pts; totalEarned+=pts; sfx('ghost');
+    updateUI(); checkMilestones();
+  },2000);
+}
+function startClone(){
+  if(ghostIv2) return;
+  ghostIv2=setInterval(()=>{
+    const pts=Math.floor(clickPower*getCurrentMult());
+    score+=pts; totalEarned+=pts;
+    updateUI();
+  },1000);
+}
+function startArmy(){
+  if(armyIv) return;
+  armyIv=setInterval(()=>{
+    const pts=Math.floor(clickPower*getCurrentMult());
+    score+=pts; totalEarned+=pts;
+    updateUI();
+  },500);
+}
+
+// ═══════════════════════════════════════
+// TEMP EFFECTS
+// ═══════════════════════════════════════
+function applyTempMult(val,secs){
+  const dur=(secs+rainbowBonus)*1000;
+  tempMult=Math.max(tempMult,val);
+  tempMultExp=Date.now()+dur;
+  toast(`×${val} por ${secs+rainbowBonus}s!`,'gold'); sfx('mult');
+  renderStrip();
+  setTimeout(()=>{tempMult=1;renderStrip();updateUI();},dur);
+}
+
+// ═══════════════════════════════════════
+// BUY UPGRADE
+// ═══════════════════════════════════════
+function buy(id){
+  const up=ALL_UPS.find(u=>u.id===id);
+  if(!up) return;
+  if(owned.has(id)&&!up.instant&&!up.temp){toast('Já comprado!');sfx('error');return;}
+  if(up.requires&&!owned.has(up.requires)){toast('🔒 Desbloqueia o anterior!');sfx('error');return;}
+  const cost=up.stars?up.cost:up.cost;
+  if(up.stars){
+    if(prestigeStars<up.cost){toast(`Precisa de ${up.cost} ⭐ estrelas!`,'red');sfx('error');return;}
+    prestigeStars-=up.cost;
+    document.getElementById('sPrestige').textContent=prestigeStars+'⭐';
+  } else {
+    if(score<cost){toast(`Precisa de ${fmt(cost)} pts!`,'red');sfx('error');return;}
+    score-=cost;
+  }
+  owned.add(id);
+  up.effect();
+  sfx(up.instant?'jackpot':'buy');
+  updateUI(); renderAll(); checkMilestones();
+}
+
+// ═══════════════════════════════════════
+// PRESTIGE
+// ═══════════════════════════════════════
+function doPrestige(){
+  if(score<PRESTIGE_GOAL()) return;
+  prestigeCount++;
+  prestigeStars+=prestigeCount;
+  score=0; totalEarned=0;
+  clickPower=1; autoPerSec=0; globalMult=1; tempMult=1;
+  // keep perm prestige upgrades effects but reset owned (non-prestige)
+  const keepIds=new Set([...owned].filter(id=>id.startsWith('p')));
+  owned.clear();
+  keepIds.forEach(id=>owned.add(id));
+  // re-apply prestige upgrades
+  PRESTIGE_UPS.forEach(u=>{if(owned.has(u.id)) u.effect();});
+  sfx('milestone');
+  toast(`⭐ PRESTÍGIO ${prestigeCount}! +${prestigeCount} estrelas!`,'gold');
+  updateUI(); renderAll();
+}
+
+function checkPrestige(){
+  const goal=PRESTIGE_GOAL();
+  const pct=Math.min(100,score/goal*100);
+  document.getElementById('prestigeFill').style.width=pct+'%';
+  document.getElementById('prestigeGoalLabel').textContent=`${fmt(score)} / ${fmt(goal)} para prestigiar`;
+  document.getElementById('prestigeBtn').disabled=score<goal;
+}
+
+// ═══════════════════════════════════════
+// MILESTONES CHECK
+// ═══════════════════════════════════════
+function checkMilestones(){
+  MILESTONES.forEach(m=>{
+    if(doneMilestones.has(m.id)) return;
+    const val=m.clicker?totalClicks:m.upgrades?owned.size:m.prestige?prestigeCount:score;
+    if(val>=m.goal){
+      doneMilestones.add(m.id);
+      m.bonus();
+      sfx('milestone');
+      toast(`🏆 ${m.label.replace(/<[^>]+>/g,'')}! ${m.reward}`,'green');
+      renderMilestones();
+    }
+  });
+  renderMilestonesBars();
+}
+
+// ═══════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════
+function updateUI(){
+  document.getElementById('sTotal').textContent=fmt(score);
+  document.getElementById('scoreNum').textContent=fmt(score);
+  document.getElementById('sCps').textContent=fmt(Math.floor(autoPerSec*getCurrentMult()));
+  document.getElementById('sClick').textContent=fmt(Math.floor(clickPower*getCurrentMult()));
+  document.getElementById('sMult').textContent='×'+fmt(getCurrentMult());
+  document.getElementById('sTClicks').textContent=fmt(totalClicks);
+  document.getElementById('cpsLine').textContent=`+${fmt(Math.floor(clickPower*getCurrentMult()))} por clique${autoPerSec>0?` • +${fmt(Math.floor(autoPerSec*getCurrentMult()))}/seg`:''}`;
+  document.getElementById('perClickLabel').textContent='+'+fmt(Math.floor(clickPower*getCurrentMult()));
+  renderStrip();
+}
+
+function renderGrid(list,gridId){
+  const grid=document.getElementById(gridId);
+  grid.innerHTML='';
+  list.forEach(up=>{
+    const isOwned=owned.has(up.id);
+    const locked=up.requires&&!owned.has(up.requires);
+    const stars=up.stars;
+    const canAfford=stars?prestigeStars>=up.cost:score>=up.cost;
+    const d=document.createElement('div');
+    d.className='up-card'+(locked?' locked':isOwned&&!up.instant&&!up.temp?' owned':'');
+    d.style.borderColor=isOwned&&!up.instant&&!up.temp?'var(--green)':(canAfford&&!locked?up.color:'var(--border)');
+    const costLabel=stars?`${up.cost}⭐`:fmt(up.cost)+' pts';
+    d.innerHTML=`
+      <div class="up-lv" style="color:${up.color}">${up.temp?'TEMP':up.instant?'INST':up.stars?'PREST':'PERM'}</div>
+      <span class="up-icon">${up.icon}</span>
+      <div class="up-name">${up.name}</div>
+      <div class="up-desc">${up.desc}</div>
+      <div class="up-cost" style="color:${canAfford||isOwned?up.color:'var(--sub)'}">
+        ${isOwned&&!up.instant&&!up.temp?'<span style="color:var(--green)">✓ ATIVO</span>':`⚡ ${costLabel}`}
       </div>
     `;
-    if (!locked && !(isOwned && b.type === 'perm')) {
-      d.onclick = () => buyBoost(b.id);
-    }
+    if(!locked&&!(isOwned&&!up.instant&&!up.temp)) d.onclick=()=>buy(up.id);
+    d.addEventListener('mouseenter',()=>sfx('hover'));
     grid.appendChild(d);
   });
 }
 
-function renderActiveStrip() {
-  const strip = document.getElementById('activeStrip');
-  strip.innerHTML = '';
-
-  // temp mult
-  if (tempMultVal > 1 && Date.now() < tempMultExpiry) {
-    const rem = Math.ceil((tempMultExpiry - Date.now()) / 1000);
-    const chip = document.createElement('div');
-    chip.className = 'active-chip';
-    chip.style.cssText = `color:var(--yellow);border-color:#886600;background:#1a1200;`;
-    chip.textContent = `×${tempMultVal} MULT — ${rem}s`;
-    strip.appendChild(chip);
-  }
-  // other active
-  Object.entries(activeBoosts).forEach(([id, expiry]) => {
-    const rem = Math.ceil((expiry - Date.now()) / 1000);
-    if (rem <= 0) return;
-    const b = BOOSTS.find(x => x.id === id);
-    if (!b) return;
-    const chip = document.createElement('div');
-    chip.className = 'active-chip';
-    chip.style.cssText = `color:${b.color};border-color:${b.borderColor};background:var(--card);`;
-    chip.textContent = `${b.icon} ${b.name} — ${rem}s`;
-    strip.appendChild(chip);
-  });
-  // permanent notable
-  if (owned.has('ghost')) {
-    const chip = document.createElement('div');
-    chip.className = 'active-chip';
-    chip.style.cssText = 'color:#aaaaff;border-color:#444488;background:var(--card);';
-    chip.textContent = '👻 FANTASMA ativo';
-    strip.appendChild(chip);
-  }
+function renderAll(){
+  renderGrid(CLICK_UPS,'grid-click');
+  renderGrid(AUTO_UPS,'grid-auto');
+  renderGrid(MULT_UPS,'grid-mult');
+  renderGrid(SPECIAL_UPS,'grid-special');
+  renderGrid(CRAZY_UPS,'grid-crazy');
+  renderGrid(PRESTIGE_UPS,'grid-prestige');
 }
 
-function updateComboDisplay() {
-  const el = document.getElementById('comboDisplay');
-  if (comboCount >= 3) {
-    el.textContent = `🔥 COMBO ×${(1 + comboCount * 0.1).toFixed(1)} (${comboCount} seguidos!)`;
-    el.className = 'combo-display active';
-  } else {
-    el.textContent = '';
-    el.className = 'combo-display';
+function renderStrip(){
+  const strip=document.getElementById('activeStrip');
+  strip.innerHTML='';
+  if(tempMult>1&&Date.now()<tempMultExp){
+    const rem=Math.ceil((tempMultExp-Date.now())/1000);
+    const c=document.createElement('div');
+    c.className='active-chip';
+    c.style.cssText='color:var(--yellow);border-color:#886600;background:#1a1200;';
+    c.textContent=`×${tempMult} MULT — ${rem}s`;
+    strip.appendChild(c);
   }
+  if(owned.has('s10')){const c=document.createElement('div');c.className='active-chip';c.style.cssText='color:#aaaaff;border-color:#444488;background:var(--card);';c.textContent='👻 FANTASMA';strip.appendChild(c);}
+  if(owned.has('s11')){const c=document.createElement('div');c.className='active-chip';c.style.cssText='color:#aaaaff;border-color:#444488;background:var(--card);';c.textContent='👥 CLONE';strip.appendChild(c);}
+  if(owned.has('s12')){const c=document.createElement('div');c.className='active-chip';c.style.cssText='color:#ff4444;border-color:#880000;background:var(--card);';c.textContent='⚔️ EXÉRCITO';strip.appendChild(c);}
 }
 
-// ════════════════════════════════
-// MILESTONES
-// ════════════════════════════════
-function buildMilestones() {
-  const list = document.getElementById('milestoneList');
-  list.innerHTML = '';
-  MILESTONES.forEach(m => {
-    const d = document.createElement('div');
-    d.className = 'milestone-row' + (doneMilestones.has(m.id) ? ' done' : '');
-    d.id = 'ms-' + m.id;
-    const val = m.clicker ? totalClicks : score;
-    const pct = Math.min(100, Math.floor(val / m.goal * 100));
-    d.innerHTML = `
-      <div class="milestone-icon">${doneMilestones.has(m.id) ? '✅' : '🏆'}</div>
+function updateCombo(){
+  const el=document.getElementById('comboDisplay');
+  if(comboCount>=3){el.textContent=`🔥 COMBO ×${(1+comboCount*.1).toFixed(1)} (${comboCount}x)`;el.className='combo-display active';}
+  else{el.textContent='';el.className='combo-display';}
+}
+
+function renderMilestones(){
+  const list=document.getElementById('msList');
+  list.innerHTML='';
+  MILESTONES.forEach(m=>{
+    const done=doneMilestones.has(m.id);
+    const val=m.clicker?totalClicks:m.upgrades?owned.size:m.prestige?prestigeCount:score;
+    const pct=Math.min(100,Math.floor(val/m.goal*100));
+    const d=document.createElement('div');
+    d.className='ms-row'+(done?' done':'');d.id='ms-'+m.id;
+    d.innerHTML=`
+      <div class="ms-icon">${done?'✅':'🏆'}</div>
       <div style="flex:1">
-        <div class="milestone-text">${m.label} ${m.clicker ? '(cliques)' : ''}</div>
-        <div style="height:4px;background:var(--border);border-radius:2px;margin-top:3px;overflow:hidden;">
-          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--accent2),var(--green));border-radius:2px;transition:width .4s;"></div>
-        </div>
+        <div class="ms-text">${m.label} ${m.clicker?'(cliques)':m.upgrades?'(upgrades)':m.prestige?'(prestígios)':''}</div>
+        <div class="ms-bar-wrap"><div class="ms-bar-fill" style="width:${pct}%"></div></div>
       </div>
-      <div class="milestone-reward">${m.reward}</div>
-      <div class="milestone-check">${doneMilestones.has(m.id) ? '✓' : ''}</div>
+      <div class="ms-reward">${m.reward}</div>
     `;
     list.appendChild(d);
   });
 }
-
-function checkMilestones() {
-  MILESTONES.forEach(m => {
-    if (doneMilestones.has(m.id)) return;
-    const val = m.clicker ? totalClicks : score;
-    if (val >= m.goal) {
-      doneMilestones.add(m.id);
-      m.bonus();
-      toast(`🏆 CONQUISTA: ${m.label.replace(/<[^>]+>/g,'')}! ${m.reward}`);
-      buildMilestones();
-    }
-  });
-  // refresh progress bars
-  MILESTONES.forEach(m => {
-    const el = document.getElementById('ms-' + m.id);
-    if (!el || doneMilestones.has(m.id)) return;
-    const val = m.clicker ? totalClicks : score;
-    const pct = Math.min(100, Math.floor(val / m.goal * 100));
-    const bar = el.querySelector('div div div');
-    if (bar) bar.style.width = pct + '%';
+function renderMilestonesBars(){
+  MILESTONES.forEach(m=>{
+    const el=document.getElementById('ms-'+m.id);
+    if(!el||doneMilestones.has(m.id)) return;
+    const val=m.clicker?totalClicks:m.upgrades?owned.size:m.prestige?prestigeCount:score;
+    const pct=Math.min(100,Math.floor(val/m.goal*100));
+    const bar=el.querySelector('.ms-bar-fill');
+    if(bar) bar.style.width=pct+'%';
   });
 }
 
-// ════════════════════════════════
+// ═══════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════
+function showTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.currentTarget.classList.add('active');
+  sfx('hover');
+}
+
+// ═══════════════════════════════════════
 // TOAST
-// ════════════════════════════════
-let toastTimer;
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+// ═══════════════════════════════════════
+let toastT;
+function toast(msg,type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.className='toast show'+(type?' '+type:'');
+  clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2800);
 }
 
-// ════════════════════════════════
-// SOUND SYSTEM (Web Audio API)
-// ════════════════════════════════
+// ═══════════════════════════════════════
+// SOUND
+// ═══════════════════════════════════════
 let _ac;
-function getAC() {
-  if (!_ac) _ac = new (window.AudioContext || window.webkitAudioContext)();
-  if (_ac.state === 'suspended') _ac.resume();
-  return _ac;
+function getAC(){if(!_ac)_ac=new(window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume();return _ac;}
+function tone(freq,dur=.1,type='sine',vol=.15,delay=0){
+  try{const a=getAC(),o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);
+    o.type=type;o.frequency.setValueAtTime(freq,a.currentTime+delay);
+    g.gain.setValueAtTime(vol,a.currentTime+delay);
+    g.gain.exponentialRampToValueAtTime(.001,a.currentTime+delay+dur);
+    o.start(a.currentTime+delay);o.stop(a.currentTime+delay+dur);}catch(e){}
 }
-function tone(freq, dur = 0.1, type = 'sine', vol = 0.15, delay = 0) {
-  try {
-    const a = getAC(), o = a.createOscillator(), g = a.createGain();
-    o.connect(g); g.connect(a.destination);
-    o.type = type;
-    o.frequency.setValueAtTime(freq, a.currentTime + delay);
-    g.gain.setValueAtTime(vol, a.currentTime + delay);
-    g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + delay + dur);
-    o.start(a.currentTime + delay);
-    o.stop(a.currentTime + delay + dur);
-  } catch(e) {}
-}
-function sfx(name) {
-  const S = {
-    // clique normal
-    click:     () => { tone(440, .05, 'sine', .12); tone(660, .06, 'sine', .1, .04); },
-    // clique lucky (especial)
-    lucky:     () => { [880,1100,1320,1540].forEach((f,i) => tone(f,.08,'sine',.15,i*.05)); },
-    // clique crítico
-    crit:      () => { tone(200,.05,'sawtooth',.1); tone(880,.15,'sine',.2,.04); },
-    // comprar boost
-    buy:       () => { [440,550,660,770,880].forEach((f,i) => tone(f,.08,'square',.1,i*.05)); },
-    // boost já comprado / erro
-    error:     () => { tone(220,.15,'sawtooth',.15); tone(180,.15,'sawtooth',.1,.08); },
-    // conquista desbloqueada
-    milestone: () => { [523,659,784,880,1046,1318].forEach((f,i) => tone(f,.12,'sine',.18,i*.07)); },
-    // multiplicador ativado
-    mult:      () => { tone(330,.08,'triangle',.12); tone(660,.08,'triangle',.15,.09); tone(990,.15,'triangle',.18,.18); },
-    // auto-clique fantasma
-    ghost:     () => { tone(220,.06,'sine',.06); },
-    // jackpot
-    jackpot:   () => { [440,550,660,880,1100,1320].forEach((f,i) => tone(f,.1,'sine',.18,i*.06)); },
-    // banco de pontos
-    bank:      () => { tone(660,.07,'sine',.12); tone(880,.1,'sine',.15,.08); },
-    // tempestade
-    storm:     () => { tone(150,.3,'sawtooth',.08); tone(300,.2,'square',.06,.15); },
-    // coffee
-    coffee:    () => { tone(880,.05,'sine',.1); tone(1100,.05,'sine',.1,.06); tone(1320,.08,'sine',.1,.12); },
-    // combo
-    combo:     () => { const c = Math.min(comboCount, 10); tone(440+c*40,.06,'sine',.12); },
-    // botão WEN / vídeo
-    wen:       () => { [880,1100,1320].forEach((f,i) => tone(f,.1,'sine',.2,i*.09)); },
-    // botão planta
-    planta:    () => { [440,550,660].forEach((f,i) => tone(f,.1,'triangle',.15,i*.08)); },
-    // toast genérico
-    toast:     () => { tone(660,.06,'sine',.1); tone(880,.08,'sine',.1,.07); },
-    // hover boost
-    hover:     () => { tone(880,.03,'sine',.04); },
+function sfx(name){
+  const S={
+    click:    ()=>{tone(440,.05,'sine',.1);tone(660,.06,'sine',.08,.04);},
+    buy:      ()=>{[440,550,660,770,880].forEach((f,i)=>tone(f,.08,'square',.09,i*.05));},
+    error:    ()=>{tone(220,.15,'sawtooth',.12);tone(180,.12,'sawtooth',.08,.08);},
+    milestone:()=>{[523,659,784,880,1046,1318].forEach((f,i)=>tone(f,.12,'sine',.15,i*.07));},
+    mult:     ()=>{tone(330,.08,'triangle',.12);tone(660,.08,'triangle',.14,.09);tone(990,.15,'triangle',.16,.18);},
+    jackpot:  ()=>{[440,550,660,880,1100,1320].forEach((f,i)=>tone(f,.1,'sine',.16,i*.06));},
+    ghost:    ()=>{tone(220,.05,'sine',.05);},
+    hover:    ()=>{tone(880,.03,'sine',.04);},
+    wen:      ()=>{[880,1100,1320].forEach((f,i)=>tone(f,.1,'sine',.18,i*.09));},
+    planta:   ()=>{[440,550,660].forEach((f,i)=>tone(f,.1,'triangle',.14,i*.08));},
+    prestige: ()=>{[261,329,392,523,659,784,1046,1318].forEach((f,i)=>tone(f,.15,'sine',.2,i*.06));},
   };
-  if (S[name]) S[name]();
+  if(S[name])S[name]();
 }
 
-// ── Hook sounds into game events ──
-// Click principal
-const _origDoClick = doClick;
-doClick = (e) => { sfx('click'); _origDoClick(e); };
-
-// Toast
-const _origToast = toast;
-toast = (msg) => {
-  if (msg.includes('CONQUISTA')) sfx('milestone');
-  else if (msg.includes('JACKPOT')) sfx('jackpot');
-  else if (msg.includes('banco') || msg.includes('Banco')) sfx('bank');
-  else if (msg.includes('×')) sfx('mult');
-  else if (msg.includes('BEANS') || msg.includes('beans')) sfx('bank');
-  else sfx('toast');
-  _origToast(msg);
-};
-
-// Buy boost sounds
-const _origBuyBoost = buyBoost;
-buyBoost = (id) => {
-  const boost = BOOSTS.find(b => b.id === id);
-  if (!boost) return;
-  if (score < boost.cost && !owned.has(id)) { sfx('error'); _origBuyBoost(id); return; }
-  const isJackpot = id === 'jackpot';
-  const isCoffee  = id === 'coffee';
-  const isStorm   = id === 'storm';
-  if (isJackpot) sfx('jackpot');
-  else if (isCoffee) sfx('coffee');
-  else if (isStorm) sfx('storm');
-  else sfx('buy');
-  _origBuyBoost(id);
-};
-
-// Hover on boost cards
-document.addEventListener('mouseover', e => {
-  if (e.target.closest('.boost-card:not(.locked)')) sfx('hover');
-});
-
-// Ghost auto-click sound
-const _origStartGhost = startGhostClick;
-startGhostClick = () => {
-  _origStartGhost();
-  // override interval to add sound
-  clearInterval(ghostIv);
-  ghostIv = setInterval(() => {
-    const pts = Math.floor(clickPower * globalMult);
-    addScore(pts); sfx('ghost');
-    updateUI(); checkMilestones();
-  }, 2000);
-};
-
-// ════════════════════════════════
+// ═══════════════════════════════════════
 // INIT
-// ════════════════════════════════
-renderBoosts();
-buildMilestones();
+// ═══════════════════════════════════════
+renderAll();
+renderMilestones();
 updateUI();
-
-setTimeout(() => toast('⚡ Clique no botão e compre boosts!'), 800);
+setInterval(()=>{renderStrip();updateUI();checkPrestige();},1000);
+setTimeout(()=>toast('⚡ 100 upgrades esperando por você!'),800);
 </script>
-
-<footer>⚡ CLICKER SUPREMO — Jonathan & Willian · Claude AI</footer>
+<footer>⚡ CLICKER MASTER v2 — Jonathan & Willian · Claude AI</footer>
 </body>
 </html>

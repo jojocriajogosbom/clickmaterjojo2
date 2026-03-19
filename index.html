@@ -1842,11 +1842,9 @@ async function doRegister(){
   if(!name){toast('Coloca um nome!','red');return;}
   if(name.length<2){toast('Nome muito curto!','red');return;}
   playerName=name;
-  // generate unique id
   if(!playerId){playerId='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);}
   localStorage.setItem('cmPlayerName',playerName);
   localStorage.setItem('cmPlayerId',playerId);
-  // save to Firebase
   try{
     await db.collection('jogadores').doc(playerId).set({
       nome:playerName,id:playerId,
@@ -1855,11 +1853,40 @@ async function doRegister(){
       prestígios:prestigeCount,
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-    toast('✅ Bem-vindo, '+playerName+'! Score salvo!','green');
-  }catch(e){
-    toast('✅ Cadastrado! (offline por ora)','green');
+  }catch(e){}
+  closeReg();updateUserBtn();sfx('prestige');
+  // SHOW SUCCESS CONFIRMATION
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:800;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);';
+  ov.innerHTML=`
+  <div style="background:#0a0018;border:5px solid #00ffaa;border-radius:26px;padding:2rem 1.8rem;text-align:center;max-width:400px;width:92%;box-shadow:0 0 80px #00ffaa55,0 0 150px #00ffaa22;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:3.5rem;margin-bottom:.4rem;animation:gpBounce 1s ease-in-out infinite;">🏆</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#00cc88;letter-spacing:4px;margin-bottom:.3rem;">CADASTRO REALIZADO!</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.8rem;color:#00ffaa;text-shadow:0 0 25px #00ffaa;letter-spacing:3px;margin-bottom:.2rem;">${playerName}</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:#ffdd00;letter-spacing:2px;margin:.5rem 0 1rem;text-shadow:0 0 15px #ffdd00;">
+      VOCÊ AGORA É UM<br>
+      <span style="font-size:1.6rem;color:#cc00ff;text-shadow:0 0 25px #cc00ff;animation:hW 2s ease-in-out infinite;display:inline-block;">⚡ CLICKER MASTER ⚡</span>
+    </div>
+    <div style="background:#0d0022;border:2px solid #330055;border-radius:12px;padding:.7rem;margin-bottom:1rem;font-size:.52rem;color:#664477;line-height:1.8;">
+      ✅ Nome registrado<br>
+      ✅ Entrando no ranking global<br>
+      ✅ Score sendo salvo
+    </div>
+    <button onclick="this.parentElement.parentElement.remove()" style="font-family:'Boogaloo',cursive;font-size:1rem;padding:.55rem 1.8rem;background:linear-gradient(135deg,#004422,#00ff88,#00ccaa);color:#000;border:none;border-radius:14px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 20px #00ff8866,0 5px 0 #002211;font-weight:900;">
+      🎮 VAMOS JOGAR!!
+    </button>
+  </div>`;
+  // confetti
+  for(let i=0;i<18;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText=`position:fixed;font-size:${1.2+Math.random()*1.5}rem;left:${Math.random()*95}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${1.5+Math.random()*2}s ease-in forwards;`;
+      el.textContent=['🏆','⚡','🎮','✨','🌟','💎','🎉'][Math.floor(Math.random()*7)];
+      document.body.appendChild(el);setTimeout(()=>el.remove(),4000);
+    },i*100);
   }
-  closeReg();updateUserBtn();sfx('milestone');
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
 }
 
 // SAVE SCORE

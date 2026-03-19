@@ -273,6 +273,7 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
 
 @keyframes btnChaosAnim{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
 @keyframes tabChaos{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes cardShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 </style>
 </head>
 <body>
@@ -392,11 +393,7 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
 
 <!-- TABS -->
 <div class="tabs" id="tabBar">
-  <button class="tab on" onclick="showTab('click',this)" id="t-click">👆 CLIQUE</button>
-  <button class="tab" onclick="showTab('auto',this)" id="t-auto">🤖 AUTO</button>
-  <button class="tab" onclick="showTab('mult',this)" id="t-mult">✖️ MULT</button>
-  <button class="tab" onclick="showTab('special',this)" id="t-special">⚡ ESPECIAL</button>
-  <button class="tab" onclick="showTab('crazy',this)" id="t-crazy">🌀 LOUCO</button>
+  <button class="tab on" onclick="showTab('boosts',this)" id="t-boosts" style="color:#ffdd00;border-color:#664400;">🚀 BOOSTS</button>
   <button class="tab" onclick="showTab('pres',this)" id="t-pres">⭐ PRESTÍGIO</button>
   <button class="tab" onclick="showTab('ranked',this)" id="t-ranked" style="color:#ffdd00;border-color:#664400;">🏅 RANKEADO</button>
   <button class="tab" onclick="showTab('div',this)" id="t-div" style="color:#ff88ff;border-color:#662244;">🎉 DIVERSÃO</button>
@@ -406,11 +403,27 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
 </div>
 
 <!-- TAB PANELS -->
-<div class="tpanel on" id="tab-click"><div class="stitle">👆 CLIQUE</div><div class="ugrid" id="g-click"></div></div>
-<div class="tpanel" id="tab-auto"><div class="stitle">🤖 AUTO</div><div class="ugrid" id="g-auto"></div></div>
-<div class="tpanel" id="tab-mult"><div class="stitle">✖️ MULT</div><div class="ugrid" id="g-mult"></div></div>
-<div class="tpanel" id="tab-special"><div class="stitle">⚡ ESPECIAL</div><div class="ugrid" id="g-special"></div></div>
-<div class="tpanel" id="tab-crazy"><div class="stitle">🌀 LOUCO</div><div class="ugrid" id="g-crazy"></div></div>
+<div class="tpanel on" id="tab-boosts">
+  <div class="stitle">👆 CLIQUE</div>
+  <div class="ugrid" id="g-click"></div>
+  <div class="stitle" style="margin-top:.8rem;">🤖 AUTO</div>
+  <div class="ugrid" id="g-auto"></div>
+  <div class="stitle" style="margin-top:.8rem;">✖️ MULTIPLICADORES</div>
+  <div class="ugrid" id="g-mult"></div>
+  <div class="stitle" style="margin-top:.8rem;">⚡ ESPECIAL</div>
+  <div class="ugrid" id="g-special"></div>
+  <div class="stitle" style="margin-top:.8rem;">🌀 LOUCO</div>
+  <div class="ugrid" id="g-crazy"></div>
+</div>
+
+<!-- hidden grids needed for rAll() -->
+<div style="display:none">
+  <div id="g-click-hidden"></div>
+  <div id="g-auto-hidden"></div>
+  <div id="g-mult-hidden"></div>
+  <div id="g-special-hidden"></div>
+  <div id="g-crazy-hidden"></div>
+</div>
 <div class="tpanel" id="tab-pres">
   <div class="stitle">⭐ PRESTÍGIO</div>
   <div style="text-align:center;font-size:.55rem;color:var(--sub);margin-bottom:.5rem">Prestigie para ganhar ⭐ e comprar upgrades poderosos!</div>
@@ -1336,20 +1349,33 @@ function updCombo(){
 function rGrid(list,gid){
   const g=document.getElementById(gid);if(!g)return;g.innerHTML='';
   list.forEach(up=>{
-    const isO=owned.has(up.id),ca=up.star?prestigeStars>=up.cost:up.cost===Infinity?false:score>=up.cost;
-    const costStr=up.star?up.cost+'⭐':up.cost===Infinity?'1×10¹²⁰ pts':fmt(up.cost)+' pts';
+    const isO=owned.has(up.id);
+    const ca=up.star?prestigeStars>=up.cost:up.cost===Infinity?false:score>=up.cost;
+    const costStr=up.star?up.cost+'⭐':up.cost===Infinity?'impossível':fmt(up.cost)+' pts';
     const tc={'PERM':'#443355','AUTO':'#001a33','TEMP':'#331100','INST':'#003322','SORTE':'#003300','COMBO':'#331100','⭐':'#332200','MISTO':'#1a1133','CAOS':'#1a0008','NADA':'#111111'}[up.tag]||'#221133';
-    const d=document.createElement('div');d.className='ucard'+(isO&&!up.inst?' uowned':'');d.dataset.id=up.id;
-    d.style.borderColor=isO&&!up.inst?'var(--green)':ca?up.color:'var(--border)';
+    const d=document.createElement('div');
+    d.className='ucard'+(isO&&!up.inst?' uowned':'');
+    d.dataset.id=up.id;
+    // border color: green=owned, color=can afford, grey=can't
+    d.style.borderColor=isO&&!up.inst?'var(--green)':ca?up.color:'#444';
+    if(!ca&&!isO){d.style.opacity='.55';}
     if(up.id==='d_last')d.style.opacity='.45';
-    d.innerHTML=`<div class="utag" style="background:${tc};color:${up.color}">${up.tag}</div>
+    d.innerHTML=`
+      <div class="utag" style="background:${tc};color:${up.color}">${up.tag}</div>
       <span class="uico">${up.icon}</span>
       <div class="uname">${up.name}</div>
       <div class="udesc">${up.desc}</div>
-      <div class="ucost" style="color:${ca||isO?up.color:'var(--sub)'}">
-        ${isO&&!up.inst?`<span style="color:var(--green)">✓ ATIVO</span>`:'⚡ '+costStr}
+      <div class="ucost" style="color:${isO?'var(--green)':ca?up.color:'#ff4444'}">
+        ${isO&&!up.inst
+          ?'<span style="color:var(--green)">✓ ATIVO</span>'
+          :`⚡ ${costStr}${!ca&&!up.star&&up.cost!==Infinity?'<br><small style="font-size:.38rem;color:#ff4444">faltam '+fmt(up.cost-score)+' pts</small>':''}`
+        }
       </div>`;
-    if(!(isO&&!up.inst))d.onclick=()=>buy(up.id);
+    // always add onclick — let buy() handle the validation
+    if(!(isO&&!up.inst)){
+      d.style.cursor='pointer';
+      d.onclick=()=>buy(up.id);
+    }
     d.addEventListener('mouseenter',()=>sfx('hover'));
     g.appendChild(d);
   });
@@ -1958,6 +1984,21 @@ sendFb=function(){
 
 // Init user state
 updateUserBtn();
+
+// ══ INIT ══
+rAll();
+rMS();
+updateUI();
+checkPrestige();
+renderSkins();
+renderChaosGrid();
+
+// make sure boosts tab is active on start
+document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('on'));
+document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));
+document.getElementById('tab-boosts').classList.add('on');
+document.getElementById('t-boosts').classList.add('on');
+
 setTimeout(()=>{checkMS();},400);
 setInterval(()=>{renderStrip();updateUI();checkPrestige();},1000);
 setTimeout(()=>toast('⚡ Bem-vindo ao Clicker Master v4! 🎮'),900);

@@ -18,6 +18,7 @@ const firebaseConfig={
 };
 firebase.initializeApp(firebaseConfig);
 const db=firebase.firestore();
+db.settings({experimentalForceLongPolling:true,merge:true});
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;900&display=swap');
@@ -37,7 +38,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;color
 
 /* HEADER */
 header{text-align:center;padding:1rem 0 .4rem;}
-h1{font-family:'Boogaloo',cursive;font-size:clamp(2rem,7vw,3.8rem);color:var(--accent);
+h1{font-family:'Boogaloo',cursive;font-size:clamp(2rem,7vw,3.8rem);color:#00ff44;
   text-shadow:0 0 40px var(--accent),0 0 80px var(--accent2)88,5px 5px 0 #1a0033;
   letter-spacing:4px;animation:hW 3s ease-in-out infinite;cursor:pointer;}
 @keyframes hW{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg)}}
@@ -240,7 +241,7 @@ header p{font-size:.65rem;color:var(--sub);letter-spacing:4px;margin-top:.2rem;}
 /* CADASTRO / RANKING */
 .reg-ov{display:none;position:fixed;inset:0;z-index:600;background:#000000ee;backdrop-filter:blur(8px);align-items:center;justify-content:center;}
 .reg-ov.open{display:flex;animation:fbFade .25s;}
-.reg-box{background:#0a0018;border:4px solid var(--accent);border-radius:22px;padding:1.6rem;width:min(92vw,420px);box-shadow:0 0 50px var(--accent)44;}
+.reg-box{background:#0a0018;border:4px solid var(--accent);border-radius:22px;padding:1.6rem;width:min(92vw,420px);max-height:90vh;overflow-y:auto;box-shadow:0 0 50px var(--accent)44;}
 .reg-title{font-family:'Boogaloo',cursive;font-size:1.2rem;color:var(--accent);letter-spacing:3px;text-align:center;margin-bottom:.9rem;}
 .reg-input{width:100%;background:#15002a;border:2px solid #4400aa;border-radius:10px;padding:.5rem .8rem;color:#f0d0ff;font-family:'Nunito',sans-serif;font-size:.85rem;outline:none;margin-bottom:.5rem;}
 .reg-input:focus{border-color:var(--accent);}
@@ -305,10 +306,60 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
 <!-- CADASTRO OVERLAY -->
 <div class="reg-ov" id="regOv" onclick="if(event.target===this)closeReg()">
   <div class="reg-box" onclick="event.stopPropagation()">
-    <div class="reg-title" id="regTitle">👤 ENTRAR NO JOGO</div>
+    <div class="reg-title" id="regTitle">👤 CRIAR PERFIL</div>
     <div id="regBody">
-      <div style="font-size:.55rem;color:var(--sub);text-align:center;margin-bottom:.8rem;letter-spacing:1px;">Escolha um nome pra aparecer no ranking global!</div>
+      <div style="font-size:.5rem;color:var(--sub);text-align:center;margin-bottom:.6rem;letter-spacing:1px;">Escolha avatar, nome e senha!</div>
+
+      <!-- AVATAR -->
+      <div style="text-align:center;margin-bottom:.5rem;">
+        <div id="regAvatarPick" style="font-size:2rem;cursor:pointer;background:#110022;border:3px solid #cc00ff;border-radius:50%;width:3rem;height:3rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:.3rem;" onclick="toggleAvatarPicker()">👾</div>
+        <div style="font-size:.42rem;color:#664488;">clique pra trocar</div>
+        <div id="avatarPicker" style="display:none;flex-wrap:wrap;gap:.25rem;justify-content:center;margin-top:.4rem;background:#110022;border:2px solid #330055;border-radius:12px;padding:.4rem;max-height:120px;overflow-y:auto;">
+          <span onclick="selectAvatar('👾')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">👾</span>
+          <span onclick="selectAvatar('🐰')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🐰</span>
+          <span onclick="selectAvatar('🔥')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🔥</span>
+          <span onclick="selectAvatar('⚡')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">⚡</span>
+          <span onclick="selectAvatar('💎')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">💎</span>
+          <span onclick="selectAvatar('🌟')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🌟</span>
+          <span onclick="selectAvatar('👑')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">👑</span>
+          <span onclick="selectAvatar('🤖')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🤖</span>
+          <span onclick="selectAvatar('🦄')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🦄</span>
+          <span onclick="selectAvatar('🐉')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🐉</span>
+          <span onclick="selectAvatar('👽')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">👽</span>
+          <span onclick="selectAvatar('🎮')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🎮</span>
+          <span onclick="selectAvatar('🏆')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🏆</span>
+          <span onclick="selectAvatar('💀')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">💀</span>
+          <span onclick="selectAvatar('🍕')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🍕</span>
+          <span onclick="selectAvatar('🚀')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🚀</span>
+          <span onclick="selectAvatar('🌈')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🌈</span>
+          <span onclick="selectAvatar('😈')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">😈</span>
+          <span onclick="selectAvatar('🎪')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🎪</span>
+          <span onclick="selectAvatar('🧸')" style="font-size:1.3rem;cursor:pointer;padding:.15rem;border-radius:6px;">🧸</span>
+        </div>
+      </div>
+
+      <!-- COR -->
+      <div style="display:flex;gap:.3rem;justify-content:center;margin-bottom:.5rem;">
+        <div onclick="selectProfileColor('#cc00ff')" style="width:1.2rem;height:1.2rem;background:#cc00ff;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#ff0088')" style="width:1.2rem;height:1.2rem;background:#ff0088;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#00ffaa')" style="width:1.2rem;height:1.2rem;background:#00ffaa;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#ffdd00')" style="width:1.2rem;height:1.2rem;background:#ffdd00;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#0088ff')" style="width:1.2rem;height:1.2rem;background:#0088ff;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#ff4400')" style="width:1.2rem;height:1.2rem;background:#ff4400;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#ff00ff')" style="width:1.2rem;height:1.2rem;background:#ff00ff;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+        <div onclick="selectProfileColor('#00ffff')" style="width:1.2rem;height:1.2rem;background:#00ffff;border-radius:50%;cursor:pointer;border:2px solid transparent;"></div>
+      </div>
+
+      <!-- NOME -->
       <input class="reg-input" id="regNameInput" placeholder="Seu nome de jogador..." maxlength="20" onclick="event.stopPropagation()"/>
+
+      <!-- SENHA -->
+      <div style="position:relative;margin-bottom:.4rem;">
+        <input class="reg-input" id="regPassInput" type="password" placeholder="Crie uma senha..." maxlength="20" onclick="event.stopPropagation()" style="margin-bottom:0;padding-right:2.5rem;"/>
+        <span onclick="togglePassVis('regPassInput',this)" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1rem;">👁️</span>
+      </div>
+      <div style="font-size:.42rem;color:#664488;text-align:center;margin-bottom:.6rem;">⚠️ Guarde bem sua senha!</div>
+
       <button class="reg-btn" onclick="doRegister()">🎮 ENTRAR!</button>
       <button onclick="closeReg()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">AGORA NÃO</button>
     </div>
@@ -340,6 +391,7 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
       <span class="ptri"></span>ASSISTIR VÍDEO
     </a>
     <button onclick="openRegOrProfile()" id="btnUser" style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.42rem 1rem;background:linear-gradient(135deg,#220044,#8800cc);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 15px #8800cc44,0 4px 0 #110022;transition:.12s;">👤 ENTRAR</button>
+    <button onclick="openShare()" style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.42rem 1rem;background:linear-gradient(135deg,#003322,#00cc66);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 15px #00cc6644,0 4px 0 #001a0d;transition:.12s;">📤 COMPARTILHAR</button>
     <button onclick="openRank()" style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.42rem 1rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 15px #ffaa0044,0 4px 0 #221100;transition:.12s;">🏆 RANKING</button>
   </div>
   <div class="lang-row">
@@ -368,6 +420,12 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
   <div class="pstars" id="pStars">0 prest.</div>
   <button class="pbtn" id="btnPres" onclick="doPrestige()" disabled id="lPres">⭐ PRESTIGIAR</button>
 </div>
+
+<!-- BOTÃO TECLADO SECRETO -->
+<button id="btnKeyboard" onclick="openAdmKeyboard()" style="position:fixed;left:12px;top:50%;transform:translateY(-50%);z-index:500;background:#110022;border:2px solid #330055;border-radius:12px;padding:.5rem .4rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.2rem;box-shadow:0 0 10px #33005555;transition:.2s;" onmouseover="this.style.borderColor='#cc00ff';this.style.boxShadow='0 0 15px #cc00ff55'" onmouseout="this.style.borderColor='#330055';this.style.boxShadow='0 0 10px #33005555'">
+  <span style="font-size:1.1rem;">🔑</span>
+  <span style="font-family:'Boogaloo',cursive;font-size:.45rem;color:#664488;letter-spacing:1px;writing-mode:vertical-lr;">ADM</span>
+</button>
 
 <!-- SCORE -->
 <div class="score-area">
@@ -464,6 +522,17 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
     <div id="chaosDesc" style="font-size:.5rem;color:var(--sub);margin:.28rem 0 .55rem;">Ative para coisas loucas acontecerem!</div>
     <button onclick="toggleChaos()" id="btnChaos" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem 1.1rem;background:linear-gradient(135deg,#880011,#ff2244);color:#fff;border:none;border-radius:10px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 14px #ff224433,0 4px 0 #440011;">☠️ ATIVAR CAOS</button>
   </div>
+
+  <!-- CONTROLES DO CAOS -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;padding:.6rem .4rem 0;">
+    <button onclick="chaosTurbo()" id="btnChaosTurbo" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.42rem;background:linear-gradient(135deg,#440000,#ff0044);color:#fff;border:none;border-radius:10px;cursor:pointer;letter-spacing:1px;box-shadow:0 3px 0 #220000;">⚡ CAOS TURBO</button>
+    <button onclick="chaosFreeze()" id="btnChaosFreeze" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.42rem;background:linear-gradient(135deg,#001133,#0088ff);color:#fff;border:none;border-radius:10px;cursor:pointer;letter-spacing:1px;box-shadow:0 3px 0 #000822;">🧊 CONGELAR 10s</button>
+    <button onclick="chaosDouble()" id="btnChaosDouble" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.42rem;background:linear-gradient(135deg,#003300,#00ff44);color:#000;border:none;border-radius:10px;cursor:pointer;letter-spacing:1px;box-shadow:0 3px 0 #001a00;">×2 PONTOS CAOS</button>
+    <button onclick="chaosSpeed()" id="btnChaosSpeed" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.42rem;background:linear-gradient(135deg,#332200,#ffaa00);color:#000;border:none;border-radius:10px;cursor:pointer;letter-spacing:1px;box-shadow:0 3px 0 #1a1000;">🔄 VELOCIDADE</button>
+    <button onclick="chaosAll()" id="btnChaosAll" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.42rem;background:linear-gradient(135deg,#440044,#ff00ff,#ff0044);color:#fff;border:none;border-radius:10px;cursor:pointer;letter-spacing:1px;box-shadow:0 3px 0 #220022;grid-column:span 2;">💀 TODOS OS EVENTOS DE UMA VEZ!!</button>
+  </div>
+  <div id="chaosSpeedDisplay" style="font-family:'Boogaloo',cursive;font-size:.5rem;color:#884444;text-align:center;padding:.3rem 0;">velocidade: normal</div>
+
   <div class="ugrid" id="g-chaos"></div>
 </div>
 <div class="tpanel" id="tab-ms">
@@ -597,7 +666,7 @@ function openMeme(url,label){
   window.open(url,'_blank');
   const s=document.getElementById('memeStatus');
   if(s){s.textContent='▶ '+label;setTimeout(()=>s.textContent='',3000);}
-  sfx('buy');toast('🎵 '+label);
+  sfx('buy');sfx('upgrade');toast('🎵 '+label);
 }
 
 // ══════════════════════════════════════════════════════
@@ -677,7 +746,7 @@ function sfx(n){
   const S={
     click:()=>{tone(440,.05,'sine',.1);tone(660,.06,'sine',.08,.04);},
     buy:()=>{[440,550,660,770,880].forEach((f,i)=>tone(f,.08,'square',.09,i*.05));},
-    error:()=>{tone(220,.15,'sawtooth',.12);},
+    error:()=>{tone(220,.15,'sawtooth',.12);tone(180,.2,'sawtooth',.1,.1);},
     milestone:()=>{[523,659,784,880,1046,1318].forEach((f,i)=>tone(f,.12,'sine',.14,i*.07));},
     mult:()=>{[330,660,990].forEach((f,i)=>tone(f,.1,'triangle',.12,i*.09));},
     jackpot:()=>{[440,550,660,880,1100,1320].forEach((f,i)=>tone(f,.1,'sine',.15,i*.06));},
@@ -686,6 +755,19 @@ function sfx(n){
     wen:()=>{[880,1100,1320].forEach((f,i)=>tone(f,.1,'sine',.16,i*.09));},
     prestige:()=>{[261,329,392,523,659,784,1046,1318].forEach((f,i)=>tone(f,.15,'sine',.18,i*.06));},
     chaos:()=>{[100,200,400,800,1600].forEach((f,i)=>tone(f,.1,'sawtooth',.1,i*.05));},
+    // NOVOS SONS
+    upgrade:()=>{[330,440,550,660].forEach((f,i)=>tone(f,.1,'triangle',.13,i*.04));tone(880,.15,'sine',.15,.18);},
+    conquest:()=>{[523,784,1046,1318,1568].forEach((f,i)=>tone(f,.18,'sine',.2,i*.08));tone(2000,.3,'sine',.1,.5);},
+    levelup:()=>{[262,330,392,523,659,784,1047].forEach((f,i)=>tone(f,.12,'sine',.18,i*.07));[1047,1319,1568].forEach((f,i)=>tone(f,.15,'sine',.2,i*.05+.55));},
+    coin:()=>{tone(1200,.04,'sine',.08);tone(1600,.05,'sine',.07,.05);tone(2000,.04,'sine',.06,.1);},
+    explosion:()=>{
+      try{const a=getAC();const b=a.createBuffer(1,a.sampleRate*.4,a.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,2);const s=a.createBufferSource();const g=a.createGain();s.buffer=b;s.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.4,a.currentTime);g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.4);s.start();}catch(e){}
+      tone(80,.3,'sawtooth',.15);tone(120,.25,'sawtooth',.12,.05);
+    },
+    circus:()=>{[523,659,523,784,659,880,784,1046].forEach((f,i)=>tone(f,.1,'square',.12,i*.08));},
+    kinger:()=>{tone(150,.05,'sawtooth',.1);tone(200,.08,'sawtooth',.12,.05);tone(100,.2,'square',.08,.1);},
+    rank:()=>{[392,494,587,740,880,1047].forEach((f,i)=>tone(f,.14,'sine',.17,i*.06));tone(1568,.3,'sine',.2,.4);},
+    portal:()=>{[200,400,800,1600,3200].forEach((f,i)=>tone(f,.08,'sine',.1,i*.06));[3200,1600,800,400,200].forEach((f,i)=>tone(f,.08,'sine',.08,i*.06+.35));},
   };
   if(S[n])S[n]();
 }
@@ -1093,33 +1175,117 @@ function checkRankedMS(){
 }
 
 // CHAOS
+// ══ CONTROLES DO CAOS ══
+let chaosInterval=2000;
+let chaosMultiplier=1;
+let chaosTurboOn=false;
+let chaosFrozen=false;
+let chaosDoubleOn=false;
+
+function chaosTurbo(){
+  if(!chaosActive){toast('Ativa o Caos primeiro!','red');return;}
+  chaosTurboOn=!chaosTurboOn;
+  clearInterval(chaosIv);
+  chaosInterval=chaosTurboOn?500:2000;
+  const btn=document.getElementById('btnChaosTurbo');
+  if(btn){btn.style.background=chaosTurboOn?'linear-gradient(135deg,#ff0044,#ffdd00)':'linear-gradient(135deg,#440000,#ff0044)';btn.style.color=chaosTurboOn?'#000':'#fff';}
+  document.getElementById('chaosSpeedDisplay').textContent='velocidade: '+(chaosTurboOn?'TURBO ⚡⚡⚡':'normal');
+  chaosIv=setInterval(runChaosEvent,chaosInterval);
+  toast(chaosTurboOn?'⚡ CAOS TURBO! 4x mais rápido!':'⚡ Voltou ao normal','red');sfx('chaos');
+}
+
+function chaosFreeze(){
+  if(!chaosActive){toast('Ativa o Caos primeiro!','red');return;}
+  if(chaosFrozen){toast('Já tá congelado!','red');return;}
+  chaosFrozen=true;
+  clearInterval(chaosIv);
+  const btn=document.getElementById('btnChaosFreeze');
+  if(btn){btn.textContent='🧊 CONGELADO...';btn.style.background='linear-gradient(135deg,#0088ff,#00ffff)';btn.style.color='#000';}
+  toast('🧊 Caos congelado por 10s!','green');sfx('error');
+  let t=10;
+  const iv=setInterval(()=>{
+    t--;
+    if(btn)btn.textContent='🧊 '+t+'s...';
+    if(t<=0){
+      clearInterval(iv);chaosFrozen=false;
+      chaosIv=setInterval(runChaosEvent,chaosInterval);
+      if(btn){btn.textContent='🧊 CONGELAR 10s';btn.style.background='linear-gradient(135deg,#001133,#0088ff)';btn.style.color='#fff';}
+      toast('🧊 Caos descongelado!','red');
+    }
+  },1000);
+}
+
+function chaosDouble(){
+  chaosDoubleOn=!chaosDoubleOn;
+  chaosMultiplier=chaosDoubleOn?2:1;
+  const btn=document.getElementById('btnChaosDouble');
+  if(btn){btn.style.background=chaosDoubleOn?'linear-gradient(135deg,#00ff44,#ffdd00)':'linear-gradient(135deg,#003300,#00ff44)';btn.textContent=chaosDoubleOn?'×2 ATIVO ✅':'×2 PONTOS CAOS';}
+  toast(chaosDoubleOn?'×2 pontos no Caos ativado!':'×2 desativado','green');sfx('milestone');
+}
+
+function chaosSpeed(){
+  const speeds=[{ms:2000,label:'normal'},{ms:1000,label:'rápido'},{ms:500,label:'turbo ⚡'},{ms:250,label:'INSANO 💀'}];
+  const cur=speeds.findIndex(s=>s.ms===chaosInterval);
+  const next=speeds[(cur+1)%speeds.length];
+  chaosInterval=next.ms;
+  if(chaosActive){clearInterval(chaosIv);chaosIv=setInterval(runChaosEvent,chaosInterval);}
+  document.getElementById('chaosSpeedDisplay').textContent='velocidade: '+next.label;
+  const btn=document.getElementById('btnChaosSpeed');
+  if(btn)btn.textContent='🔄 '+next.label.toUpperCase();
+  toast('🔄 Velocidade: '+next.label,'red');sfx('hover');
+}
+
+function chaosAll(){
+  if(!chaosActive){toggleChaos();}
+  // dispara TODOS os eventos de uma vez
+  CHAOS_EVENTS.forEach(fn=>{try{fn();}catch(e){}});
+  score+=1000000;totalEarned+=1000000;updateUI();
+  admConfetti();sfx('chaos');
+  toast('💀 TODOS OS EVENTOS DE UMA VEZ!!','rainbow');
+}
+
+// Lista de eventos do caos separada pra reutilizar
+const CHAOS_EVENTS=[
+  ()=>{score+=Math.floor(Math.random()*10000*chaosMultiplier);updateUI();},
+  ()=>{score=Math.max(0,score-Math.floor(Math.random()*1000));updateUI();},
+  ()=>{clickPower+=Math.floor(Math.random()*100);updateUI();},
+  ()=>{autoPerSec+=Math.floor(Math.random()*50);updateUI();},
+  ()=>{atmp(Math.floor(Math.random()*5)+2,3);},
+  ()=>{score*=1+Math.random()*.3*chaosMultiplier;updateUI();},
+  ()=>{score+=Math.floor(autoPerSec*gm()*5*chaosMultiplier);updateUI();},
+];
+
+function runChaosEvent(){
+  if(chaosFrozen)return;
+  CHAOS_EVENTS[Math.floor(Math.random()*CHAOS_EVENTS.length)]();
+  checkMS();checkPrestige();
+}
+
 function toggleChaos(){
   if(!chaosActive)chaosActivations++;
   chaosActive=!chaosActive;
   document.getElementById('btnChaos').textContent=chaosActive?'☠️ DESATIVAR CAOS':'☠️ ATIVAR CAOS';
   document.getElementById('chaosIco').textContent=chaosActive?'🌀':'💀';
   document.getElementById('chaosName').textContent=chaosActive?'MODO CAOS ATIVO!!':'MODO CAOS DESATIVADO';
-  document.getElementById('chaosDesc').textContent=chaosActive?'Coisas aleatórias acontecem a cada 2s!':'Ative para coisas loucas acontecerem!';
+  document.getElementById('chaosDesc').textContent=chaosActive?'Coisas aleatórias acontecem!':'Ative para coisas loucas acontecerem!';
   if(chaosActive){
     sfx('chaos');toast('💀 MODO CAOS ATIVADO!!','red');
-    chaosIv=setInterval(()=>{
-      const evts=[
-        ()=>{score+=Math.floor(Math.random()*10000);updateUI();},
-        ()=>{score=Math.max(0,score-Math.floor(Math.random()*1000));updateUI();},
-        ()=>{clickPower+=Math.floor(Math.random()*100);updateUI();},
-        ()=>{autoPerSec+=Math.floor(Math.random()*50);updateUI();},
-        ()=>{atmp(Math.floor(Math.random()*5)+2,3);},
-        ()=>{},
-        ()=>{score*=1+Math.random()*.3;updateUI();},
-      ];
-      evts[Math.floor(Math.random()*evts.length)]();
-      checkMS();checkPrestige();
-    },2000);
+    chaosIv=setInterval(runChaosEvent,chaosInterval);
     checkMS();
   } else {
     clearInterval(chaosIv);chaosIv=null;
+    chaosTurboOn=false;chaosFrozen=false;chaosDoubleOn=false;
+    chaosInterval=2000;chaosMultiplier=1;
     document.body.style.animation='';document.body.style.filter='';
     document.querySelector('.bigbtn').style.animation='';
+    const spd=document.getElementById('chaosSpeedDisplay');
+    if(spd)spd.textContent='velocidade: normal';
+    const tb=document.getElementById('btnChaosTurbo');
+    if(tb){tb.textContent='⚡ CAOS TURBO';tb.style.background='linear-gradient(135deg,#440000,#ff0044)';tb.style.color='#fff';}
+    const db=document.getElementById('btnChaosDouble');
+    if(db){db.textContent='×2 PONTOS CAOS';db.style.background='linear-gradient(135deg,#003300,#00ff44)';}
+    const sb=document.getElementById('btnChaosSpeed');
+    if(sb)sb.textContent='🔄 VELOCIDADE';
     toast('Caos desativado.','red');
   }
   renderChaosGrid();
@@ -1263,7 +1429,7 @@ function buy(id){
 }
 
 // PRESTIGE
-function doPrestige(){
+function doPrestige(){sfx("levelup");
   const req=PREQ();
   if(totalEarned<req){toast('Ainda não tem pts suficientes!','red');return;}
   prestigeCount++;
@@ -1890,7 +2056,7 @@ function openADM(){
         <button onclick="sfx('buy');toast('🛒 Som compra!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#334400,#aaff00);color:#000;border:none;border-radius:8px;cursor:pointer;">🛒 SOM COMPRA</button>
         <button onclick="sfx('prestige');toast('⭐ Som prestígio!','gold')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">⭐ SOM PRESTÍGIO</button>
         <button onclick="sfx('jackpot');toast('🎰 Som jackpot!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#ff00cc);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎰 SOM JACKPOT</button>
-        <button onclick="sfx('milestone');toast('🏆 Som conquista!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">🏆 SOM CONQUISTA</button>
+        <button onclick="sfx('milestone');sfx('conquest');toast('🏆 Som conquista!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">🏆 SOM CONQUISTA</button>
         <button onclick="sfx('chaos');toast('💀 Som caos!','red')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff2244);color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 SOM CAOS</button>
         <button onclick="for(let i=0;i<5;i++)setTimeout(()=>sfx('jackpot'),i*200);toast('🎵 COMBO DE SONS!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎵 COMBO SONS</button>
         <button onclick="sfx('error');toast('❌ Som erro!','red')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:none;border-radius:8px;cursor:pointer;">❌ SOM ERRO</button>
@@ -2267,6 +2433,7 @@ let dcCharDiv=null;
 let dcCharInterval=null;
 
 function openDigitalCircus(){
+  sfx('circus');
   const ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
 
@@ -3015,7 +3182,7 @@ async function admAnnounce(type){
 }
 
 // ── ⚔️ BATALHA
-function admBoss(){
+function admBoss(){sfx("explosion");
   const boss={hp:1000,name:'BOSS ADM 👹'};
   score=Math.max(0,score-50000);updateUI();
   toast('👹 BOSS APARECEU! -50K pts mas se matar ganha 1M!','red');sfx('chaos');
@@ -3452,34 +3619,9 @@ holdMenu.addEventListener('click',e=>{if(e.target===holdMenu)holdMenu.style.disp
 
 // HOLD LOGIC — 3 seconds
 let holdTimer=null,holdBar=null;
-function startHold(){
-  const btn=document.getElementById('bigBtn');
-  if(!holdBar){
-    holdBar=document.createElement('div');
-    holdBar.style.cssText='position:absolute;bottom:0;left:0;height:5px;background:#ffdd00;border-radius:0 0 50% 50%;width:0%;pointer-events:none;transition:none;';
-    btn.style.position='relative';
-    btn.appendChild(holdBar);
-  }
-  holdBar.style.width='0%';
-  const start=Date.now();
-  const HOLD_MS=3000;
-  function tick(){
-    const pct=Math.min(100,((Date.now()-start)/HOLD_MS)*100);
-    if(holdBar)holdBar.style.width=pct+'%';
-    if(pct>=100){
-      if(holdBar)holdBar.style.width='0%';
-      holdMenu.style.display='flex';
-      sfx('prestige');toast('🤫 Menu secreto!','rainbow');
-    } else {
-      holdTimer=setTimeout(tick,40);
-    }
-  }
-  holdTimer=setTimeout(tick,40);
-}
-function cancelHold(){
-  clearTimeout(holdTimer);holdTimer=null;
-  if(holdBar)holdBar.style.width='0%';
-}
+function startHold(){} // desativado - use o botão 🔑 lateral
+function cancelHold(){}
+
 
 // ══ 67 EASTER EGG ══
 // Add -1000 AURA skin to SKINS array
@@ -3627,41 +3769,184 @@ function updateUserBtn(){
 // REGISTER
 function openRegOrProfile(){
   if(playerName){
-    // already registered — show profile options
-    const ov=document.createElement('div');
-    ov.style.cssText='position:fixed;inset:0;z-index:700;background:#000000cc;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
-    ov.innerHTML=`<div style="background:#0a0018;border:4px solid #00cc66;border-radius:22px;padding:1.5rem;width:min(90vw,380px);text-align:center;box-shadow:0 0 40px #00cc6644;animation:gpPop .3s cubic-bezier(.34,1.56,.64,1);">
-      <div style="font-size:2rem;margin-bottom:.3rem;">👤</div>
-      <div style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:#00cc66;letter-spacing:2px;margin-bottom:.2rem;">${playerName}</div>
-      <div style="font-size:.5rem;color:#446655;margin-bottom:.9rem;">jogador cadastrado ✅</div>
-      <button onclick="saveScore();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#004422,#00cc66);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">💾 SALVAR MEU SCORE</button>
-      <button onclick="openRank();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">🏆 VER RANKING</button>
-      <button onclick="playerName=null;playerId=null;localStorage.removeItem('cmPlayerName');localStorage.removeItem('cmPlayerId');updateUserBtn();this.parentElement.parentElement.remove();toast('Saiu da conta!','red');" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-bottom:.4rem;">TROCAR NOME</button>
-      <button onclick="this.parentElement.parentElement.remove()" style="font-family:'Boogaloo',cursive;font-size:.75rem;padding:.35rem .9rem;background:#0a0018;color:#664477;border:2px solid #220033;border-radius:10px;cursor:pointer;">FECHAR</button>
-    </div>`;
-    ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
-    document.body.appendChild(ov);
+    // pede senha antes de abrir o perfil
+    const savedHash=localStorage.getItem('cmPassHash');
+    if(savedHash){
+      const ov=document.createElement('div');
+      ov.id='passOv';
+      ov.style.cssText='position:fixed;inset:0;z-index:700;background:#000000cc;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
+      ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #cc00ff;border-radius:22px;padding:1.5rem;width:min(90vw,340px);text-align:center;box-shadow:0 0 40px #cc00ff44;animation:gpPop .3s cubic-bezier(.34,1.56,.64,1);">
+        <div style="font-size:2rem;margin-bottom:.3rem;">🔐</div>
+        <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#cc00ff;letter-spacing:2px;margin-bottom:.2rem;">${playerName}</div>
+        <div style="font-size:.48rem;color:#664488;margin-bottom:.8rem;">digite sua senha pra acessar o perfil</div>
+        <div style="position:relative;margin-bottom:.5rem;">
+          <input id="passCheckInput" type="password" placeholder="Sua senha..." onclick="event.stopPropagation()"
+            style="width:100%;background:#110022;border:2px solid #440066;border-radius:10px;padding:.45rem .7rem;color:#cc88ff;font-family:'Boogaloo',cursive;font-size:.85rem;outline:none;box-sizing:border-box;padding-right:2.5rem;"
+            onkeydown="if(event.key==='Enter')checkPassAndOpen()"/>
+          <span onclick="togglePassVis('passCheckInput',this)" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);cursor:pointer;font-size:1rem;">👁️</span>
+        </div>
+        <button onclick="checkPassAndOpen()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.85rem;padding:.45rem;background:linear-gradient(135deg,#330066,#cc00ff);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">🔓 ENTRAR</button>
+        <button onclick="document.getElementById('passOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.35rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">CANCELAR</button>
+      </div>`;
+      ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+      document.body.appendChild(ov);
+      setTimeout(()=>document.getElementById('passCheckInput')?.focus(),200);
+    } else {
+      // sem senha salva — abre perfil direto
+      openProfilePanel();
+    }
   } else {
     document.getElementById('regOv').classList.add('open');
     setTimeout(()=>document.getElementById('regNameInput').focus(),300);
   }
 }
-function closeReg(){document.getElementById('regOv').classList.remove('open');}
+
+function checkPassAndOpen(){
+  const pass=document.getElementById('passCheckInput')?.value.trim();
+  const savedHash=localStorage.getItem('cmPassHash');
+  if(!pass){toast('Coloca a senha!','red');return;}
+  if(hashPass(pass)===savedHash){
+    document.getElementById('passOv')?.remove();
+    openProfilePanel();
+  } else {
+    const inp=document.getElementById('passCheckInput');
+    if(inp){inp.style.borderColor='#ff4444';inp.value='';}
+    sfx('error');toast('❌ Senha errada!','red');
+    setTimeout(()=>{if(inp)inp.style.borderColor='#440066';},1000);
+  }
+}
+
+function openProfilePanel(){
+  const sk=SKINS.find(s=>s.id===activeSkin)||SKINS[0];
+  const avatar=localStorage.getItem('cmAvatar')||sk.emoji||'👾';
+  const color=localStorage.getItem('cmColor')||'#cc00ff';
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:700;background:#000000cc;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
+  ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid ${color};border-radius:22px;padding:1.5rem;width:min(90vw,380px);text-align:center;box-shadow:0 0 40px ${color}44;animation:gpPop .3s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:2.8rem;background:#110022;border:3px solid ${color};border-radius:50%;width:4rem;height:4rem;display:inline-flex;align-items:center;justify-content:center;margin-bottom:.4rem;">${avatar}</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.1rem;color:${color};letter-spacing:2px;margin-bottom:.1rem;">${playerName}</div>
+    <div style="font-size:.48rem;color:#446655;margin-bottom:.3rem;">💰 ${fmt(score)} pts · ⭐ ${prestigeCount} prest · 🏆 ${dMS.size} conquistas</div>
+    <div style="font-size:.45rem;color:#664488;margin-bottom:.8rem;">jogador cadastrado ✅</div>
+    <button onclick="saveScore();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#004422,#00cc66);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">💾 SALVAR MEU SCORE</button>
+    <button onclick="openRank();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">🏆 VER RANKING</button>
+    <button onclick="openShare();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#003322,#00cc66);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">📤 COMPARTILHAR</button>
+    <button onclick="playerName=null;playerId=null;localStorage.removeItem('cmPlayerName');localStorage.removeItem('cmPlayerId');localStorage.removeItem('cmPassHash');updateUserBtn();this.parentElement.parentElement.remove();toast('Saiu da conta!','red');" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-bottom:.4rem;">SAIR / TROCAR CONTA</button>
+    <button onclick="this.parentElement.parentElement.remove()" style="font-family:'Boogaloo',cursive;font-size:.75rem;padding:.35rem .9rem;background:#0a0018;color:#664477;border:2px solid #220033;border-radius:10px;cursor:pointer;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+// ══ CADASTRO MELHORADO ══
+let selectedAvatar='👾';
+let selectedColor='#cc00ff';
+
+function togglePassVis(id,btn){
+  const inp=document.getElementById(id);
+  if(!inp)return;
+  inp.type=inp.type==='password'?'text':'password';
+  btn.textContent=inp.type==='password'?'👁️':'🙈';
+}
+
+function hashPass(s){
+  // simple hash pra não salvar senha em texto puro
+  let h=0;for(let i=0;i<s.length;i++){h=((h<<5)-h)+s.charCodeAt(i);h|=0;}
+  return Math.abs(h).toString(36);
+}
+
+function toggleAvatarPicker(){
+  const p=document.getElementById('avatarPicker');
+  if(p)p.style.display=p.style.display==='none'?'flex':'none';
+}
+function selectAvatar(emoji){
+  selectedAvatar=emoji;
+  const av=document.getElementById('regAvatarPick');
+  if(av)av.textContent=emoji;
+  const p=document.getElementById('avatarPicker');
+  if(p)p.style.display='none';
+  sfx('hover');
+}
+function selectProfileColor(color){
+  selectedColor=color;
+  const av=document.getElementById('regAvatarPick');
+  if(av)av.style.borderColor=color;
+  sfx('hover');
+}
+
+// ══ COMPARTILHAR ══
+function openShare(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+  const sk=SKINS.find(s=>s.id===activeSkin)||SKINS[0];
+  const shareText=`🎮 Clicker Master\n${sk.emoji} ${playerName||'Jogador'}\n💰 Score: ${fmt(score)}\n⭐ Prestígios: ${prestigeCount}\n🏆 Conquistas: ${dMS.size}\n\nJogue também: https://jojocriajogosbom.github.io/clickmaterjojo2/`;
+
+  ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #00cc66;border-radius:24px;padding:1.6rem;max-width:380px;width:92%;box-shadow:0 0 60px #00cc6644;animation:gpPop .4s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+    <div style="font-size:2rem;margin-bottom:.3rem;">📤</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.2rem;color:#00cc66;letter-spacing:3px;margin-bottom:.8rem;">COMPARTILHAR</div>
+
+    <!-- CARD PREVIEW -->
+    <div style="background:linear-gradient(135deg,#110022,#220044);border:3px solid #cc00ff;border-radius:16px;padding:1rem;margin-bottom:.8rem;">
+      <div style="font-size:2.5rem;">${sk.emoji}</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#cc00ff;margin:.2rem 0;">${playerName||'Jogador'}</div>
+      <div style="font-size:.55rem;color:#ffdd00;">💰 ${fmt(score)} pts</div>
+      <div style="font-size:.5rem;color:#aaaacc;margin-top:.2rem;">⭐ ${prestigeCount} prestígios · 🏆 ${dMS.size} conquistas</div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:.4rem;">
+      <button onclick="shareNative('${shareText.replace(/'/g,'&apos;').replace(/\n/g,'\\n')}')" style="font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:linear-gradient(135deg,#003322,#00cc66);color:#fff;border:none;border-radius:10px;cursor:pointer;">📲 COMPARTILHAR</button>
+      <button onclick="copyShare('${shareText.replace(/'/g,'&apos;').replace(/\n/g,'\\n')}')" style="font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:linear-gradient(135deg,#220044,#8800cc);color:#fff;border:none;border-radius:10px;cursor:pointer;">📋 COPIAR TEXTO</button>
+      <button onclick="shareWhatsApp('${shareText.replace(/'/g,'&apos;').replace(/\n/g,'\\n')}')" style="font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:linear-gradient(135deg,#003311,#25D366);color:#fff;border:none;border-radius:10px;cursor:pointer;">💬 WHATSAPP</button>
+    </div>
+    <button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.38rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.5rem;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  sfx('hover');
+}
+
+function shareNative(text){
+  const t=text.replace(/\\n/g,'\n');
+  if(navigator.share){
+    navigator.share({title:'Clicker Master',text:t,url:'https://jojocriajogosbom.github.io/clickmaterjojo2/'}).catch(()=>{});
+  } else {
+    copyShare(text);
+  }
+}
+function copyShare(text){
+  const t=text.replace(/\\n/g,'\n');
+  navigator.clipboard?.writeText(t).then(()=>toast('📋 Copiado!','green')).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('📋 Copiado!','green');
+  });
+  sfx('milestone');
+}
+function shareWhatsApp(text){
+  const t=encodeURIComponent(text.replace(/\\n/g,'\n'));
+  window.open('https://wa.me/?text='+t,'_blank');
+}
 
 async function doRegister(){
   const name=document.getElementById('regNameInput').value.trim();
+  const pass=document.getElementById('regPassInput')?.value.trim();
   if(!name){toast('Coloca um nome!','red');return;}
   if(name.length<2){toast('Nome muito curto!','red');return;}
+  if(!pass||pass.length<3){toast('Senha muito curta! Mínimo 3 caracteres.','red');return;}
   playerName=name;
   if(!playerId){playerId='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);}
+  const passHash=hashPass(pass);
   localStorage.setItem('cmPlayerName',playerName);
   localStorage.setItem('cmPlayerId',playerId);
+  localStorage.setItem('cmPassHash',passHash);
+  localStorage.setItem('cmAvatar',selectedAvatar);
+  localStorage.setItem('cmColor',selectedColor);
   try{
     await db.collection('jogadores').doc(playerId).set({
       nome:playerName,id:playerId,
       score:Math.floor(score),
       totalCliques:totalClicks,
       prestígios:prestigeCount,
+      avatar:selectedAvatar,
+      cor:selectedColor,
+      passHash:passHash,
+      skin:activeSkin||'sk_default',
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
   }catch(e){}
@@ -4634,7 +4919,7 @@ async function abuseGodAll(){admNotify('deu GOD MODE pra TODOS! 👁️');
   toast('👁️ GOD MODE PRA TODOS por 60s!!','rainbow');sfx('prestige');admConfetti();
 }
 
-function abuseExplode(){
+function abuseExplode(){sfx("explosion");
   // EXPLOSÃO VISUAL NA TELA
   for(let i=0;i<50;i++){
     setTimeout(()=>{
@@ -4861,8 +5146,319 @@ function openADM321(){
   sfx('hover');toast('🎮 Painel 321!','green');
 }
 
+// ══ TECLADO ADM VIRTUAL ══
+function openAdmKeyboard(){
+  if(document.getElementById('admKbOv'))return;
+  sfx('hover');
+  const ov=document.createElement('div');
+  ov.id='admKbOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(8px);';
+
+  const keys=[
+    ['1','2','3','4','5','6','7','8','9','0'],
+    ['q','w','e','r','t','y','u','i','o','p'],
+    ['a','s','d','f','g','h','j','k','l'],
+    ['z','x','c','v','b','n','m','⌫'],
+    ['ENTRAR']
+  ];
+
+  let typed='';
+
+  function buildKb(){
+    return `
+    <div onclick="event.stopPropagation()" style="background:#0a0018;border-top:3px solid #cc00ff;border-radius:20px 20px 0 0;padding:1rem;width:100%;max-width:480px;box-shadow:0 -10px 40px #cc00ff33;animation:gpPop .3s;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#664488;text-align:center;margin-bottom:.5rem;letter-spacing:3px;">🔑 CÓDIGO SECRETO</div>
+      <div id="kbDisplay" style="font-family:'Boogaloo',cursive;font-size:1.2rem;color:#cc00ff;text-align:center;background:#110022;border:2px solid #330055;border-radius:12px;padding:.5rem;margin-bottom:.7rem;min-height:2.2rem;letter-spacing:4px;">${typed||'...'}</div>
+      ${keys.map(row=>`
+      <div style="display:flex;gap:.25rem;justify-content:center;margin-bottom:.25rem;">
+        ${row.map(k=>`
+        <button onclick="kbPress('${k}')" style="font-family:'Boogaloo',cursive;font-size:${k==='ENTRAR'?.8:1}rem;padding:${k==='ENTRAR'?'.45rem 2rem':'.45rem'};min-width:${k==='ENTRAR'?'100%':'2.4rem'};background:${k==='ENTRAR'?'linear-gradient(135deg,#330066,#cc00ff)':k==='⌫'?'#330022':'#110022'};color:${k==='ENTRAR'?'#fff':k==='⌫'?'#ff4488':'#cc88ff'};border:1px solid ${k==='ENTRAR'?'#cc00ff':'#330044'};border-radius:8px;cursor:pointer;letter-spacing:${k==='ENTRAR'?'2':'0'}px;flex:${k==='ENTRAR'?'unset':'1'};">${k}</button>
+        `).join('')}
+      </div>`).join('')}
+      <button onclick="document.getElementById('admKbOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.38rem;background:#0a0010;color:#443355;border:1px solid #220033;border-radius:10px;cursor:pointer;margin-top:.3rem;">FECHAR</button>
+    </div>`;
+  }
+
+  ov.innerHTML=buildKb();
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+
+  window.kbPress=(k)=>{
+    sfx('click');
+    if(k==='⌫'){typed=typed.slice(0,-1);}
+    else if(k==='ENTRAR'){
+      const code=typed.toLowerCase();
+      if(code==='eutuv3214'){
+        document.getElementById('admKbOv').remove();
+        openADM3214();
+      } else if(SECRET_CODES[code]){
+        document.getElementById('admKbOv').remove();
+        SECRET_CODES[code]();
+      } else {
+        const d=document.getElementById('kbDisplay');
+        if(d){d.style.color='#ff4444';d.textContent='ERRADO! ❌';}
+        sfx('error');
+        setTimeout(()=>{typed='';const d=document.getElementById('kbDisplay');if(d){d.style.color='#cc00ff';d.textContent='...';}},1200);
+        return;
+      }
+      typed='';return;
+    } else {
+      if(typed.length<20)typed+=k;
+    }
+    const d=document.getElementById('kbDisplay');
+    if(d)d.textContent=typed||'...';
+  };
+}
+
+// ══ PAINEL ADM 3214 (especial) ══
+function openADM3214(){
+  if(document.getElementById('adm3214Ov'))return;
+  sfx('prestige');toast('🎮 Painel 3214 desbloqueado!','rainbow');
+  const ov=document.createElement('div');
+  ov.id='adm3214Ov';
+  ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:flex-start;justify-content:center;backdrop-filter:blur(8px);overflow-y:auto;padding:1rem 0;';
+  ov.innerHTML=`
+  <div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #ff8800;border-radius:24px;padding:1.4rem;text-align:center;max-width:420px;width:92%;box-shadow:0 0 80px #ff880044;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:2.2rem;margin-bottom:.2rem;">🎮</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.4rem;color:#ff8800;letter-spacing:3px;margin-bottom:.1rem;">PAINEL 3214</div>
+    <div style="font-size:.45rem;color:#664400;margin-bottom:.9rem;letter-spacing:2px;">painel secreto do ADM 🔥</div>
+
+    <div style="background:#110022;border:2px solid #ff8800;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#ff8800;margin-bottom:.5rem;">🎮 MODOS ESPECIAIS</div>
+      <div style="display:flex;flex-direction:column;gap:.35rem;">
+        <button onclick="document.getElementById('adm3214Ov').remove();openModoQueda();" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#110033,#cc00ff);color:#fff;border:none;border-radius:10px;cursor:pointer;">🌈 QUEDA DOS UPGRADES</button>
+        <button onclick="document.getElementById('adm3214Ov').remove();openModoLoteria();" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#003300,#ffdd00);color:#000;border:none;border-radius:10px;cursor:pointer;">🎰 LOTERIA</button>
+        <button onclick="document.getElementById('adm3214Ov').remove();openModoGigante();" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#440000,#ff8800);color:#fff;border:none;border-radius:10px;cursor:pointer;">🔥 BOTÃO GIGANTE</button>
+        <button onclick="document.getElementById('adm3214Ov').remove();openModoInvasao();" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#000022,#0088ff);color:#fff;border:none;border-radius:10px;cursor:pointer;">🤖 INVASÃO DE ROBÔS</button>
+        <button onclick="document.getElementById('adm3214Ov').remove();openModoRelogio();" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#221100,#ff8800);color:#fff;border:none;border-radius:10px;cursor:pointer;">⏰ RELÓGIO LOUCO</button>
+        <button onclick="document.getElementById('adm3214Ov').remove();openModoCassino();" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#220033,#ff00cc);color:#fff;border:none;border-radius:10px;cursor:pointer;">🃏 CASSINO</button>
+      </div>
+    </div>
+
+    <div style="background:#110022;border:2px solid #ffdd00;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#ffdd00;margin-bottom:.5rem;">💰 PONTOS RÁPIDOS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.3rem;">
+        <button onclick="score+=1e6;totalEarned+=1e6;updateUI();admNotify('pegou +1M! 💰');toast('+1M!','gold');sfx('coin')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#221100;color:#ffdd00;border:1px solid #664400;border-radius:8px;cursor:pointer;">+1M</button>
+        <button onclick="score+=1e9;totalEarned+=1e9;updateUI();admNotify('pegou +1B! 💰');toast('+1B!','rainbow');sfx('coin')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#331100;color:#ffaa00;border:1px solid #664400;border-radius:8px;cursor:pointer;">+1B</button>
+        <button onclick="score+=1e12;totalEarned+=1e12;updateUI();admNotify('pegou +1T! 💰');toast('+1T!','rainbow');sfx('jackpot')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#442200;color:#ff8800;border:1px solid #664400;border-radius:8px;cursor:pointer;">+1T</button>
+        <button onclick="clickPower*=10;updateUI();admNotify('aumentou o click! 👆');toast('Click×10!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#220033;color:#cc00ff;border:1px solid #440066;border-radius:8px;cursor:pointer;">Click×10</button>
+        <button onclick="globalMult*=100;updateUI();admNotify('aumentou o mult! ✖️');toast('Mult×100!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#003300;color:#00ff44;border:1px solid #006600;border-radius:8px;cursor:pointer;">Mult×100</button>
+        <button onclick="prestigeStars+=50;updateUI();admNotify('pegou +50⭐!');toast('+50⭐!','gold')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#332200;color:#ffdd00;border:1px solid #665500;border-radius:8px;cursor:pointer;">+50⭐</button>
+      </div>
+    </div>
+
+    <div style="background:#110022;border:2px solid #00ffdd;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#00ffdd;margin-bottom:.5rem;">🎨 VISUAIS & EVENTOS</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admConfetti();admNotify('mandou confete! 🎉')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#330033;color:#ff44ff;border:1px solid #550055;border-radius:8px;cursor:pointer;">🎉 Confete</button>
+        <button onclick="admRainbow();admNotify('ativou arco-íris! 🌈')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#110022;color:#ff88ff;border:1px solid #330044;border-radius:8px;cursor:pointer;">🌈 Arco-íris</button>
+        <button onclick="admFireworks();admNotify('fogos! 🎆')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#330000;color:#ff8800;border:1px solid #550000;border-radius:8px;cursor:pointer;">🎆 Fogos</button>
+        <button onclick="admMeteor();admNotify('meteoros! ☄️')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#220000;color:#ffaa00;border:1px solid #440000;border-radius:8px;cursor:pointer;">☄️ Meteoros</button>
+        <button onclick="admEventBrazil();admNotify('Brasil! 🇧🇷')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#003300;color:#ffdd00;border:1px solid #006600;border-radius:8px;cursor:pointer;">🇧🇷 Brasil</button>
+        <button onclick="admShake();admNotify('tremeu! 📳')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:#220000;color:#ff4444;border:1px solid #440000;border-radius:8px;cursor:pointer;">📳 Tremer</button>
+      </div>
+    </div>
+
+    <div style="background:#110022;border:2px solid #ff4444;border-radius:14px;padding:.8rem;margin-bottom:.7rem;text-align:left;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#ff4444;margin-bottom:.5rem;">😈 PODER ADM</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admGodMode();admNotify('ativou GOD MODE! 👁️')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:linear-gradient(135deg,#444400,#ffff00);color:#000;border:none;border-radius:8px;cursor:pointer;">👁️ GOD MODE</button>
+        <button onclick="atmp(1000,60);admNotify('boost ×1000! ⚡');toast('×1000/60s!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:linear-gradient(135deg,#332200,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">⚡ ×1000/60s</button>
+        <button onclick="admUnlockSkins()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:linear-gradient(135deg,#003344,#00ffdd);color:#000;border:none;border-radius:8px;cursor:pointer;">🎨 Todas Skins</button>
+        <button onclick="admReset()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.35rem;background:linear-gradient(135deg,#330000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔄 Reset Jogo</button>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('adm3214Ov').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.42rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  sfx('chaos');toast('🌀 Painel 3214!','rainbow');
+}
+
+// ══ MODO QUEDA DOS UPGRADES 🌈 ══
+function openModoQueda(){
+  sfx('prestige');admNotify('ativou o MODO QUEDA DOS UPGRADES! 🌈');
+  toast('🌈 UPGRADES CAINDO! Clique neles pra comprar de graça!','rainbow');
+  const upgs=ALL.filter(u=>!owned.has(u.id)).slice(0,8);
+  upgs.forEach((u,i)=>{
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText=`position:fixed;left:${5+Math.random()*80}%;top:-10%;z-index:600;cursor:pointer;z-index:700;animation:crownFall ${3+Math.random()*2}s ease-in forwards;background:#110022;border:2px solid #cc00ff;border-radius:12px;padding:.4rem .7rem;text-align:center;`;
+      el.innerHTML=`<div style="font-size:1.5rem">${u.icon}</div><div style="font-family:'Boogaloo',cursive;font-size:.55rem;color:#cc88ff;">${u.name}</div>`;
+      el.onclick=()=>{
+        if(!owned.has(u.id)){owned.add(u.id);u.eff();updateUI();rAll();checkMS();}
+        sfx('buy');toast('⚡ '+u.name+' grátis!','rainbow');el.remove();
+      };
+      document.body.appendChild(el);
+      setTimeout(()=>el.remove(),5000);
+    },i*400);
+  });
+}
+
+// ══ MODO LOTERIA 🎰 ══
+function openModoLoteria(){
+  sfx('jackpot');admNotify('ativou o MODO LOTERIA! 🎰');
+  const prizes=[1e6,1e7,1e8,1e9,0,0,1e5,1e6,5e6,1e8];
+  const spins=15;let spin=0;
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:900;background:#000000cc;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a000a;border:4px solid #ffdd00;border-radius:24px;padding:1.8rem;text-align:center;max-width:360px;width:90%;box-shadow:0 0 60px #ffdd0066;">
+    <div style="font-family:'Boogaloo',cursive;font-size:1.2rem;color:#ffdd00;margin-bottom:.5rem;">🎰 LOTERIA!</div>
+    <div id="lotterySlot" style="font-family:'Boogaloo',cursive;font-size:2.5rem;color:#ff8800;margin:1rem 0;">💰</div>
+    <div id="lotteryMsg" style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#884400;">girando...</div>
+    <button id="lotteryBtn" onclick="runLottery()" style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.5rem 1.5rem;background:linear-gradient(135deg,#664400,#ffdd00);color:#000;border:none;border-radius:12px;cursor:pointer;margin-top:.8rem;">🎰 GIRAR!</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  window.runLottery=()=>{
+    document.getElementById('lotteryBtn').disabled=true;
+    const emojis=['💰','💎','⭐','🎁','💸','🔥','✨','🌟'];
+    let s=0;
+    const iv=setInterval(()=>{
+      s++;
+      const el=document.getElementById('lotterySlot');
+      if(el)el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+      sfx('hover');
+      if(s>=spins){
+        clearInterval(iv);
+        const prize=prizes[Math.floor(Math.random()*prizes.length)];
+        if(prize>0){score+=prize;totalEarned+=prize;updateUI();sfx('jackpot');admConfetti();}
+        const msg=document.getElementById('lotteryMsg');
+        const slot=document.getElementById('lotterySlot');
+        if(prize>0){if(slot)slot.textContent='🎉';if(msg){msg.textContent='+'+fmt(prize)+' pts!!';msg.style.color='#ffdd00';}}
+        else{if(slot)slot.textContent='😢';if(msg){msg.textContent='Não ganhou nada...';msg.style.color='#ff4444';}}
+        const btn=document.getElementById('lotteryBtn');
+        if(btn){btn.disabled=false;btn.textContent='🎰 GIRAR DE NOVO!';}
+      }
+    },80);
+  };
+}
+
+// ══ MODO BOTÃO GIGANTE 🔥 ══
+function openModoGigante(){
+  sfx('prestige');admNotify('ativou o MODO BOTÃO GIGANTE! 🔥');
+  const btn=document.getElementById('bigBtn');
+  if(!btn)return;
+  btn.style.transform='scale(3)';
+  btn.style.transition='transform .5s cubic-bezier(.34,1.56,.64,1)';
+  btn.style.zIndex='600';
+  btn.style.position='relative';
+  atmp(10,30);
+  toast('🔥 BOTÃO GIGANTE! ×10 por 30s!','rainbow');
+  setTimeout(()=>{
+    btn.style.transform='scale(1)';
+    btn.style.zIndex='';
+    btn.style.position='';
+    toast('🔥 Voltou ao normal!','green');
+  },30000);
+}
+
+// ══ MODO INVASÃO DE ROBÔS 🤖 ══
+function openModoInvasao(){
+  sfx('chaos');admNotify('ativou o MODO INVASÃO DE ROBÔS! 🤖');
+  let robos=0;const maxRobos=10;
+  const iv=setInterval(()=>{
+    robos++;
+    const el=document.createElement('div');
+    const side=Math.random()>.5;
+    el.style.cssText=`position:fixed;font-size:2rem;${side?'left:-60px':'right:-60px'};top:${10+Math.random()*80}%;z-index:500;cursor:pointer;transition:all ${2+Math.random()*2}s linear;filter:drop-shadow(0 0 8px #0088ff);`;
+    el.textContent='🤖';
+    el.title='Clique no robô!';
+    document.body.appendChild(el);
+    setTimeout(()=>{el.style[side?'left':'right']='110%';},100);
+    el.onclick=()=>{
+      const bonus=Math.floor(clickPower*gm()*10);
+      score+=bonus;totalEarned+=bonus;updateUI();
+      sfx('buy');toast('🤖 ROBÔ DESTRUÍDO! +'+fmt(bonus)+'!','rainbow');
+      el.remove();
+    };
+    setTimeout(()=>el.remove(),6000);
+    if(robos>=maxRobos){
+      clearInterval(iv);
+      score+=500000;totalEarned+=500000;updateUI();
+      toast('🤖 Invasão derrotada! +500K!','rainbow');sfx('prestige');
+    }
+  },800);
+  toast('🤖 INVASÃO! Clique nos robôs pra destruí-los!','rainbow');
+}
+
+// ══ MODO RELÓGIO LOUCO ⏰ ══
+function openModoRelogio(){
+  sfx('milestone');admNotify('ativou o MODO RELÓGIO LOUCO! ⏰');
+  const rounds=[
+    {time:5,mult:2,msg:'×2 por 5s!'},
+    {time:3,mult:10,msg:'×10 por 3s!'},
+    {time:8,mult:0.5,msg:'÷2 por 8s... cuidado!'},
+    {time:4,mult:50,msg:'×50 por 4s!! CLICA RÁPIDO!'},
+    {time:5,mult:5,msg:'×5 por 5s!'},
+    {time:2,mult:1000,msg:'×1000 por 2s!! AGORA!!'},
+  ];
+  let r=0;
+  const ov=document.createElement('div');
+  ov.id='clockOv';
+  ov.style.cssText='position:fixed;top:10%;left:50%;transform:translateX(-50%);z-index:700;background:#0a0018;border:3px solid #ff8800;border-radius:16px;padding:.7rem 1.4rem;text-align:center;pointer-events:none;box-shadow:0 0 20px #ff880066;';
+  ov.innerHTML=`<div id="clockMsg" style="font-family:'Boogaloo',cursive;font-size:.9rem;color:#ff8800;">⏰ COMEÇANDO...</div><div id="clockBar" style="background:#ff8800;height:6px;border-radius:4px;width:100%;margin-top:.3rem;transition:width .1s linear;"></div>`;
+  document.body.appendChild(ov);
+  function runRound(){
+    if(r>=rounds.length){ov.remove();toast('⏰ Relógio parou!','green');return;}
+    const rd=rounds[r++];
+    atmp(rd.mult,rd.time);
+    const msg=document.getElementById('clockMsg');
+    if(msg){msg.textContent='⏰ '+rd.msg;msg.style.color=rd.mult>=10?'#ffdd00':rd.mult<1?'#ff4444':'#ff8800';}
+    sfx(rd.mult>=50?'prestige':rd.mult<1?'error':'milestone');
+    toast('⏰ '+rd.msg,'rainbow');
+    let elapsed=0;
+    const bar=document.getElementById('clockBar');
+    const barIv=setInterval(()=>{elapsed+=100;if(bar)bar.style.width=(100-elapsed/rd.time/10)+'%';},100);
+    setTimeout(()=>{clearInterval(barIv);runRound();},rd.time*1000);
+  }
+  runRound();
+}
+
+// ══ MODO CASSINO 🃏 ══
+function openModoCassino(){
+  sfx('jackpot');admNotify('ativou o MODO CASSINO! 🃏');
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:900;background:#000000cc;display:flex;align-items:center;justify-content:center;';
+  const cards=['🃏','🎰','🎲','🃏','💎','7️⃣','🍒','🔔','⭐','💰'];
+  const prizes={'🃏🃏🃏':1e8,'🎰🎰🎰':1e9,'💎💎💎':1e10,'7️⃣7️⃣7️⃣':1e11,'🍒🍒🍒':5e7,'⭐⭐⭐':2e8};
+  ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0005;border:4px solid #ffdd00;border-radius:24px;padding:1.8rem;text-align:center;max-width:380px;width:90%;box-shadow:0 0 60px #ffdd0066;">
+    <div style="font-family:'Boogaloo',cursive;font-size:1.2rem;color:#ffdd00;margin-bottom:.7rem;">🃏 CASSINO!</div>
+    <div style="display:flex;gap:.5rem;justify-content:center;margin-bottom:.8rem;">
+      <div id="cs1" style="font-size:2.5rem;background:#110011;border:2px solid #ffdd00;border-radius:10px;padding:.3rem .6rem;">🃏</div>
+      <div id="cs2" style="font-size:2.5rem;background:#110011;border:2px solid #ffdd00;border-radius:10px;padding:.3rem .6rem;">🃏</div>
+      <div id="cs3" style="font-size:2.5rem;background:#110011;border:2px solid #ffdd00;border-radius:10px;padding:.3rem .6rem;">🃏</div>
+    </div>
+    <div id="csMsg" style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#884400;margin-bottom:.7rem;">Aposte tudo!</div>
+    <button onclick="spinCassino()" style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.5rem 1.5rem;background:linear-gradient(135deg,#664400,#ffdd00);color:#000;border:none;border-radius:12px;cursor:pointer;">🎰 GIRAR!</button>
+    <button onclick="this.parentElement.parentElement.remove()" style="display:block;width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.38rem;background:#1a0010;color:#664455;border:2px solid #330022;border-radius:10px;cursor:pointer;margin-top:.5rem;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  window.spinCassino=()=>{
+    let s=0;
+    const iv=setInterval(()=>{
+      s++;
+      ['cs1','cs2','cs3'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=cards[Math.floor(Math.random()*cards.length)];});
+      sfx('hover');
+      if(s>=20){
+        clearInterval(iv);
+        const r1=document.getElementById('cs1')?.textContent;
+        const r2=document.getElementById('cs2')?.textContent;
+        const r3=document.getElementById('cs3')?.textContent;
+        const key=r1+r2+r3;
+        const prize=prizes[key]||(r1===r2||r2===r3?1e6:0);
+        const msg=document.getElementById('csMsg');
+        if(prize>0){score+=prize;totalEarned+=prize;updateUI();sfx('prestige');admConfetti();if(msg){msg.textContent='🎉 GANHOU +'+fmt(prize)+'!!';msg.style.color='#ffdd00';}}
+        else{if(msg){msg.textContent='😢 Não foi dessa vez...';msg.style.color='#ff4444';}}
+      }
+    },80);
+  };
+}
+
 // ══ MODO HACKER 👾 ══
-function openModoHacker(){admNotify('ativou o Modo Hacker! 👾');
+function openModoHacker(){sfx("circus");admNotify('ativou o Modo Hacker! 👾');
   if(document.getElementById('hackerOv'))return;
   sfx('chaos');
 
@@ -4953,7 +5549,7 @@ function openModoHacker(){admNotify('ativou o Modo Hacker! 👾');
 }
 
 // ══ MODO TELETRANSPORTE ⚡ ══
-function openModoTeleporte(){admNotify('ativou o Modo Teletransporte! ⚡');
+function openModoTeleporte(){sfx("portal");admNotify('ativou o Modo Teletransporte! ⚡');
   if(document.getElementById('teleOv'))return;
   sfx('prestige');
 

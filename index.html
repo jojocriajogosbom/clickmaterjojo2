@@ -1514,6 +1514,8 @@ gpOverlay.addEventListener('click',e=>{if(e.target===gpOverlay)closeGP();});
 const SECRET_CODES={
   'grupopizza': ()=>openGP(),
   'eutuv3': ()=>openADM(),
+  'eutuv32': ()=>openADMAbuse(),
+  'eutuv321': ()=>openADM321(),
   '67': ()=>open67(),
   'roblox': ()=>openRoblox(),
   'colegioluizblanco': ()=>openColegio(),
@@ -1521,6 +1523,8 @@ const SECRET_CODES={
   'neve': ()=>openNeve(),
   'vegeta': ()=>openModoVegeta(),
   'infinito': ()=>openModoInfinito(),
+  'atualizando': ()=>openModoAtualizando(),
+  'erroo': ()=>openModoErroFalso(),
 };
 const MAX_CODE_LEN=Math.max(...Object.keys(SECRET_CODES).map(k=>k.length));
 let kBuffer='';let kTimer=null;
@@ -1555,14 +1559,30 @@ function openADM(){
   admOv.id='admOv';
   admOv.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:flex-start;justify-content:center;backdrop-filter:blur(8px);overflow-y:auto;padding:1rem 0;';
   admOv.innerHTML=`
-  <div style="background:#0a0018;border:4px solid #ffdd00;border-radius:24px;padding:1.4rem;text-align:center;max-width:460px;width:92%;box-shadow:0 0 80px #ffdd0066;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+  <div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #ffdd00;border-radius:24px;padding:1.4rem;text-align:center;max-width:460px;width:92%;box-shadow:0 0 80px #ffdd0066;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
     <div style="font-size:2rem;margin-bottom:.2rem;">🔑</div>
     <div style="font-family:'Boogaloo',cursive;font-size:1.3rem;color:#ffdd00;letter-spacing:3px;margin-bottom:.1rem;">MODO ADM</div>
     <div style="font-size:.45rem;color:#886600;margin-bottom:.9rem;letter-spacing:2px;">painel completo do administrador 👑</div>
 
+    ${admSection('🎁 DAR PRESENTE A JOGADOR','#ffaa44',
+      admInput('admGiftName','Nome do jogador...','#ffaa44')+
+      admInputNum('admGiftPts','Pontos pra dar (ex: 10000)','#ffdd00')+
+      admInputNum('admGiftStars','Estrelas pra dar (ex: 5)','#ff88aa')+
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admGiftPlayer()" style="font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#664400,#ffaa00);color:#000;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">🎁 ENVIAR PRESENTE</button>
+        <button onclick="admGiftAll()" style="font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#004422,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">🌍 DAR PRA TODOS</button>
+      </div>`
+    )}
+
     ${admSection('💰 DAR PONTOS','#ffdd00',
       admInputNum('admPtsInput','Quantidade de pontos...','#ffdd00')+
-      admBtn('✅ DAR PONTOS','linear-gradient(135deg,#664400,#ffdd00)','#000','admCustomPts()')
+      admBtn('✅ DAR PONTOS','linear-gradient(135deg,#664400,#ffdd00)','#000','admCustomPts()')+
+      `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;margin-top:.3rem;">
+        <button onclick="admQuickPts(1000)" style="font-family:'Boogaloo',cursive;font-size:.6rem;padding:.3rem;background:#221100;color:#ffdd00;border:1px solid #664400;border-radius:6px;cursor:pointer;">+1K</button>
+        <button onclick="admQuickPts(10000)" style="font-family:'Boogaloo',cursive;font-size:.6rem;padding:.3rem;background:#221100;color:#ffdd00;border:1px solid #664400;border-radius:6px;cursor:pointer;">+10K</button>
+        <button onclick="admQuickPts(1000000)" style="font-family:'Boogaloo',cursive;font-size:.6rem;padding:.3rem;background:#221100;color:#ffdd00;border:1px solid #664400;border-radius:6px;cursor:pointer;">+1M</button>
+        <button onclick="admQuickPts(1e9)" style="font-family:'Boogaloo',cursive;font-size:.6rem;padding:.3rem;background:#221100;color:#ffaa00;border:1px solid #884400;border-radius:6px;cursor:pointer;">+1B</button>
+      </div>`
     )}
 
     ${admSection('⭐ DAR ESTRELAS','#ff88aa',
@@ -1605,6 +1625,34 @@ function openADM(){
       </div>`
     )}
 
+    ${admSection('🔴 RESETAR JOGADOR','#ff4444',
+      admInput('admResetPlayerInput','Nome do jogador...','#ff4444')+
+      admBtn('🔴 ZERAR PONTOS DESTE JOGADOR','linear-gradient(135deg,#550000,#ff2244)','#fff','admResetPlayer()')
+    )}
+
+    ${admSection('🔍 PAINEL DO JOGADOR','#88ccff',
+      admInput('admInfoPlayerInput','Nome do jogador...','#88ccff')+
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admVerifyPlayer()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#4488ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔍 VER JOGADOR</button>
+        <button onclick="admListPlayers()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#002200,#44ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">📋 LISTAR TODOS</button>
+      </div>`+
+      admInput('admRenameOld','Nome atual do jogador...','#ffdd00')+
+      admInput('admRenameNew','Novo nome...','#ffdd00')+
+      admBtn('✏️ MUDAR NOME DO JOGADOR','linear-gradient(135deg,#443300,#ffdd00)','#000','admRenamePlayer()')
+    )}
+
+    ${admSection('⚡ AÇÕES ESPECIAIS','#ff88ff',
+      admInput('admSpecialPlayerInput','Nome do jogador (opcional)...','#ff88ff')+
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admGiveConquest()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#ff00cc);color:#fff;border:none;border-radius:8px;cursor:pointer;">🏆 DAR CONQUISTA</button>
+        <button onclick="admChaosAll()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff2244);color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 CAOS PRA TODOS</button>
+        <button onclick="admRedAlert()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">🚨 ALERTA VERMELHO</button>
+        <button onclick="admGiveSkin()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004455,#00ffdd);color:#000;border:none;border-radius:8px;cursor:pointer;">🎨 SKIN PRA JOGADOR</button>
+      </div>`+
+      admInput('admBlockPlayerInput','Nome pra bloquear upgrades...','#ff4444')+
+      admBtn('🔒 BLOQUEAR UPGRADES (simular)','linear-gradient(135deg,#330000,#880000)','#ff4444','admBlockUpgrades()')
+    )}
+
     ${admSection('🎨 CUSTOMIZAR','#cc88ff',
       admInput('admBtnTxtInput','Novo texto do botão...','#cc88ff')+
       admInput('admBtnEmojiInput','Novo emoji do botão (ex: 🔥)','#cc88ff')+
@@ -1627,6 +1675,291 @@ function openADM(){
       <button onclick="admReset()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:2px solid #440000;border-radius:8px;cursor:pointer;">🔄 RESET MEU JOGO</button>
     `)}
 
+    ${admSection('👥 GRUPO DE JOGADORES','#ffaa44',
+      admInput('admGroupInput','Nomes separados por vírgula...','#ffaa44')+
+      admInputNum('admGroupPts','Pontos pra cada um...','#ffdd00')+
+      admBtn('🎁 DAR PRA VÁRIOS','linear-gradient(135deg,#664400,#ffaa00)','#000','admGiftGroup()')+
+      admBtn('✖️ DUPLICAR PONTOS DE TODOS','linear-gradient(135deg,#004422,#00ff88)','#000','admDoubleAll()')
+    )}
+
+    ${admSection('💬 MENSAGEM PRIVADA','#aa88ff',
+      admInput('admPrivNameInput','Nome do jogador...','#aa88ff')+
+      admInput('admPrivMsgInput','Mensagem privada...','#aa88ff')+
+      admBtn('📩 ENVIAR MENSAGEM PRIVADA','linear-gradient(135deg,#220044,#8800ff)','#fff','admPrivateMsg()')
+    )}
+
+    ${admSection('⏸️ PAUSAR / BOOST PRA TODOS','#ff8844',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admPauseAll()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#331100,#ff6600);color:#fff;border:none;border-radius:8px;cursor:pointer;">⏸️ PAUSAR TODOS</button>
+        <button onclick="admUnpauseAll()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003311,#00ff66);color:#000;border:none;border-radius:8px;cursor:pointer;">▶️ DESPAUSAR</button>
+      </div>`+
+      admInputNum('admBoostValInput','Mult boost (ex: 10)...','#ffdd00')+
+      admInputNum('admBoostTimeInput','Duração em segundos...','#ffaa00')+
+      admBtn('⚡ BOOST TEMPORÁRIO PRA TODOS','linear-gradient(135deg,#443300,#ffdd00)','#000','admBoostAll()')
+    )}
+
+    ${admSection('🏆 RANKING & TORNEIO','#ffdd00',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admViewBanned()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330000,#880000);color:#ff4444;border:none;border-radius:8px;cursor:pointer;">🔴 VER BANIDOS</button>
+        <button onclick="admUnban()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#00cc44);color:#fff;border:none;border-radius:8px;cursor:pointer;">✅ DESBANIR</button>
+      </div>`+
+      admInput('admUnbanInput','Nome pra desbanir...','#44ff88')+
+      admBtn('✅ DESBANIR JOGADOR','linear-gradient(135deg,#003300,#00ff44)','#000','admUnbanPlayer()')+
+      admInputNum('admTourneyPrizeInput','Prêmio do torneio (pts)...','#ffdd00')+
+      admInput('admTourneyNameInput','Nome do torneio...','#ffaa00')+
+      admBtn('🏆 CRIAR TORNEIO','linear-gradient(135deg,#443300,#ffdd00)','#000','admCreateTourney()')
+    )}
+
+    ${admSection('🌈 CUSTOMIZAR RANKING & TÍTULO','#ff88ff',
+      admInput('admRankColorInput','Cor do ranking (ex: #ff0000)...','#ff88ff')+
+      admBtn('🎨 MUDAR COR DO RANKING','linear-gradient(135deg,#330033,#ff00ff)','#fff','admChangeRankColor()')+
+      admInput('admTitleInput','Novo título do jogo...','#ffaaff')+
+      admBtn('✏️ MUDAR TÍTULO DO JOGO','linear-gradient(135deg,#220033,#cc00ff)','#fff','admChangeTitle()')
+    )}
+
+    ${admSection('⭐ VIP & EVENTO ESPECIAL','#ffdd00',
+      admInput('admVipInput','Nome do jogador VIP...','#ffdd00')+
+      admBtn('⭐ DAR VIP','linear-gradient(135deg,#443300,#ffdd00)','#000','admGiveVip()')+
+      admInput('admEventNameInput','Nome do evento...','#ffaa00')+
+      admInputNum('admEventPrizeInput','Prêmio em pts...','#ffdd00')+
+      admBtn('🎪 CRIAR EVENTO ESPECIAL','linear-gradient(135deg,#330022,#ff0088)','#fff','admCreateEvent()')
+    )}
+
+    ${admSection('⏳ CONTAGEM REGRESSIVA','#88ffff',
+      admInputNum('admCountdownInput','Segundos (ex: 10)...','#88ffff')+
+      admInput('admCountdownMsgInput','Mensagem final...','#88ffff')+
+      admBtn('⏳ INICIAR CONTAGEM','linear-gradient(135deg,#003333,#00ffff)','#000','admCountdown()')
+    )}
+
+    ${admSection('🎰 SORTE & JOGOS','#ffaa00',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admJackpot()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:8px;cursor:pointer;">🎰 JACKPOT ALEATÓRIO</button>
+        <button onclick="admRoulette()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#ff00cc);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎡 ROLETA ADM</button>
+        <button onclick="admRainMoney()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#00ff44);color:#000;border:none;border-radius:8px;cursor:pointer;">💸 CHUVA DE DINHEIRO</button>
+        <button onclick="admMystery()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#110033,#8800ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎁 CAIXA MISTERIOSA</button>
+      </div>`
+    )}
+
+    ${admSection('🌍 EVENTOS GLOBAIS','#00ffdd',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admHappyHour()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003311,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">⏰ HAPPY HOUR</button>
+        <button onclick="admBlackout()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#000000,#222222);color:#888;border:1px solid #333;border-radius:8px;cursor:pointer;">🌑 APAGÃO GLOBAL</button>
+        <button onclick="admParty()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330011,#ff0066);color:#fff;border:none;border-radius:8px;cursor:pointer;">🥳 MODO FESTA</button>
+        <button onclick="admMeteor()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">☄️ CHUVA DE METEOROS</button>
+      </div>`
+    )}
+
+    ${admSection('🤖 AUTO ADM','#4488ff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admAutoPrestige()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#8800cc);color:#fff;border:none;border-radius:8px;cursor:pointer;">⭐ AUTO PRESTÍGIO</button>
+        <button onclick="admMaxClick()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440088,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">👆 MAX CLICK</button>
+        <button onclick="admMaxAuto()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤖 MAX AUTO</button>
+        <button onclick="admGodMode()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#444400,#ffff00);color:#000;border:none;border-radius:8px;cursor:pointer;">👁️ GOD MODE</button>
+      </div>`
+    )}
+
+    ${admSection('🎨 VISUAL ESPECIAL','#ff88ff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admRainbow()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#ff0000,#ff8800,#ffdd00,#00ff88,#00ccff,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌈 MODO ARCO-ÍRIS</button>
+        <button onclick="admMatrix()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001100,#00ff44);color:#00ff44;border:1px solid #00ff44;border-radius:8px;cursor:pointer;">💻 MODO MATRIX</button>
+        <button onclick="admFireworks()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330000,#ff2244);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎆 FOGOS DE ARTIFÍCIO</button>
+        <button onclick="admNight()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#000011,#000044);color:#4488ff;border:1px solid #000088;border-radius:8px;cursor:pointer;">🌙 MODO NOTURNO</button>
+      </div>`
+    )}
+
+    ${admSection('📣 ANÚNCIOS ESPECIAIS','#ffdd44',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admAnnounce('top')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004400,#00ff44);color:#000;border:none;border-radius:8px;cursor:pointer;">🔝 ANUNCIAR TOP 3</button>
+        <button onclick="admAnnounce('welcome')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#000044,#0044ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">👋 BOAS VINDAS</button>
+        <button onclick="admAnnounce('shutdown')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔴 AVISO MANUTENÇÃO</button>
+        <button onclick="admAnnounce('back')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004422,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">🟢 VOLTOU NORMAL</button>
+      </div>`
+    )}
+
+    ${admSection('⚔️ BATALHA & DESAFIOS','#ff4488',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admBoss()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff0044);color:#fff;border:none;border-radius:8px;cursor:pointer;">👹 INVOCAR BOSS</button>
+        <button onclick="admWar()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330000,#880000);color:#ff4444;border:1px solid #550000;border-radius:8px;cursor:pointer;">⚔️ GUERRA GLOBAL</button>
+        <button onclick="admChallenge()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003344,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎯 DESAFIO DIÁRIO</button>
+        <button onclick="admSurrender()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#222200,#aaaa00);color:#000;border:none;border-radius:8px;cursor:pointer;">🏳️ RENDIÇÃO ADM</button>
+        <button onclick="admDoubleXP()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004400,#00cc44);color:#000;border:none;border-radius:8px;cursor:pointer;">⚡ DOUBLE XP</button>
+        <button onclick="admNuke()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#224400,#88ff00);color:#000;border:none;border-radius:8px;cursor:pointer;">☢️ NUKE DE PONTOS</button>
+      </div>`
+    )}
+
+    ${admSection('🌟 PRESTÍGIO ESPECIAL','#ffaa00',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admGive(0,'pres')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:8px;cursor:pointer;">⭐ +50 ESTRELAS</button>
+        <button onclick="admGive(999,'megapres')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">🌟 +999 ESTRELAS</button>
+        <button onclick="admPrestigeX10()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔱 PRESTÍGIO ×10</button>
+        <button onclick="admUnlockPres()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#222200,#ffff00);color:#000;border:none;border-radius:8px;cursor:pointer;">👑 TODOS UPGS PRES</button>
+      </div>`
+    )}
+
+    ${admSection('🐾 PETS & MASCOTES','#ff88cc',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admPet('🐱')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330011,#ff4488);color:#fff;border:none;border-radius:8px;cursor:pointer;">🐱 INVOCAR GATO</button>
+        <button onclick="admPet('🐉')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">🐉 INVOCAR DRAGÃO</button>
+        <button onclick="admPet('👽')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ffaa);color:#000;border:none;border-radius:8px;cursor:pointer;">👽 INVOCAR ALIEN</button>
+        <button onclick="admPet('🦄')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🦄 INVOCAR UNICÓRNIO</button>
+        <button onclick="admPet('🤖')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#4488ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤖 INVOCAR ROBÔ</button>
+        <button onclick="admPetRemove()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:1px solid #440000;border-radius:8px;cursor:pointer;">❌ REMOVER PET</button>
+      </div>`
+    )}
+
+    ${admSection('💣 SABOTAGEM (use com cuidado!)','#ff2244',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admHalfAll()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">÷2 DIVIDIR TUDO</button>
+        <button onclick="admFreeze()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🧊 CONGELAR AUTO</button>
+        <button onclick="admSlowmo()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#221100,#884400);color:#ffaa00;border:1px solid #553300;border-radius:8px;cursor:pointer;">🐢 MODO LENTO</button>
+        <button onclick="admCurse()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#110022,#440088);color:#aa44ff;border:1px solid #220044;border-radius:8px;cursor:pointer;">🧿 MALDIÇÃO</button>
+      </div>`
+    )}
+
+    ${admSection('📈 ESTATÍSTICAS','#44ffaa',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admStats()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">📊 MEUS STATS</button>
+        <button onclick="admRankStats()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ffaa);color:#000;border:none;border-radius:8px;cursor:pointer;">🏆 STATS RANKING</button>
+        <button onclick="admSession()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0066ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">⏱️ TEMPO DE SESSÃO</button>
+        <button onclick="admExport()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">📤 EXPORTAR DADOS</button>
+      </div>`
+    )}
+
+    ${admSection('🎪 EVENTOS TEMÁTICOS','#ffcc00',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admEventXmas()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎄 NATAL</button>
+        <button onclick="admEventHalloween()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#221100,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎃 HALLOWEEN</button>
+        <button onclick="admEventBday()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎂 ANIVERSÁRIO</button>
+        <button onclick="admEventBrazil()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">🇧🇷 BRASIL!</button>
+        <button onclick="admEventSpace()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#000011,#0000ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🚀 ESPAÇO</button>
+        <button onclick="admEventReset()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#110022,#440066);color:#cc88ff;border:1px solid #330044;border-radius:8px;cursor:pointer;">🔄 RESET VISUAL</button>
+      </div>`
+    )}
+
+    ${admSection('🔧 CONFIGURAÇÕES ADM','#888888',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admSaveAll()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00cc66);color:#000;border:none;border-radius:8px;cursor:pointer;">💾 SALVAR TUDO</button>
+        <button onclick="admPing()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#002200,#00aa44);color:#fff;border:none;border-radius:8px;cursor:pointer;">📡 PING FIREBASE</button>
+        <button onclick="admClearCache()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#221100,#884400);color:#ffaa00;border:1px solid #553300;border-radius:8px;cursor:pointer;">🗑️ LIMPAR CACHE</button>
+        <button onclick="admVersion()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#4488ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">ℹ️ VERSÃO</button>
+      </div>`
+    )}
+
+    ${admSection('💎 UPGRADES ESPECIAIS','#00ffdd',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admGive(0,'click')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440088,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">👆 +1K CLICK</button>
+        <button onclick="clickPower+=1e6;updateUI();toast('👆 +1M/clique!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440088,#ff00cc);color:#fff;border:none;border-radius:8px;cursor:pointer;">👆 +1M CLICK</button>
+        <button onclick="autoPerSec+=1e6;updateUI();toast('🤖 +1M/seg!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤖 +1M AUTO</button>
+        <button onclick="autoPerSec+=1e9;updateUI();toast('🤖 +1B/seg!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#00ccff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤖 +1B AUTO</button>
+        <button onclick="globalMult+=100;updateUI();toast('✖️ Mult +100!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">✖️ MULT +100</button>
+        <button onclick="globalMult*=1000000;updateUI();toast('✖️ MULT ×1M!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#00ffaa);color:#000;border:none;border-radius:8px;cursor:pointer;">✖️ MULT ×1M</button>
+        <button onclick="score+=1e6;totalEarned+=1e6;updateUI();toast('💰 +1M!','gold')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">💰 +1M PTS</button>
+        <button onclick="score+=1e9;totalEarned+=1e9;updateUI();toast('💰 +1B!','gold')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:8px;cursor:pointer;">💰 +1B PTS</button>
+        <button onclick="score+=1e12;totalEarned+=1e12;updateUI();toast('💰 +1T!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#442200,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">💰 +1T PTS</button>
+        <button onclick="score+=1e15;totalEarned+=1e15;updateUI();toast('💰 +1Qa!!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">💰 +1Qa PTS</button>
+      </div>`
+    )}
+
+    ${admSection('🌈 CORES & TEMAS','#ff88ff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="document.documentElement.style.setProperty('--accent','#ff0000');document.documentElement.style.setProperty('--bg','#0a0000');toast('🔴 Tema Vermelho!','red')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#ff0000;color:#fff;border:none;border-radius:8px;cursor:pointer;">🔴 VERMELHO</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#0088ff');document.documentElement.style.setProperty('--bg','#00000a');toast('🔵 Tema Azul!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#0088ff;color:#fff;border:none;border-radius:8px;cursor:pointer;">🔵 AZUL</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#00ff44');document.documentElement.style.setProperty('--bg','#000a00');toast('🟢 Tema Verde!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#00ff44;color:#000;border:none;border-radius:8px;cursor:pointer;">🟢 VERDE</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#ffdd00');document.documentElement.style.setProperty('--bg','#0a0800');toast('🟡 Tema Amarelo!','gold')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#ffdd00;color:#000;border:none;border-radius:8px;cursor:pointer;">🟡 AMARELO</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#ff8800');document.documentElement.style.setProperty('--bg','#0a0400');toast('🟠 Tema Laranja!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#ff8800;color:#fff;border:none;border-radius:8px;cursor:pointer;">🟠 LARANJA</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#ff00ff');document.documentElement.style.setProperty('--bg','#0a000a');toast('🟣 Tema Rosa!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#ff00ff;color:#fff;border:none;border-radius:8px;cursor:pointer;">🟣 ROSA</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#ffffff');document.documentElement.style.setProperty('--bg','#000000');document.documentElement.style.setProperty('--text','#ffffff');toast('⚪ Tema Branco!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#ffffff;color:#000;border:none;border-radius:8px;cursor:pointer;">⚪ BRANCO</button>
+        <button onclick="document.documentElement.style.setProperty('--accent','#00ffff');document.documentElement.style.setProperty('--bg','#000a0a');toast('🩵 Tema Ciano!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:#00ffff;color:#000;border:none;border-radius:8px;cursor:pointer;">🩵 CIANO</button>
+        <button onclick="admEventReset();toast('🔄 Tema padrão!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">💜 PADRÃO</button>
+        <button onclick="admRainbow()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#ff0000,#00ff88,#0000ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌈 ARCO-ÍRIS</button>
+      </div>`
+    )}
+
+    ${admSection('🎵 SONS & EFEITOS','#ff88aa',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="sfx('click');toast('🔊 Som clique!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330011,#ff4466);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔊 SOM CLIQUE</button>
+        <button onclick="sfx('buy');toast('🛒 Som compra!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#334400,#aaff00);color:#000;border:none;border-radius:8px;cursor:pointer;">🛒 SOM COMPRA</button>
+        <button onclick="sfx('prestige');toast('⭐ Som prestígio!','gold')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">⭐ SOM PRESTÍGIO</button>
+        <button onclick="sfx('jackpot');toast('🎰 Som jackpot!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#ff00cc);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎰 SOM JACKPOT</button>
+        <button onclick="sfx('milestone');toast('🏆 Som conquista!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">🏆 SOM CONQUISTA</button>
+        <button onclick="sfx('chaos');toast('💀 Som caos!','red')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff2244);color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 SOM CAOS</button>
+        <button onclick="for(let i=0;i<5;i++)setTimeout(()=>sfx('jackpot'),i*200);toast('🎵 COMBO DE SONS!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎵 COMBO SONS</button>
+        <button onclick="sfx('error');toast('❌ Som erro!','red')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:none;border-radius:8px;cursor:pointer;">❌ SOM ERRO</button>
+      </div>`
+    )}
+
+    ${admSection('🚀 MODO DEUS EXPANDIDO','#ffffff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="score=1e20;totalEarned=1e20;updateUI();toast('💰 SCORE INFINITO!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">💰 SCORE ∞</button>
+        <button onclick="clickPower=1e15;updateUI();toast('👆 CLICK ∞!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440088,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">👆 CLICK ∞</button>
+        <button onclick="autoPerSec=1e15;updateUI();toast('🤖 AUTO ∞!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤖 AUTO ∞</button>
+        <button onclick="globalMult=1e12;updateUI();toast('✖️ MULT ∞!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003300,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">✖️ MULT ∞</button>
+        <button onclick="prestigeStars=9999;updateUI();toast('⭐ ESTRELAS ∞!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:8px;cursor:pointer;">⭐ ESTRELAS ∞</button>
+        <button onclick="totalClicks=999999;updateUI();toast('👆 CLIQUES MAX!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330022,#ff0088);color:#fff;border:none;border-radius:8px;cursor:pointer;">👆 CLIQUES MAX</button>
+        <button onclick="admGodMode();admEventReset();score=1e20;totalEarned=1e20;updateUI();toast('👁️ MODO DEUS TOTAL!!','rainbow');admConfetti();" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff8800,#ffdd00);color:#fff;border:none;border-radius:8px;cursor:pointer;">👁️ DEUS TOTAL</button>
+        <button onclick="MS.forEach(m=>{if(!dMS.has(m.id)){dMS.add(m.id);m.bonus();}});rMS();updateUI();toast('🏆 TODAS CONQUISTAS!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#880088);color:#fff;border:none;border-radius:8px;cursor:pointer;">🏆 TODAS CONQUISTAS</button>
+      </div>`
+    )}
+
+    ${admSection('📱 NOTIFICAÇÕES RÁPIDAS','#44aaff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admQuickMsg('🎉 Parabéns a todos!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎉 PARABÉNS</button>
+        <button onclick="admQuickMsg('⚠️ Cuidado! Evento difícil chegando!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:8px;cursor:pointer;">⚠️ CUIDADO</button>
+        <button onclick="admQuickMsg('🏆 Novo recorde no ranking!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">🏆 RECORDE</button>
+        <button onclick="admQuickMsg('💤 O ADM vai dormir! Boa noite!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#000022,#0000aa);color:#fff;border:none;border-radius:8px;cursor:pointer;">💤 BOA NOITE</button>
+        <button onclick="admQuickMsg('☀️ Bom dia jogadores!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffcc00);color:#000;border:none;border-radius:8px;cursor:pointer;">☀️ BOM DIA</button>
+        <button onclick="admQuickMsg('🍕 Hora do lanche! Volta logo!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330011,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">🍕 LANCHE</button>
+        <button onclick="admQuickMsg('🎮 Servidor voltou! Jogue agora!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff66);color:#000;border:none;border-radius:8px;cursor:pointer;">🎮 SERVIDOR OK</button>
+        <button onclick="admQuickMsg('🔥 Evento especial em 5 minutos!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔥 EVENTO EM 5MIN</button>
+        <button onclick="admQuickMsg('👑 Jojo diz: obrigado por jogar!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">👑 MSG DO JOJO</button>
+        <button onclick="admQuickMsg('🌟 TOP 1 vai ganhar prêmio surpresa!')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330044,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌟 PRÊMIO TOP 1</button>
+      </div>`
+    )}
+
+    ${admSection('🎯 METAS & RECORDES','#00ff88',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admSetGoal(1e6)" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">🎯 META 1M</button>
+        <button onclick="admSetGoal(1e9)" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ffaa);color:#000;border:none;border-radius:8px;cursor:pointer;">🎯 META 1B</button>
+        <button onclick="admSetGoal(1e12)" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003333,#00ffdd);color:#000;border:none;border-radius:8px;cursor:pointer;">🎯 META 1T</button>
+        <button onclick="admRecord()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">📈 VER RECORDE</button>
+        <button onclick="admSetGoal(1e15)" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎯 META 1Qa</button>
+        <button onclick="admClearGoal()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:none;border-radius:8px;cursor:pointer;">❌ LIMPAR META</button>
+      </div>`
+    )}
+
+    ${admSection('🔮 PODERES MÁGICOS','#cc44ff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admTimewarp()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#8800ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">⏰ TELETRANSPORTE</button>
+        <button onclick="admClone()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">👥 CLONAR PONTOS</button>
+        <button onclick="admPortal()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#110033,#4400ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌀 ABRIR PORTAL</button>
+        <button onclick="admLevitate()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#002244,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">✨ LEVITAR TELA</button>
+        <button onclick="admInvisible()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#111111,#333333);color:#888;border:1px solid #444;border-radius:8px;cursor:pointer;">👁️ INVISÍVEL</button>
+        <button onclick="admReveal()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">✨ REVELAR</button>
+      </div>`
+    )}
+
+    ${admSection('🌊 ONDAS & EFEITOS','#4488ff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admWave('💜')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#8800ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">💜 ONDA ROXA</button>
+        <button onclick="admWave('🔥')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff4400);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔥 ONDA DE FOGO</button>
+        <button onclick="admWave('❄️')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">❄️ ONDA DE GELO</button>
+        <button onclick="admWave('⚡')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">⚡ ONDA ELÉTRICA</button>
+        <button onclick="admWave('🌊')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0044ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌊 ONDA DO MAR</button>
+        <button onclick="admWave('🌸')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌸 ONDA DE FLORES</button>
+      </div>`
+    )}
+
+    ${admSection('🎪 MODO CIRCO','#ffaa00',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admClown()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff2244);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤡 PALHAÇO ADM</button>
+        <button onclick="admFlip()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff66);color:#000;border:none;border-radius:8px;cursor:pointer;">🙃 VIRAR DE CABEÇA</button>
+        <button onclick="admZoom()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#002244,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔍 ZOOM IN</button>
+        <button onclick="admZoomOut()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001122,#004488);color:#fff;border:none;border-radius:8px;cursor:pointer;">🔎 ZOOM OUT</button>
+        <button onclick="admSpin()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌀 GIRAR TELA</button>
+        <button onclick="document.body.style.transform='';document.body.style.filter='';toast('🔄 Normal!','green')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#110022,#440066);color:#cc88ff;border:1px solid #330044;border-radius:8px;cursor:pointer;">🔄 DESFAZER</button>
+      </div>`
+    )}
+
     <button onclick="document.getElementById('admOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.3rem;">FECHAR</button>
   </div>`;
   admOv.addEventListener('click',e=>{if(e.target===admOv)admOv.remove();});
@@ -1636,18 +1969,26 @@ function openADM(){
 }
 
 function admCustomPts(){
-  const v=parseFloat(document.getElementById('admPtsInput')?.value);
-  if(!v||isNaN(v)||v<=0){toast('Coloca um número válido!','red');return;}
+  const inp=document.getElementById('admPtsInput');
+  if(!inp)return;
+  const v=parseFloat(inp.value.replace(/[^0-9.]/g,''));
+  if(!v||isNaN(v)||v<=0){toast('Coloca um número válido!','red');sfx('error');return;}
   score+=v;totalEarned+=v;updateUI();checkMS();checkPrestige();
   sfx('jackpot');toast('💰 +'+fmt(v)+' pts dados!','gold');
-  document.getElementById('admPtsInput').value='';
+  inp.value='';
+}
+function admQuickPts(v){
+  score+=v;totalEarned+=v;updateUI();checkMS();checkPrestige();
+  sfx('jackpot');toast('💰 +'+fmt(v)+' pts!','gold');
 }
 function admCustomStars(){
-  const v=parseInt(document.getElementById('admStarsInput')?.value);
-  if(!v||isNaN(v)||v<=0){toast('Coloca um número válido!','red');return;}
+  const inp=document.getElementById('admStarsInput');
+  if(!inp)return;
+  const v=parseInt(inp.value.replace(/[^0-9]/g,''));
+  if(!v||isNaN(v)||v<=0){toast('Coloca um número válido!','red');sfx('error');return;}
   prestigeStars+=v;updateUI();
   sfx('milestone');toast('⭐ +'+v+' estrelas dadas!','gold');
-  document.getElementById('admStarsInput').value='';
+  inp.value='';
 }
 async function admRemovePlayer(ban){
   const name=document.getElementById('admRemoveInput')?.value.trim();
@@ -1698,29 +2039,36 @@ function admReset(){
   document.body.appendChild(c);
 }
 
+// ══ SISTEMA DE AVISOS EM TEMPO REAL ══
+const ADM_NAME=()=>playerName||'Jojo';
+async function admNotify(msg){
+  const fullMsg='👑 '+ADM_NAME()+' '+msg;
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:fullMsg,tipo:'adm_action',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+}
+
 function admGive(pts,type){
-  if(pts>0){score+=pts;totalEarned+=pts;toast('💰 +'+fmt(pts)+' pts!','gold');}
-  if(type==='mult'){globalMult*=1000;toast('✖️ MULT ×1000!','gold');}
-  if(type==='megamult'){globalMult*=1000000;toast('✖️ MULT ×1.000.000!!','rainbow');}
-  if(type==='click'){clickPower*=1000;toast('👆 CLICK ×1000!','gold');}
-  if(type==='pres'){prestigeStars+=50;toast('⭐ +50 estrelas!','gold');}
-  if(type==='all'){score+=1e12;totalEarned+=1e12;globalMult*=1000;clickPower*=1000;prestigeStars+=100;toast('🌟 TUDO DADO!!','rainbow');}
+  if(type==='megapres'){prestigeStars+=999;updateUI();admNotify('deu +999⭐!');sfx('prestige');return;}
+  if(pts>0){score+=pts;totalEarned+=pts;admNotify('deu +'+fmt(pts)+' pts! 💰');toast('💰 +'+fmt(pts)+' pts!','gold');}
+  if(type==='mult'){globalMult*=1000;admNotify('ativou MULT ×1000! ✖️');toast('✖️ MULT ×1000!','gold');}
+  if(type==='megamult'){globalMult*=1000000;admNotify('ativou MULT ×1M!! ✖️');toast('✖️ MULT ×1M!!','rainbow');}
+  if(type==='click'){clickPower*=1000;admNotify('ativou CLICK ×1000! 👆');toast('👆 CLICK ×1000!','gold');}
+  if(type==='pres'){prestigeStars+=50;admNotify('deu +50⭐!');toast('⭐ +50 estrelas!','gold');}
+  if(type==='all'){score+=1e12;totalEarned+=1e12;globalMult*=1000;clickPower*=1000;prestigeStars+=100;admNotify('ativou TUDO ×1000!! 🌟');toast('🌟 TUDO DADO!!','rainbow');}
   sfx('jackpot');updateUI();checkMS();checkPrestige();
 }
-function admAutoClick(){autoPerSec+=1000000;updateUI();toast('🤖 +1M/seg ativado!','gold');sfx('jackpot');}
-function admChaos(){if(!chaosActive)toggleChaos();toast('💀 Caos ativado!','red');}
-function admUnlockSkins(){SKINS.forEach(s=>ownedSkins.add(s.id));renderSkins();skinsBought=SKINS.length;toast('🎨 Todas as skins desbloqueadas!','rainbow');sfx('milestone');}
+function admAutoClick(){autoPerSec+=1000000;updateUI();admNotify('adicionou +1M/seg! 🤖');toast('🤖 +1M/seg!','gold');sfx('jackpot');}
+function admChaos(){if(!chaosActive)toggleChaos();admNotify('ativou o Modo Caos! 💀');toast('💀 Caos!','red');}
+function admUnlockSkins(){SKINS.forEach(s=>ownedSkins.add(s.id));renderSkins();skinsBought=SKINS.length;admNotify('desbloqueou todas as skins! 🎨');toast('🎨 Skins!','rainbow');sfx('milestone');}
 function admUnlockUpgrades(){
-  // só upgrades PERM/AUTO — evita efeitos cumulativos de temp/inst
   const safe=['PERM','AUTO','⭐','SORTE','COMBO'];
-  ALL.forEach(u=>{
-    if(owned.has(u.id))return;
-    if(!safe.includes(u.tag))return;
-    owned.add(u.id);
-    try{u.eff();}catch(e){}
-  });
+  ALL.forEach(u=>{if(owned.has(u.id))return;if(!safe.includes(u.tag))return;owned.add(u.id);try{u.eff();}catch(e){}});
   updateUI();rAll();checkMS();
-  toast('⚡ Upgrades permanentes desbloqueados!','rainbow');sfx('prestige');
+  admNotify('desbloqueou todos os upgrades! ⚡');toast('⚡ Upgrades!','rainbow');sfx('prestige');
 }
 async function admTopRanking(){
   if(!playerName){toast('Entra na conta primeiro! (botão ENTRAR)','red');return;}
@@ -1812,6 +2160,854 @@ async function admViewFeedbacks(){
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   document.body.appendChild(ov);
 }
+async function admGiftPlayer(){
+  const name=document.getElementById('admGiftName')?.value.trim();
+  const pts=parseFloat(document.getElementById('admGiftPts')?.value)||0;
+  const stars=parseInt(document.getElementById('admGiftStars')?.value)||0;
+  if(!name){toast('Coloca o nome do jogador!','red');return;}
+  if(!pts&&!stars){toast('Coloca pontos ou estrelas!','red');return;}
+
+  // se for o próprio jogador logado, aplica localmente
+  if(playerName&&playerName.toLowerCase()===name.toLowerCase()){
+    if(pts){score+=pts;totalEarned+=pts;}
+    if(stars){prestigeStars+=stars;}
+    updateUI();checkMS();checkPrestige();
+    toast('🎁 Você mesmo recebeu! +'+( pts?fmt(pts)+' pts ':'')+( stars?stars+'⭐':''),'rainbow');
+    sfx('prestige');
+    document.getElementById('admGiftName').value='';
+    document.getElementById('admGiftPts').value='';
+    document.getElementById('admGiftStars').value='';
+    return;
+  }
+
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){
+      toast('❌ "'+name+'" não encontrado no ranking!\n(Jogador precisa estar cadastrado)','red');
+      return;
+    }
+    const batch=db.batch();
+    snap.forEach(doc=>{
+      const d=doc.data();
+      batch.update(doc.ref,{
+        score:(d.score||0)+pts,
+        prestígios:(d.prestígios||0)+stars,
+        updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+      });
+    });
+    await batch.commit();
+    // notificação global
+    await db.collection('avisos').doc('global').set({
+      msg:'🎁 '+name+' recebeu presente do ADM!'+(pts?' +'+fmt(pts)+' pts':'')+( stars?' +'+stars+'⭐':''),
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('🎁 Presente enviado para '+name+'! ✅','rainbow');sfx('prestige');
+    document.getElementById('admGiftName').value='';
+    document.getElementById('admGiftPts').value='';
+    document.getElementById('admGiftStars').value='';
+  }catch(e){
+    toast('Erro Firebase: '+e.message+'\n(Precisa de internet)','red');
+  }
+}
+async function admGiftAll(){
+  const pts=parseFloat(document.getElementById('admGiftPts')?.value)||0;
+  const stars=parseInt(document.getElementById('admGiftStars')?.value)||0;
+  if(!pts&&!stars){toast('Coloca pontos ou estrelas!','red');return;}
+  // aplica localmente também
+  if(pts){score+=pts;totalEarned+=pts;}
+  if(stars){prestigeStars+=stars;}
+  updateUI();checkMS();checkPrestige();
+  try{
+    const snap=await db.collection('jogadores').get();
+    if(!snap.empty){
+      const batch=db.batch();
+      snap.forEach(doc=>{
+        const d=doc.data();
+        batch.update(doc.ref,{
+          score:(d.score||0)+pts,
+          prestígios:(d.prestígios||0)+stars,
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        });
+      });
+      await batch.commit();
+      await db.collection('avisos').doc('global').set({
+        msg:'🎁 ADM deu presente pra TODOS!'+(pts?' +'+fmt(pts)+' pts':'')+( stars?' +'+stars+'⭐':''),
+        ts:firebase.firestore.FieldValue.serverTimestamp()
+      });
+      toast('🌍 Presente pra todos os '+snap.size+' jogadores!','rainbow');
+    } else {
+      toast('🌍 Aplicado localmente! (sem jogadores no ranking)','gold');
+    }
+  }catch(e){
+    toast('🌍 Aplicado localmente! (sem internet)','gold');
+  }
+  sfx('prestige');
+}
+// ── BOTÃO 1: RESETAR JOGADOR
+async function admResetPlayer(){
+  const name=document.getElementById('admResetPlayerInput')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{score:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();
+    toast('🔴 Pontos de '+name+' zerados!','red');sfx('error');
+    document.getElementById('admResetPlayerInput').value='';
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+
+// ── BOTÃO 2: PAINEL DO JOGADOR
+async function admVerifyPlayer(){
+  const name=document.getElementById('admInfoPlayerInput')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('❌ "'+name+'" NÃO existe no ranking!','red');return;}
+    const d=snap.docs[0].data();
+    // show info overlay
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+    const sk=SKINS.find(s=>s.id===(d.skin||'sk_default'));
+    ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #88ccff;border-radius:22px;padding:1.4rem;max-width:360px;width:90%;box-shadow:0 0 40px #88ccff44;animation:gpPop .3s;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:.3rem;">${sk?.emoji||'👆'}</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#88ccff;letter-spacing:2px;margin-bottom:.6rem;">${d.nome||'?'}</div>
+      <div style="background:#110022;border-radius:10px;padding:.6rem;font-size:.55rem;color:#aaaacc;text-align:left;line-height:2;">
+        📊 Score: <b style="color:#ffdd00">${fmt(d.score||0)}</b><br>
+        👆 Cliques: <b style="color:#ff88cc">${d.totalCliques||0}</b><br>
+        ⭐ Prestígios: <b style="color:#ffaa00">${d.prestígios||0}</b><br>
+        🎨 Skin: <b style="color:#00ffdd">${sk?.name||'Padrão'}</b><br>
+        🔴 Banido: <b style="color:${d.banido?'#ff4444':'#44ff88'}">${d.banido?'SIM':'NÃO'}</b>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.6rem;">FECHAR</button>
+    </div>`;
+    ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+    document.body.appendChild(ov);
+    sfx('hover');
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+async function admListPlayers(){
+  try{
+    const snap=await db.collection('jogadores').orderBy('score','desc').limit(30).get();
+    if(snap.empty){toast('Nenhum jogador ainda!','red');return;}
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
+    let html2=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #44ff88;border-radius:22px;padding:1.2rem;max-width:440px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px #44ff8844;animation:gpPop .3s;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.95rem;color:#44ff88;letter-spacing:3px;text-align:center;margin-bottom:.6rem;">📋 TODOS OS JOGADORES (${snap.size})</div>`;
+    snap.forEach((doc,i)=>{
+      const d=doc.data();
+      const sk=SKINS.find(s=>s.id===(d.skin||'sk_default'));
+      html2+=`<div style="display:flex;align-items:center;gap:.5rem;background:#110022;border-radius:8px;padding:.4rem .6rem;margin-bottom:.3rem;">
+        <span style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#666;min-width:1.2rem;">#${i+1}</span>
+        <span>${sk?.emoji||'👆'}</span>
+        <span style="flex:1;font-family:'Boogaloo',cursive;font-size:.7rem;color:#ccaaff;">${d.nome||'?'}${d.banido?'<span style="color:#ff4444;font-size:.5rem;"> BANIDO</span>':''}</span>
+        <span style="font-family:'Boogaloo',cursive;font-size:.65rem;color:#ffdd00;">${fmt(d.score||0)}</span>
+      </div>`;
+    });
+    html2+=`<button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.38rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.5rem;">FECHAR</button></div>`;
+    ov.innerHTML=html2;
+    ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+    document.body.appendChild(ov);sfx('hover');
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+async function admRenamePlayer(){
+  const oldName=document.getElementById('admRenameOld')?.value.trim();
+  const newName=document.getElementById('admRenameNew')?.value.trim();
+  if(!oldName||!newName){toast('Preenche os dois campos!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',oldName).get();
+    if(snap.empty){toast('"'+oldName+'" não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{nome:newName}));
+    await batch.commit();
+    toast('✏️ '+oldName+' → '+newName,'green');sfx('milestone');
+    document.getElementById('admRenameOld').value='';
+    document.getElementById('admRenameNew').value='';
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+
+// ── BOTÃO 3: AÇÕES ESPECIAIS
+async function admGiveConquest(){
+  const name=document.getElementById('admSpecialPlayerInput')?.value.trim();
+  score+=99999;totalEarned+=99999;
+  if(!dMS.has('ms_jojo')){dMS.add('ms_jojo');MS.find(m=>m.id==='ms_jojo')?.bonus();rMS();}
+  updateUI();sfx('prestige');
+  toast('🏆 Conquista secreta desbloqueada'+(name?' para '+name:'')+'!','rainbow');
+}
+async function admChaosAll(){
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'💀 O ADM ATIVOU O CAOS PRA TODOS!! ☠️',tipo:'chaos',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+  if(!chaosActive)toggleChaos();
+  toast('💀 CAOS ATIVADO PRA TODOS!','red');sfx('chaos');
+}
+async function admRedAlert(){
+  const msg='🚨 ALERTA DO ADM 🚨';
+  // show locally
+  const alertDiv=document.createElement('div');
+  alertDiv.style.cssText='position:fixed;inset:0;z-index:1200;background:#ff000088;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);animation:gpPop .3s;';
+  alertDiv.innerHTML=`<div onclick="event.stopPropagation()" style="background:#1a0000;border:5px solid #ff0000;border-radius:22px;padding:1.6rem;text-align:center;max-width:360px;width:90%;box-shadow:0 0 60px #ff000088;animation:turboShake .2s infinite;">
+    <div style="font-size:3rem;margin-bottom:.3rem;">🚨</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.3rem;color:#ff4444;letter-spacing:3px;">ALERTA DO ADM!</div>
+    <button onclick="this.parentElement.parentElement.remove()" style="font-family:'Boogaloo',cursive;font-size:.85rem;padding:.4rem 1.2rem;background:#ff0000;color:#fff;border:none;border-radius:10px;cursor:pointer;margin-top:.8rem;letter-spacing:2px;">OK</button>
+  </div>`;
+  document.body.appendChild(alertDiv);
+  try{
+    await db.collection('avisos').doc('global').set({msg,tipo:'alert',ts:firebase.firestore.FieldValue.serverTimestamp()});
+  }catch(e){}
+  sfx('error');
+}
+async function admGiveSkin(){
+  const name=document.getElementById('admSpecialPlayerInput')?.value.trim()||'todos';
+  // unlock all skins locally + notify
+  admUnlockSkins();
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'🎨 '+name+' recebeu todas as skins do ADM! 🎨',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+  toast('🎨 Skins enviadas para '+name+'!','rainbow');
+}
+async function admBlockUpgrades(){
+  const name=document.getElementById('admBlockPlayerInput')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{bloqueado:true}));
+    await batch.commit();
+    toast('🔒 Upgrades de '+name+' bloqueados!','red');sfx('error');
+    document.getElementById('admBlockPlayerInput').value='';
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+
+// ── GRUPO DE JOGADORES
+async function admGiftGroup(){
+  const names=(document.getElementById('admGroupInput')?.value||'').split(',').map(n=>n.trim()).filter(Boolean);
+  const pts=parseFloat(document.getElementById('admGroupPts')?.value)||0;
+  if(!names.length){toast('Coloca os nomes!','red');return;}
+  if(!pts){toast('Coloca os pontos!','red');return;}
+  let ok=0;
+  for(const name of names){
+    try{
+      const snap=await db.collection('jogadores').where('nome','==',name).get();
+      if(!snap.empty){
+        const batch=db.batch();
+        snap.forEach(doc=>batch.update(doc.ref,{score:(doc.data().score||0)+pts,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+        await batch.commit();ok++;
+      }
+    }catch(e){}
+  }
+  toast('🎁 Presente dado pra '+ok+'/'+names.length+' jogadores!','rainbow');sfx('prestige');
+}
+async function admDoubleAll(){admNotify('dobrou os pontos de TODOS! ✖️2');
+  try{
+    const snap=await db.collection('jogadores').get();
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{score:(doc.data().score||0)*2,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();
+    toast('✖️ Pontos de todos duplicados!','rainbow');sfx('prestige');
+  }catch(e){score*=2;totalEarned*=2;updateUI();toast('✖️ Seus pontos duplicados!','gold');}
+}
+
+// ── MENSAGEM PRIVADA
+async function admPrivateMsg(){
+  const name=document.getElementById('admPrivNameInput')?.value.trim();
+  const msg=document.getElementById('admPrivMsgInput')?.value.trim();
+  if(!name||!msg){toast('Preenche nome e mensagem!','red');return;}
+  try{
+    await db.collection('mensagens').add({
+      para:name,de:'ADM 👑',msg,
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('📩 Mensagem enviada para '+name+'!','green');sfx('milestone');
+    document.getElementById('admPrivNameInput').value='';
+    document.getElementById('admPrivMsgInput').value='';
+  }catch(e){toast('Enviado localmente: "'+msg+'"','green');}
+}
+
+// ── PAUSAR / BOOST
+let admPaused=false;
+async function admPauseAll(){
+  admPaused=true;
+  try{await db.collection('avisos').doc('global').set({msg:'⏸️ O ADM pausou o jogo!',tipo:'pause',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast('⏸️ Jogo pausado!','red');sfx('error');
+}
+async function admUnpauseAll(){
+  admPaused=false;
+  try{await db.collection('avisos').doc('global').set({msg:'▶️ O ADM despausou! Jogue!',tipo:'unpause',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast('▶️ Jogo despausado!','green');sfx('milestone');
+}
+async function admBoostAll(){
+  const mult=parseFloat(document.getElementById('admBoostValInput')?.value)||5;
+  const secs=parseInt(document.getElementById('admBoostTimeInput')?.value)||30;
+  atmp(mult,secs);
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'⚡ ADM deu BOOST ×'+mult+' por '+secs+'s pra TODOS!!',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+  toast('⚡ Boost ×'+mult+' por '+secs+'s ativado pra todos!','rainbow');sfx('prestige');
+}
+
+// ── RANKING & TORNEIO
+async function admViewBanned(){
+  try{
+    const snap=await db.collection('jogadores').where('banido','==',true).get();
+    if(snap.empty){toast('Nenhum jogador banido!','green');return;}
+    let list='';snap.forEach(doc=>list+='\n• '+doc.data().nome);
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+    ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #ff4444;border-radius:22px;padding:1.4rem;max-width:360px;width:90%;box-shadow:0 0 40px #ff444444;animation:gpPop .3s;text-align:center;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.95rem;color:#ff4444;margin-bottom:.6rem;">🔴 BANIDOS (${snap.size})</div>
+      <div style="font-size:.6rem;color:#aa6666;white-space:pre-line;text-align:left;background:#110022;border-radius:8px;padding:.6rem;margin-bottom:.7rem;">${list||'nenhum'}</div>
+      <button onclick="this.parentElement.parentElement.remove()" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.38rem 1rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
+    </div>`;
+    ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+    document.body.appendChild(ov);
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+async function admUnban(){const name=document.getElementById('admUnbanInput')?.value.trim();if(!name){toast('Coloca o nome!','red');return;}try{const snap=await db.collection('jogadores').where('nome','==',name).get();if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}const batch=db.batch();snap.forEach(doc=>batch.update(doc.ref,{banido:false,banExpire:null}));await batch.commit();toast('✅ '+name+' desbanido!','green');sfx('milestone');document.getElementById('admUnbanInput').value='';}catch(e){toast('Erro!','red');}}
+async function admUnbanPlayer(){admUnban();}
+async function admCreateTourney(){
+  const name=document.getElementById('admTourneyNameInput')?.value.trim()||'Torneio ADM';
+  const prize=parseFloat(document.getElementById('admTourneyPrizeInput')?.value)||100000;
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'🏆 TORNEIO: '+name+'! Prêmio: +'+fmt(prize)+' pts! Quem chegar primeiro ganha!!',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('🏆 Torneio "'+name+'" criado!','rainbow');sfx('prestige');
+    document.getElementById('admTourneyNameInput').value='';
+    document.getElementById('admTourneyPrizeInput').value='';
+  }catch(e){toast('Torneio criado localmente!','green');}
+}
+
+// ── COR DO RANKING & TÍTULO
+function admChangeRankColor(){
+  const color=document.getElementById('admRankColorInput')?.value.trim()||'#ffdd00';
+  document.querySelectorAll('.rank-row').forEach(r=>r.style.borderColor=color);
+  document.querySelectorAll('.rank-name').forEach(r=>r.style.color=color);
+  toast('🎨 Cor do ranking alterada!','rainbow');sfx('hover');
+}
+function admChangeTitle(){
+  const t=document.getElementById('admTitleInput')?.value.trim();
+  if(!t){toast('Coloca o título!','red');return;}
+  document.getElementById('mainTitle').textContent=t;
+  document.title=t;
+  toast('✏️ Título alterado para: '+t,'green');sfx('milestone');
+  document.getElementById('admTitleInput').value='';
+}
+
+// ── VIP & EVENTO
+async function admGiveVip(){
+  const name=document.getElementById('admVipInput')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{vip:true,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();
+    await db.collection('avisos').doc('global').set({
+      msg:'⭐ '+name+' agora é VIP!! 👑',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('⭐ '+name+' é VIP agora!','rainbow');sfx('prestige');
+    document.getElementById('admVipInput').value='';
+  }catch(e){toast('VIP dado localmente!','gold');}
+}
+async function admCreateEvent(){
+  const name=document.getElementById('admEventNameInput')?.value.trim()||'Evento ADM';
+  const prize=parseFloat(document.getElementById('admEventPrizeInput')?.value)||500000;
+  score+=prize;totalEarned+=prize;updateUI();
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'🎪 EVENTO: '+name+'! +'+fmt(prize)+' pts pra todos!!',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+  toast('🎪 Evento "'+name+'" criado! +'+fmt(prize)+' pts!','rainbow');sfx('prestige');
+  document.getElementById('admEventNameInput').value='';
+  document.getElementById('admEventPrizeInput').value='';
+}
+
+// ── CONTAGEM REGRESSIVA
+async function admCountdown(){
+  const secs=parseInt(document.getElementById('admCountdownInput')?.value)||10;
+  const msg=document.getElementById('admCountdownMsgInput')?.value.trim()||'TEMPO ESGOTADO!';
+  let t=secs;
+  const cdDiv=document.createElement('div');
+  cdDiv.id='admCdDiv';
+  cdDiv.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:1000;text-align:center;pointer-events:none;';
+  cdDiv.innerHTML=`<div id="admCdNum" style="font-family:'Boogaloo',cursive;font-size:6rem;color:#ffdd00;text-shadow:0 0 40px #ffdd00;animation:sPop .3s;">${t}</div>`;
+  document.body.appendChild(cdDiv);
+  sfx('milestone');
+  try{await db.collection('avisos').doc('global').set({msg:'⏳ Contagem: '+t+'...',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  const iv=setInterval(async()=>{
+    t--;
+    const el=document.getElementById('admCdNum');
+    if(el){el.textContent=t>0?t:'🎉';el.style.animation='none';void el.offsetWidth;el.style.animation='sPop .3s';}
+    if(t<=0){
+      clearInterval(iv);
+      setTimeout(()=>{
+        document.getElementById('admCdDiv')?.remove();
+        toast('⏳ '+msg,'rainbow');sfx('prestige');
+      },800);
+      try{await db.collection('avisos').doc('global').set({msg:'⏳ '+msg,ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+    } else sfx('hover');
+  },1000);
+  document.getElementById('admCountdownInput').value='';
+  document.getElementById('admCountdownMsgInput').value='';
+}
+
+// ── 🎰 SORTE & JOGOS
+function admJackpot(){admNotify('ativou o JACKPOT!! 🎰');
+  const v=Math.floor(Math.random()*1e9)+1000;
+  score+=v;totalEarned+=v;updateUI();
+  sfx('jackpot');toast('🎰 JACKPOT!! +'+fmt(v)+' pts!','rainbow');
+  admConfetti();
+}
+function admRoulette(){admNotify('girou a ROLETA!! 🎡');
+  const opts=[
+    {txt:'×10 mult!',fn:()=>{globalMult*=10;}},
+    {txt:'+1M pts!',fn:()=>{score+=1e6;totalEarned+=1e6;}},
+    {txt:'+100⭐!',fn:()=>{prestigeStars+=100;}},
+    {txt:'×5 click!',fn:()=>{clickPower*=5;}},
+    {txt:'+500K pts!',fn:()=>{score+=500000;totalEarned+=500000;}},
+    {txt:'TUDO ×3!',fn:()=>{clickPower*=3;autoPerSec*=3;globalMult*=3;}},
+  ];
+  const r=opts[Math.floor(Math.random()*opts.length)];
+  r.fn();updateUI();sfx('prestige');toast('🎡 ROLETA: '+r.txt,'rainbow');
+}
+function admRainMoney(){
+  for(let i=0;i<30;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText=`position:fixed;font-size:${1+Math.random()*2}rem;left:${Math.random()*95}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${1+Math.random()*2}s ease-in forwards;`;
+      el.textContent=['💰','💸','🤑','💵','💎'][Math.floor(Math.random()*5)];
+      document.body.appendChild(el);setTimeout(()=>el.remove(),3500);
+    },i*80);
+  }
+  score+=100000;totalEarned+=100000;updateUI();
+  sfx('jackpot');toast('💸 CHUVA DE DINHEIRO! +100K!','gold');
+}
+function admMystery(){
+  const prizes=[
+    ()=>{score*=2;toast('🎁 DOBROU TUDO!!','rainbow');},
+    ()=>{globalMult*=50;toast('🎁 MULT ×50!!','rainbow');},
+    ()=>{prestigeStars+=20;toast('🎁 +20⭐!!','gold');},
+    ()=>{clickPower*=100;toast('🎁 CLICK ×100!!','rainbow');},
+    ()=>{score+=1e10;totalEarned+=1e10;toast('🎁 +10 BILHÕES!!','rainbow');},
+    ()=>{autoPerSec*=50;toast('🎁 AUTO ×50!!','rainbow');},
+  ];
+  prizes[Math.floor(Math.random()*prizes.length)]();
+  updateUI();sfx('prestige');admConfetti();
+}
+
+// ── 🌍 EVENTOS GLOBAIS
+async function admHappyHour(){admNotify('iniciou o HAPPY HOUR!! ⏰');
+  atmp(10,3600);// ×10 por 1h
+  try{await db.collection('avisos').doc('global').set({msg:'⏰ HAPPY HOUR!! ×10 por 60 minutos!! 🎉',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast('⏰ HAPPY HOUR ATIVADO! ×10 por 1h!','rainbow');sfx('prestige');
+}
+function admBlackout(){
+  document.body.style.filter='brightness(0)';
+  setTimeout(()=>{document.body.style.filter='';toast('🌑 Apagão acabou!','green');},5000);
+  sfx('chaos');toast('🌑 APAGÃO GLOBAL! 5 segundos!','red');
+}
+function admParty(){
+  document.body.style.animation='btnChaosAnim 0.5s linear infinite';
+  admConfetti();
+  setTimeout(()=>{document.body.style.animation='';},10000);
+  sfx('prestige');toast('🥳 MODO FESTA por 10s!','rainbow');
+}
+function admMeteor(){
+  for(let i=0;i<20;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      const x=Math.random()*100;
+      el.style.cssText=`position:fixed;font-size:${1.5+Math.random()*2}rem;left:${x}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${0.8+Math.random()*1.2}s ease-in forwards;transform:rotate(${-30+Math.random()*60}deg);`;
+      el.textContent=['☄️','🌠','💥','⭐'][Math.floor(Math.random()*4)];
+      document.body.appendChild(el);
+      setTimeout(()=>{el.remove();score+=Math.floor(clickPower*10);updateUI();},2000);
+    },i*150);
+  }
+  sfx('chaos');toast('☄️ CHUVA DE METEOROS! Cada um dá pontos!','rainbow');
+}
+
+// ── 🤖 AUTO ADM
+function admAutoPrestige(){
+  if(totalEarned>=PREQ()){doPrestige();toast('⭐ Prestígio automático!','gold');}
+  else{prestigeStars+=5;updateUI();toast('⭐ +5 estrelas (sem pts p/ prestigiar)','gold');}
+  sfx('milestone');
+}
+function admMaxClick(){clickPower=1e9;updateUI();toast('👆 CLICK POWER MÁXIMO! 1B/clique!','rainbow');sfx('prestige');}
+function admMaxAuto(){autoPerSec=1e9;updateUI();toast('🤖 AUTO MÁXIMO! 1B/seg!','rainbow');sfx('prestige');}
+function admGodMode(){admNotify('ativou o GOD MODE!! 👁️');
+  clickPower=1e12;autoPerSec=1e12;globalMult=1e6;prestigeStars+=999;
+  SKINS.forEach(s=>ownedSkins.add(s.id));
+  ALL.forEach(u=>{if(!owned.has(u.id)&&['PERM','AUTO'].includes(u.tag)){owned.add(u.id);try{u.eff();}catch(e){}}});
+  updateUI();rAll();renderSkins();checkMS();
+  sfx('prestige');admConfetti();
+  toast('👁️ GOD MODE ATIVADO!! TUDO MÁXIMO!!','rainbow');
+}
+
+// ── 🎨 VISUAL ESPECIAL
+function admRainbow(){
+  let h=0;
+  const iv=setInterval(()=>{
+    h=(h+5)%360;
+    document.documentElement.style.setProperty('--accent',`hsl(${h},100%,60%)`);
+    document.documentElement.style.setProperty('--accent2',`hsl(${(h+60)%360},100%,60%)`);
+    document.documentElement.style.setProperty('--yellow',`hsl(${(h+120)%360},100%,60%)`);
+  },50);
+  setTimeout(()=>{
+    clearInterval(iv);
+    document.documentElement.style.setProperty('--accent','#cc00ff');
+    document.documentElement.style.setProperty('--accent2','#ff00cc');
+    document.documentElement.style.setProperty('--yellow','#ffdd00');
+  },10000);
+  toast('🌈 MODO ARCO-ÍRIS por 10s!','rainbow');sfx('milestone');
+}
+function admMatrix(){
+  document.documentElement.style.setProperty('--bg','#001100');
+  document.documentElement.style.setProperty('--accent','#00ff44');
+  document.documentElement.style.setProperty('--text','#00ff44');
+  document.documentElement.style.setProperty('--card','#001a00');
+  setTimeout(()=>{
+    document.documentElement.style.setProperty('--bg','#04000e');
+    document.documentElement.style.setProperty('--accent','#cc00ff');
+    document.documentElement.style.setProperty('--text','#f0d0ff');
+    document.documentElement.style.setProperty('--card','#0a0018');
+  },15000);
+  toast('💻 MODO MATRIX por 15s!','green');sfx('chaos');
+}
+function admFireworks(){
+  let count=0;
+  const iv=setInterval(()=>{
+    for(let i=0;i<5;i++){
+      const el=document.createElement('div');
+      el.style.cssText=`position:fixed;font-size:${2+Math.random()*2}rem;left:${Math.random()*90}%;top:${Math.random()*70}%;z-index:999;pointer-events:none;animation:gpPop .5s ease-out forwards;`;
+      el.textContent=['🎆','🎇','✨','💥','🌟'][Math.floor(Math.random()*5)];
+      document.body.appendChild(el);setTimeout(()=>el.remove(),600);
+    }
+    count++;if(count>=8)clearInterval(iv);
+  },500);
+  sfx('prestige');toast('🎆 FOGOS DE ARTIFÍCIO!!','rainbow');
+}
+function admNight(){
+  document.documentElement.style.setProperty('--bg','#000005');
+  document.documentElement.style.setProperty('--card','#000010');
+  document.documentElement.style.setProperty('--accent','#4466ff');
+  document.documentElement.style.setProperty('--text','#aabbff');
+  toast('🌙 MODO NOTURNO ativado!','green');sfx('hover');
+}
+
+// ── 📣 ANÚNCIOS ESPECIAIS
+async function admAnnounce(type){
+  let msg='';
+  if(type==='top'){
+    try{
+      const snap=await db.collection('jogadores').orderBy('score','desc').limit(3).get();
+      const names=[];snap.forEach(doc=>names.push(doc.data().nome||'?'));
+      msg='🏆 TOP 3: 🥇'+( names[0]||'?')+' | 🥈'+(names[1]||'?')+' | 🥉'+(names[2]||'?');
+    }catch(e){msg='🏆 TOP 3 não disponível!';}
+  }else if(type==='welcome'){msg='👋 Bem-vindos ao Clicker Master! Feito por Jojo (9 anos)! ⚡';}
+  else if(type==='shutdown'){msg='🔴 MANUTENÇÃO em breve! Salve seu progresso!';}
+  else if(type==='back'){msg='🟢 Voltou ao normal! Jogue à vontade! 🎮';}
+  try{await db.collection('avisos').doc('global').set({msg,ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast(msg.substring(0,60),'green');sfx('milestone');
+}
+
+// ── ⚔️ BATALHA
+function admBoss(){
+  const boss={hp:1000,name:'BOSS ADM 👹'};
+  score=Math.max(0,score-50000);updateUI();
+  toast('👹 BOSS APARECEU! -50K pts mas se matar ganha 1M!','red');sfx('chaos');
+  setTimeout(()=>{score+=1000000;totalEarned+=1000000;updateUI();sfx('prestige');toast('💥 BOSS DERROTADO! +1M pts!','rainbow');admConfetti();},5000);
+}
+async function admWar(){
+  try{await db.collection('avisos').doc('global').set({msg:'⚔️ GUERRA GLOBAL!! Quem clicar mais em 5 min ganha prêmio do ADM!!',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast('⚔️ GUERRA GLOBAL anunciada!','red');sfx('chaos');
+}
+async function admChallenge(){
+  const challenges=['Faça 100 cliques em 30s!','Chegue a 1 milhão de pts!','Compre 10 upgrades!','Ative o Modo Caos!'];
+  const c=challenges[Math.floor(Math.random()*challenges.length)];
+  try{await db.collection('avisos').doc('global').set({msg:'🎯 DESAFIO: '+c+' Recompensa: +500K pts!',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast('🎯 Desafio: '+c,'green');sfx('milestone');
+}
+async function admSurrender(){
+  try{await db.collection('avisos').doc('global').set({msg:'🏳️ O ADM se rendeu! Todos ganham +200K pts de presente!',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  score+=200000;totalEarned+=200000;updateUI();
+  toast('🏳️ RENDIÇÃO! +200K pts!','gold');sfx('jackpot');
+}
+function admDoubleXP(){atmp(2,120);toast('⚡ DOUBLE XP por 2 minutos!','rainbow');sfx('prestige');}
+function admNuke(){admNotify('usou o NUKE!! ☢️');
+  score+=1e12;totalEarned+=1e12;
+  for(let i=0;i<15;i++){setTimeout(()=>{const el=document.createElement('div');el.style.cssText=`position:fixed;font-size:${2+Math.random()*3}rem;left:${Math.random()*90}%;top:${Math.random()*80}%;z-index:999;pointer-events:none;animation:gpPop .6s ease-out forwards;`;el.textContent='☢️';document.body.appendChild(el);setTimeout(()=>el.remove(),700);},i*100);}
+  updateUI();sfx('prestige');toast('☢️ NUKE! +1 TRILHÃO!','rainbow');
+}
+
+// ── 🌟 PRESTÍGIO ESPECIAL
+function admPrestigeX10(){for(let i=0;i<10;i++)prestigeStars+=i+1;updateUI();toast('🔱 +55 estrelas (10 prestígios simulados)!','rainbow');sfx('prestige');}
+function admUnlockPres(){PU.forEach(u=>{if(!owned.has(u.id)&&prestigeStars>=u.cost){owned.add(u.id);u.eff();}});updateUI();rAll();toast('👑 Upgrades de prestígio desbloqueados!','gold');sfx('milestone');}
+
+// ── 🐾 PETS
+let admPetDiv=null;
+function admPet(emoji){
+  if(admPetDiv)admPetDiv.remove();
+  admPetDiv=document.createElement('div');
+  admPetDiv.style.cssText='position:fixed;bottom:20px;left:20px;z-index:400;font-size:3.5rem;cursor:pointer;animation:gpBounce 1.5s ease-in-out infinite;filter:drop-shadow(0 0 8px #cc00ff88);';
+  admPetDiv.textContent=emoji;
+  admPetDiv.title='Pet do ADM! Clique pra pts bônus!';
+  admPetDiv.onclick=()=>{const b=Math.floor(clickPower*gm()*10);score+=b;totalEarned+=b;updateUI();sfx('buy');toast(emoji+' +'+fmt(b)+' pts!','gold');};
+  document.body.appendChild(admPetDiv);
+  toast(emoji+' Pet invocado! Clique nele!','rainbow');sfx('milestone');
+}
+function admPetRemove(){if(admPetDiv){admPetDiv.remove();admPetDiv=null;}toast('❌ Pet removido!','red');}
+
+// ── 💣 SABOTAGEM
+async function admHalfAll(){
+  score=Math.max(0,Math.floor(score/2));updateUI();
+  try{await db.collection('avisos').doc('global').set({msg:'÷2 O ADM dividiu os pontos de todos! 😈',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast('÷2 PONTOS DIVIDIDOS!','red');sfx('error');
+}
+function admFreeze(){
+  const orig=autoPerSec;autoPerSec=0;updateUI();
+  toast('🧊 Auto clique congelado por 10s!','red');sfx('error');
+  setTimeout(()=>{autoPerSec=orig;updateUI();toast('🧊 Descongelado!','green');},10000);
+}
+function admSlowmo(){
+  document.body.style.transition='all 2s';
+  document.body.style.filter='blur(1px) brightness(0.8)';
+  setTimeout(()=>{document.body.style.filter='';document.body.style.transition='';toast('🐢 Modo lento acabou!','green');},8000);
+  toast('🐢 MODO LENTO por 8s!','red');sfx('error');
+}
+function admCurse(){
+  globalMult=Math.max(1,Math.floor(globalMult/2));
+  clickPower=Math.max(1,Math.floor(clickPower/2));
+  updateUI();
+  toast('🧿 MALDIÇÃO! Mult e Click ÷2!','red');sfx('chaos');
+  setTimeout(()=>{globalMult*=4;clickPower*=4;updateUI();toast('🧿 Maldição removida! ×4 de volta!','rainbow');},15000);
+}
+
+// ── 📈 ESTATÍSTICAS
+function admStats(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+  const sessMin=Math.floor((Date.now()-admStartTime)/60000);
+  ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #44ffaa;border-radius:22px;padding:1.4rem;max-width:360px;width:90%;box-shadow:0 0 40px #44ffaa44;animation:gpPop .3s;text-align:center;">
+    <div style="font-family:'Boogaloo',cursive;font-size:.95rem;color:#44ffaa;letter-spacing:3px;margin-bottom:.7rem;">📊 MEUS STATS</div>
+    <div style="background:#110022;border-radius:10px;padding:.7rem;font-size:.55rem;color:#aaaacc;text-align:left;line-height:2.2;">
+      💰 Score atual: <b style="color:#ffdd00">${fmt(score)}</b><br>
+      👆 Total de cliques: <b style="color:#ff88cc">${totalClicks.toLocaleString()}</b><br>
+      🤖 Auto/seg: <b style="color:#44aaff">${fmt(Math.floor(autoPerSec*gm()))}</b><br>
+      ✖️ Mult global: <b style="color:#00ff88">×${fmt(globalMult)}</b><br>
+      ⭐ Estrelas: <b style="color:#ffaa00">${prestigeStars}</b><br>
+      🔄 Prestígios: <b style="color:#cc00ff">${prestigeCount}</b><br>
+      📦 Upgrades: <b style="color:#ff88ff">${owned.size}</b><br>
+      🎨 Skins: <b style="color:#00ffdd">${ownedSkins.size}/${SKINS.length}</b><br>
+      ⏱️ Sessão: <b style="color:#88ffff">${sessMin} minutos</b>
+    </div>
+    <button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.38rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.6rem;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);sfx('hover');
+}
+const admStartTime=Date.now();
+async function admRankStats(){
+  try{
+    const snap=await db.collection('jogadores').get();
+    let total=0,maxScore=0,maxName='?';
+    snap.forEach(doc=>{total++;const s=doc.data().score||0;if(s>maxScore){maxScore=s;maxName=doc.data().nome||'?';}});
+    toast('📊 '+total+' jogadores | Líder: '+maxName+' ('+fmt(maxScore)+')','green');sfx('hover');
+  }catch(e){toast('Sem acesso ao ranking!','red');}
+}
+function admSession(){
+  const ms=Date.now()-admStartTime;
+  const min=Math.floor(ms/60000),sec=Math.floor((ms%60000)/1000);
+  toast('⏱️ Sessão: '+min+'min '+sec+'s','green');sfx('hover');
+}
+function admExport(){
+  const data={score,totalClicks,clickPower,autoPerSec,globalMult,prestigeCount,prestigeStars,owned:[...owned],skins:[...ownedSkins],activeSkin};
+  const json=JSON.stringify(data,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='clicker-adm-export.json';a.click();
+  toast('📤 Dados exportados!','green');sfx('milestone');
+}
+
+// ── 🎪 EVENTOS TEMÁTICOS
+function admEventXmas(){
+  document.documentElement.style.setProperty('--bg','#001100');
+  document.documentElement.style.setProperty('--accent','#ff0000');
+  document.documentElement.style.setProperty('--accent2','#00ff44');
+  for(let i=0;i<20;i++){setTimeout(()=>{const el=document.createElement('div');el.style.cssText=`position:fixed;font-size:1.5rem;left:${Math.random()*95}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${2+Math.random()*3}s linear forwards;`;el.textContent=['❄️','🎄','🎁','⛄','🦌'][Math.floor(Math.random()*5)];document.body.appendChild(el);setTimeout(()=>el.remove(),5000);},i*200);}
+  score+=50000;totalEarned+=50000;updateUI();
+  toast('🎄 NATAL! +50K pts! HO HO HO!','green');sfx('prestige');
+}
+function admEventHalloween(){
+  document.documentElement.style.setProperty('--bg','#0a0500');
+  document.documentElement.style.setProperty('--accent','#ff8800');
+  document.documentElement.style.setProperty('--accent2','#aa00ff');
+  for(let i=0;i<15;i++){setTimeout(()=>{const el=document.createElement('div');el.style.cssText=`position:fixed;font-size:1.5rem;left:${Math.random()*95}%;top:${Math.random()*80}%;z-index:999;pointer-events:none;animation:gpPop .5s ease-out forwards;`;el.textContent=['🎃','👻','🕷️','🦇','💀'][Math.floor(Math.random()*5)];document.body.appendChild(el);setTimeout(()=>el.remove(),2000);},i*150);}
+  toast('🎃 HALLOWEEN! BOO!','red');sfx('chaos');
+}
+function admEventBday(){
+  admConfetti();
+  for(let i=0;i<10;i++){setTimeout(()=>{const el=document.createElement('div');el.style.cssText=`position:fixed;font-size:2rem;left:${Math.random()*90}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${1.5+Math.random()*2}s ease-in forwards;`;el.textContent=['🎂','🎈','🎉','🎊','🥳'][Math.floor(Math.random()*5)];document.body.appendChild(el);setTimeout(()=>el.remove(),4000);},i*100);}
+  score+=77777;totalEarned+=77777;updateUI();
+  toast('🎂 FELIZ ANIVERSÁRIO! +77.777 pts!','rainbow');sfx('prestige');
+}
+async function admEventBrazil(){
+  document.documentElement.style.setProperty('--accent','#00aa44');
+  document.documentElement.style.setProperty('--accent2','#ffdd00');
+  document.documentElement.style.setProperty('--bg','#001a00');
+  try{await db.collection('avisos').doc('global').set({msg:'🇧🇷 BRASIL!! EVENTO ESPECIAL! +100K pts pra todos! 🟢🟡',ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  score+=100000;totalEarned+=100000;updateUI();
+  toast('🇧🇷 BRASIL!! +100K pts!','green');sfx('prestige');
+}
+function admEventSpace(){
+  document.documentElement.style.setProperty('--bg','#000011');
+  document.documentElement.style.setProperty('--accent','#4488ff');
+  document.documentElement.style.setProperty('--card','#000022');
+  for(let i=0;i<20;i++){setTimeout(()=>{const el=document.createElement('div');el.style.cssText=`position:fixed;font-size:1.2rem;left:${Math.random()*95}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${1+Math.random()*3}s linear forwards;`;el.textContent=['🚀','⭐','🌙','🪐','✨','🌠'][Math.floor(Math.random()*6)];document.body.appendChild(el);setTimeout(()=>el.remove(),4000);},i*150);}
+  toast('🚀 EVENTO ESPACIAL! Ad astra!','rainbow');sfx('prestige');
+}
+function admEventReset(){
+  document.documentElement.style.setProperty('--bg','#04000e');
+  document.documentElement.style.setProperty('--card','#0a0018');
+  document.documentElement.style.setProperty('--accent','#cc00ff');
+  document.documentElement.style.setProperty('--accent2','#ff00cc');
+  document.documentElement.style.setProperty('--yellow','#ffdd00');
+  document.documentElement.style.setProperty('--text','#f0d0ff');
+  document.body.style.filter='';document.body.style.animation='';
+  toast('🔄 Visual resetado!','green');sfx('hover');
+}
+
+// ── 🔧 CONFIG ADM
+async function admSaveAll(){
+  if(playerName)await saveScore();
+  else{score+=1000;updateUI();toast('💾 Salvo! (+1K pts bônus)','green');}
+  sfx('buy');
+}
+async function admPing(){
+  try{
+    const t=Date.now();
+    await db.collection('avisos').doc('ping').set({ts:firebase.firestore.FieldValue.serverTimestamp()});
+    const ping=Date.now()-t;
+    toast('📡 Firebase OK! Ping: '+ping+'ms','green');sfx('hover');
+  }catch(e){toast('📡 Sem conexão com Firebase!','red');}
+}
+function admClearCache(){
+  localStorage.removeItem('cmPlayerName');localStorage.removeItem('cmPlayerId');
+  toast('🗑️ Cache limpo! Recarregue a página.','red');sfx('error');
+}
+function admVersion(){toast('ℹ️ Clicker Master v4 | Firebase compat | 3400+ linhas | Feito por Jojo 9 anos 👑','green');sfx('hover');}
+
+// Adiciona megapres ao admGive
+const _origAdmGive=admGive;
+admGive=function(pts,type){
+  if(type==='megapres'){prestigeStars+=999;updateUI();toast('🌟 +999 ESTRELAS!!','rainbow');sfx('prestige');return;}
+  _origAdmGive(pts,type);
+};
+
+// ── NOTIFICAÇÕES RÁPIDAS
+async function admQuickMsg(msg){
+  try{await db.collection('avisos').doc('global').set({msg,ts:firebase.firestore.FieldValue.serverTimestamp()});}catch(e){}
+  toast(msg.substring(0,60),'green');sfx('milestone');
+}
+
+// ── METAS
+let admGoal=0;
+function admSetGoal(v){
+  admGoal=v;
+  toast('🎯 Meta definida: '+fmt(v)+' pts!','green');sfx('hover');
+}
+function admRecord(){toast('📈 Recorde: '+fmt(totalEarned)+' pts ganhos no total!','gold');sfx('hover');}
+function admClearGoal(){admGoal=0;toast('❌ Meta removida!','red');}
+
+// ── PODERES MÁGICOS
+function admTimewarp(){
+  const bonus=Math.floor(autoPerSec*gm()*300);
+  score+=bonus;totalEarned+=bonus;updateUI();
+  toast('⏰ TELETRANSPORTE! +'+fmt(bonus)+' pts (5min de auto)!','rainbow');sfx('prestige');
+}
+function admClone(){score*=2;totalEarned*=2;updateUI();toast('👥 PONTOS CLONADOS! ×2!','rainbow');sfx('jackpot');}
+function admPortal(){
+  const el=document.createElement('div');
+  el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:999;font-size:8rem;pointer-events:none;animation:gpBounce 0.5s ease-in-out infinite;';
+  el.textContent='🌀';document.body.appendChild(el);
+  score+=500000;totalEarned+=500000;updateUI();
+  sfx('prestige');toast('🌀 PORTAL ABERTO! +500K pts!','rainbow');
+  setTimeout(()=>el.remove(),3000);
+}
+function admLevitate(){
+  document.body.style.transform='translateY(-10px)';
+  document.body.style.transition='transform 1s ease-in-out';
+  setTimeout(()=>{document.body.style.transform='translateY(0)';setTimeout(()=>document.body.style.transform='',1000);},1000);
+  toast('✨ LEVITANDO!','rainbow');sfx('hover');
+}
+function admInvisible(){
+  document.body.style.opacity='0';document.body.style.transition='opacity 1s';
+  setTimeout(()=>{document.body.style.opacity='1';},3000);
+  toast('👁️ Invisível por 3s!','red');
+}
+function admReveal(){
+  document.body.style.opacity='1';document.body.style.transition='opacity 0.5s';
+  toast('✨ REVELADO!','rainbow');sfx('hover');
+}
+
+// ── ONDAS
+function admWave(emoji){
+  for(let i=0;i<40;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText=`position:fixed;font-size:${1+Math.random()*1.5}rem;left:${(i/40)*100}%;bottom:-5%;z-index:999;pointer-events:none;animation:crownFall ${2+Math.random()*2}s ease-out forwards;transform:scaleY(-1);`;
+      el.textContent=emoji;document.body.appendChild(el);setTimeout(()=>el.remove(),4000);
+    },i*50);
+  }
+  sfx('milestone');toast(emoji+' ONDA!','rainbow');
+}
+
+// ── CIRCO
+function admClown(){
+  document.documentElement.style.setProperty('--accent','#ff0000');
+  document.documentElement.style.setProperty('--accent2','#00ff00');
+  document.documentElement.style.setProperty('--yellow','#ff00ff');
+  admConfetti();
+  toast('🤡 PALHAÇO ADM ATIVADO!','rainbow');sfx('chaos');
+}
+function admFlip(){
+  document.body.style.transform='rotate(180deg)';
+  document.body.style.transition='transform 1s';
+  toast('🙃 DE CABEÇA PRA BAIXO por 5s!','red');sfx('chaos');
+  setTimeout(()=>{document.body.style.transform='rotate(0deg)';setTimeout(()=>{document.body.style.transform='';document.body.style.transition='';},1000);},5000);
+}
+function admZoom(){
+  document.body.style.transform='scale(1.3)';document.body.style.transition='transform 0.5s';
+  toast('🔍 ZOOM IN!','green');
+  setTimeout(()=>{document.body.style.transform='scale(1)';setTimeout(()=>document.body.style.transform='',500);},4000);
+}
+function admZoomOut(){
+  document.body.style.transform='scale(0.7)';document.body.style.transition='transform 0.5s';
+  toast('🔎 ZOOM OUT!','green');
+  setTimeout(()=>{document.body.style.transform='scale(1)';setTimeout(()=>document.body.style.transform='',500);},4000);
+}
+function admSpin(){
+  document.body.style.animation='btnChaosAnim 0.3s linear infinite';
+  document.body.style.transform='rotate(360deg)';
+  toast('🌀 GIRANDO por 3s!','rainbow');sfx('chaos');
+  setTimeout(()=>{document.body.style.animation='';document.body.style.transform='';},3000);
+}
+
 function admConfetti(){
   for(let i=0;i<25;i++){
     setTimeout(()=>{
@@ -1875,6 +3071,7 @@ async function admViewOnline(){  try{
 }
 
 // Listen for global ADM messages
+// ══ LISTENER GLOBAL UNIFICADO ══
 let lastMsgTs=null;
 try{
   db.collection('avisos').doc('global').onSnapshot(doc=>{
@@ -1882,19 +3079,38 @@ try{
     const d=doc.data();
     if(!d||!d.msg)return;
     const ts=d.ts?.toMillis?.()??0;
-    if(lastMsgTs===null){lastMsgTs=ts;return;} // skip on first load
-    if(ts>lastMsgTs){
-      lastMsgTs=ts;
-      // show big banner
-      const banner=document.createElement('div');
-      banner.style.cssText='position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:800;background:#001133;border:3px solid #44aaff;border-radius:14px;padding:.7rem 1.2rem;text-align:center;box-shadow:0 0 30px #44aaff55;animation:gpPop .3s cubic-bezier(.34,1.56,.64,1);max-width:90vw;';
-      banner.innerHTML=`<div style="font-family:'Boogaloo',cursive;font-size:.9rem;color:#44aaff;letter-spacing:2px;">${d.msg}</div>`;
-      document.body.appendChild(banner);
-      sfx('milestone');
-      setTimeout(()=>banner.remove(),5000);
+    // ignora msgs antigas no load inicial
+    if(lastMsgTs===null){lastMsgTs=ts;return;}
+    if(ts<=lastMsgTs)return;
+    lastMsgTs=ts;
+
+    // blackout
+    if(d.tipo==='blackout'&&d.msg==='__BLACKOUT__'){
+      if(!document.getElementById('admOv')&&!document.getElementById('abuseOv')){
+        document.body.style.filter='brightness(0)';
+        setTimeout(()=>{document.body.style.filter='';},8000);
+      }
+      return;
     }
+    // update screen
+    if(d.tipo==='update'&&d.msg==='__ATUALIZANDO__'){
+      _showUpdateScreen();return;
+    }
+    // mostra banner pra qualquer outra msg
+    const banner=document.createElement('div');
+    const isAdmAction=d.tipo==='adm_action';
+    banner.style.cssText=`position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:800;
+      background:${isAdmAction?'#0a0018':'#001133'};
+      border:3px solid ${isAdmAction?'#ffdd00':'#44aaff'};
+      border-radius:14px;padding:.7rem 1.4rem;text-align:center;
+      box-shadow:0 0 30px ${isAdmAction?'#ffdd0055':'#44aaff55'};
+      animation:gpPop .3s cubic-bezier(.34,1.56,.64,1);max-width:92vw;pointer-events:none;`;
+    banner.innerHTML=`<div style="font-family:'Boogaloo',cursive;font-size:.88rem;color:${isAdmAction?'#ffdd00':'#44aaff'};letter-spacing:2px;">${d.msg}</div>`;
+    document.body.appendChild(banner);
+    sfx(isAdmAction?'milestone':'hover');
+    setTimeout(()=>banner.remove(),4000);
   });
-}catch(e){}
+}catch(e){console.log('Firebase listener error:',e);}
 const colegioOv=document.createElement('div');
 colegioOv.style.cssText='display:none;position:fixed;inset:0;z-index:999;background:#000000ee;backdrop-filter:blur(8px);align-items:center;justify-content:center;';
 const PROFS=[
@@ -2328,7 +3544,7 @@ saveScore=async function(){
 
 // ══ MODO ... ══
 // ══ MODO PING PONG 🏓 ══
-function openPingPong(){
+function openPingPong(){admNotify('abriu o Modo Ping Pong! 🏓');
   if(document.getElementById('ppOv'))return;
   sfx('chaos');
   toast('🏓 MODO PING PONG ATIVADO!','green');
@@ -2435,7 +3651,7 @@ function closePingPong(perdeu){
 }
 
 // ══ MODO NEVE ❄️ ══
-function openNeve(){
+function openNeve(){admNotify('ativou o Modo Neve! ❄️');
   if(document.getElementById('neveOv'))return;
   sfx('chaos');
   toast('❄️ MODO NEVE — sobreviva!','red');
@@ -2556,7 +3772,7 @@ MS.push({id:'ms_pp',label:'🏓 <strong>PING PONG MASTER</strong>',goal:1,jojo:t
 // ══ MODO VEGETA 🌿 ══
 // Digita: vegeta
 // A Vegeta (planta) aparece na tela por 60 segundos falando frases
-function openModoVegeta(){
+function openModoVegeta(){admNotify('invocou a Vegeta! 🌿');
   if(document.getElementById('vegetaOv'))return;
   sfx('milestone');
   toast('🌿 A VEGETA APARECEU!!','green');
@@ -2634,7 +3850,7 @@ function openModoVegeta(){
 // ══ MODO INFINITO ♾️ ══
 // Digita: infinito
 // Todos os upgrades ficam disponíveis de graça por 20 segundos — compre TUDO!
-function openModoInfinito(){
+function openModoInfinito(){admNotify('ativou o Modo Infinito! ♾️');
   if(document.getElementById('infOv'))return;
   sfx('prestige');
 
@@ -2684,13 +3900,834 @@ function openModoInfinito(){
   },1000);
 }
 
-// ══ INIT ══
+// ══ ADMIN ABUSADO 😈 ══
+function openADMAbuse(){
+  if(document.getElementById('abuseOv'))return;
+  sfx('chaos');
+
+  const ov=document.createElement('div');
+  ov.id='abuseOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:1000;background:#000000f5;display:flex;align-items:flex-start;justify-content:center;backdrop-filter:blur(10px);overflow-y:auto;padding:1rem 0;';
+
+  ov.innerHTML=`
+  <div onclick="event.stopPropagation()" style="background:#0a0005;border:4px solid #ff0044;border-radius:24px;padding:1.4rem;max-width:460px;width:92%;box-shadow:0 0 100px #ff004466,0 0 200px #ff004422;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:2rem;margin-bottom:.2rem;">😈</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.4rem;color:#ff0044;letter-spacing:3px;margin-bottom:.1rem;text-shadow:0 0 20px #ff004488;">ADMIN ABUSADO</div>
+    <div style="font-size:.45rem;color:#660022;margin-bottom:1rem;letter-spacing:2px;">poder total. use com responsabilidade. 😈</div>
+
+    <!-- PONTOS INFINITOS -->
+    <div style="background:#0a0000;border:2px solid #ff0044;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff0044;margin-bottom:.5rem;">💀 PONTOS INFINITOS</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.3rem;">
+        <button onclick="abuseInfPts(1e20)" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:#ff0044;color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 10²⁰</button>
+        <button onclick="abuseInfPts(1e50)" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:#cc0033;color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 10⁵⁰</button>
+        <button onclick="abuseInfPts(1e300)" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:#880022;color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 10³⁰⁰</button>
+        <button onclick="abuseInfMult()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:#440011;color:#ff4444;border:1px solid #660022;border-radius:8px;cursor:pointer;">✖️ MULT ∞</button>
+        <button onclick="abuseInfClick()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:#440011;color:#ff4444;border:1px solid #660022;border-radius:8px;cursor:pointer;">👆 CLICK ∞</button>
+        <button onclick="abuseEverything()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#ff0044,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">😈 TUDO ∞</button>
+      </div>
+    </div>
+
+    <!-- CONTROLE DE JOGADORES -->
+    <div style="background:#0a0000;border:2px solid #ff4400;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff4400;margin-bottom:.5rem;">☠️ CONTROLE TOTAL DE JOGADORES</div>
+      <input id="abusePlayerName" type="text" placeholder="Nome do jogador..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #ff4400;border-radius:8px;padding:.4rem .7rem;color:#ff8844;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <input id="abusePtsValue" type="number" placeholder="Quantidade de pontos..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #ff4400;border-radius:8px;padding:.4rem .7rem;color:#ffdd00;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="abuseGivePts(true)" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#003300,#00ff44);color:#000;border:none;border-radius:8px;cursor:pointer;">💰 DAR PTS</button>
+        <button onclick="abuseGivePts(false)" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#330000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 TIRAR PTS</button>
+        <button onclick="abuseResetPlayer()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#220000,#880000);color:#ff4444;border:1px solid #550000;border-radius:8px;cursor:pointer;">🔄 RESETAR JOGADOR</button>
+        <button onclick="abuseDeletePlayer()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#110000,#440000);color:#ff2244;border:2px solid #330000;border-radius:8px;cursor:pointer;">🗑️ DELETAR CONTA</button>
+        <button onclick="abuseRenamePlayer()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">✏️ MUDAR NOME</button>
+        <button onclick="abuseBanForever()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#000000,#220000);color:#ff0000;border:2px solid #440000;border-radius:8px;cursor:pointer;">⛔ BANIR FOREVER</button>
+      </div>
+      <input id="abuseNewName" type="text" placeholder="Novo nome (para mudar nome)..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #884400;border-radius:8px;padding:.4rem .7rem;color:#ffaa44;font-size:.78rem;outline:none;margin-top:.4rem;"/>
+    </div>
+
+    <!-- VER JOGADOR EM TEMPO REAL -->
+    <div style="background:#0a0000;border:2px solid #ff8800;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff8800;margin-bottom:.5rem;">👁️ ESPIONAR JOGADOR</div>
+      <input id="abuseSpyName" type="text" placeholder="Nome pra espionar..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #ff8800;border-radius:8px;padding:.4rem .7rem;color:#ffaa44;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <button onclick="abuseSpy()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#442200,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">👁️ VER DADOS EM TEMPO REAL</button>
+    </div>
+
+    <!-- CRIAR CÓDIGO SECRETO -->
+    <div style="background:#0a0000;border:2px solid #aa00ff;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#aa00ff;margin-bottom:.5rem;">🔑 CRIAR CÓDIGO SECRETO</div>
+      <input id="abuseNewCode" type="text" placeholder="Novo código (ex: banana123)..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #aa00ff;border-radius:8px;padding:.4rem .7rem;color:#cc88ff;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <select id="abuseCodeAction" onclick="event.stopPropagation()" style="width:100%;background:#000;border:2px solid #aa00ff;border-radius:8px;padding:.4rem .7rem;color:#cc88ff;font-size:.75rem;outline:none;margin-bottom:.4rem;">
+        <option value="pts1m">Dar 1M de pontos</option>
+        <option value="pts1b">Dar 1B de pontos</option>
+        <option value="mult">Mult ×1000</option>
+        <option value="godmode">God Mode</option>
+        <option value="allskins">Todas as skins</option>
+        <option value="stars50">+50 estrelas</option>
+        <option value="confetti">Chuva de confete</option>
+      </select>
+      <button onclick="abuseCreateCode()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#220044,#aa00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">🔑 CRIAR CÓDIGO</button>
+      <div id="abuseCodeList" style="margin-top:.5rem;font-size:.48rem;color:#664477;max-height:80px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- VER ONLINE -->
+    <div style="background:#0a0000;border:2px solid #00ff88;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#00ff88;margin-bottom:.5rem;">🟢 JOGADORES ONLINE AGORA</div>
+      <button onclick="abuseViewOnline()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;margin-bottom:.4rem;">🟢 VER QUEM TÁ ONLINE</button>
+      <div id="abuseOnlineList" style="font-size:.5rem;color:#446655;max-height:100px;overflow-y:auto;"></div>
+    </div>
+
+    <!-- ROUBAR / CLONAR -->
+    <div style="background:#0a0000;border:2px solid #ffaa00;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ffaa00;margin-bottom:.5rem;">😈 ROUBAR & CLONAR</div>
+      <input id="abuseStealName" type="text" placeholder="Nome do jogador alvo..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #ffaa00;border-radius:8px;padding:.4rem .7rem;color:#ffdd00;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="abuseSteal()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">💸 ROUBAR PTS</button>
+        <button onclick="abuseClone()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">👥 CLONAR STATS</button>
+      </div>
+    </div>
+
+    <!-- RANK ESPECIAL / FAKE PLAYER -->
+    <div style="background:#0a0000;border:2px solid #ffdd00;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ffdd00;margin-bottom:.5rem;">👑 RANK & JOGADOR FALSO</div>
+      <input id="abuseRankName" type="text" placeholder="Nome do jogador..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #ffdd00;border-radius:8px;padding:.4rem .7rem;color:#ffdd00;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <select id="abuseRankTitle" onclick="event.stopPropagation()" style="width:100%;background:#000;border:2px solid #ffdd00;border-radius:8px;padding:.4rem .7rem;color:#ffdd00;font-size:.75rem;outline:none;margin-bottom:.4rem;">
+        <option value="👑 LENDA">👑 LENDA</option>
+        <option value="😈 ABUSADO">😈 ABUSADO</option>
+        <option value="⭐ VIP ADM">⭐ VIP ADM</option>
+        <option value="🔱 DEUS">🔱 DEUS</option>
+        <option value="🌟 ESTRELA">🌟 ESTRELA</option>
+        <option value="💎 DIAMANTE">💎 DIAMANTE</option>
+      </select>
+      <button onclick="abuseGiveRank()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">👑 DAR RANK ESPECIAL</button>
+      <input id="abuseFakeName" type="text" placeholder="Nome do jogador falso..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #884400;border-radius:8px;padding:.4rem .7rem;color:#ffaa44;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <input id="abuseFakePts" type="number" placeholder="Pontos do falso..." onclick="event.stopPropagation()"
+        style="width:100%;background:#000;border:2px solid #884400;border-radius:8px;padding:.4rem .7rem;color:#ffdd00;font-size:.78rem;outline:none;margin-bottom:.4rem;"/>
+      <button onclick="abuseCreateFake()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.4rem;background:linear-gradient(135deg,#331100,#ff6600);color:#fff;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">👻 CRIAR JOGADOR FALSO</button>
+    </div>
+
+    <!-- GOD MODE TODOS / EXPLOSÃO -->
+    <div style="background:#0a0000;border:2px solid #ff4400;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff4400;margin-bottom:.5rem;">💥 PODER MÁXIMO</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="abuseGodAll()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#444400,#ffff00);color:#000;border:none;border-radius:8px;cursor:pointer;">👁️ GOD MODE TODOS</button>
+        <button onclick="abuseExplode()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">💥 EXPLODIR TELA</button>
+        <button onclick="abuseExplodePlayer()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#330000,#cc0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">💣 EXPLODIR JOGADOR</button>
+        <button onclick="abuseFreezeAll()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#001133,#0066ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🧊 CONGELAR TODOS</button>
+      </div>
+    </div>
+    <div style="background:#0a0000;border:2px solid #cc44ff;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#cc44ff;margin-bottom:.5rem;">⚡ PONTOS RÁPIDOS</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem;">
+        <button onclick="score+=1e6;totalEarned+=1e6;updateUI();toast('+1M!','gold')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#221100;color:#ffdd00;border:1px solid #664400;border-radius:6px;cursor:pointer;">+1M</button>
+        <button onclick="score+=1e9;totalEarned+=1e9;updateUI();toast('+1B!','gold')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#221100;color:#ffaa00;border:1px solid #664400;border-radius:6px;cursor:pointer;">+1B</button>
+        <button onclick="score+=1e12;totalEarned+=1e12;updateUI();toast('+1T!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#331100;color:#ff8800;border:1px solid #664400;border-radius:6px;cursor:pointer;">+1T</button>
+        <button onclick="score+=1e15;totalEarned+=1e15;updateUI();toast('+1Qa!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#440000;color:#ff4400;border:1px solid #660000;border-radius:6px;cursor:pointer;">+1Qa</button>
+        <button onclick="score+=1e20;totalEarned+=1e20;updateUI();toast('+1e20!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#550000;color:#ff2200;border:1px solid #770000;border-radius:6px;cursor:pointer;">+1e20</button>
+        <button onclick="score+=1e50;totalEarned+=1e50;updateUI();toast('+1e50!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#660000;color:#ff0000;border:1px solid #880000;border-radius:6px;cursor:pointer;">+1e50</button>
+        <button onclick="clickPower*=2;updateUI();toast('Click×2!','gold')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#220033;color:#cc00ff;border:1px solid #440066;border-radius:6px;cursor:pointer;">Click×2</button>
+        <button onclick="clickPower*=100;updateUI();toast('Click×100!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#440055;color:#ff00ff;border:1px solid #660099;border-radius:6px;cursor:pointer;">Click×100</button>
+        <button onclick="autoPerSec*=10;updateUI();toast('Auto×10!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#001144;color:#00aaff;border:1px solid #003388;border-radius:6px;cursor:pointer;">Auto×10</button>
+        <button onclick="globalMult*=10;updateUI();toast('Mult×10!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#004400;color:#00ff66;border:1px solid #008800;border-radius:6px;cursor:pointer;">Mult×10</button>
+        <button onclick="globalMult*=1000;updateUI();toast('Mult×1K!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#005500;color:#00ff88;border:1px solid #00aa00;border-radius:6px;cursor:pointer;">Mult×1K</button>
+        <button onclick="prestigeStars+=999;updateUI();toast('+999⭐!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#554400;color:#ffee00;border:1px solid #887700;border-radius:6px;cursor:pointer;">+999⭐</button>
+      </div>
+    </div>
+
+    <div style="background:#0a0000;border:2px solid #ff6600;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff6600;margin-bottom:.5rem;">🎮 JOGO RÁPIDO</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem;">
+        <button onclick="atmp(100,60);toast('×100/1min!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#332200;color:#ffaa00;border:1px solid #664400;border-radius:6px;cursor:pointer;">×100/1min</button>
+        <button onclick="atmp(1000,30);toast('×1K/30s!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#443300;color:#ffcc00;border:1px solid #886600;border-radius:6px;cursor:pointer;">×1K/30s</button>
+        <button onclick="atmp(1000000,10);toast('×1M/10s!!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#554400;color:#ffee00;border:1px solid #998800;border-radius:6px;cursor:pointer;">×1M/10s</button>
+        <button onclick="stGhost();stClone();stArmy();toast('Autos!','gold')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#001133;color:#4488ff;border:1px solid #002266;border-radius:6px;cursor:pointer;">👻👥⚔️</button>
+        <button onclick="comboCount=50;updCombo();toast('Combo50!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#330011;color:#ff4466;border:1px solid #660022;border-radius:6px;cursor:pointer;">🔥Combo50</button>
+        <button onclick="rainbowBonus=9999;toast('Boost∞!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#330033;color:#ff44ff;border:1px solid #660066;border-radius:6px;cursor:pointer;">🌈Boost∞</button>
+        <button onclick="MS.forEach(m=>{if(!dMS.has(m.id)){dMS.add(m.id);m.bonus();}});rMS();updateUI();toast('Conquistas!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#220033;color:#aa44ff;border:1px solid #440066;border-radius:6px;cursor:pointer;">🏆Tudo</button>
+        <button onclick="SKINS.forEach(s=>ownedSkins.add(s.id));renderSkins();toast('Skins!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#003344;color:#00ffdd;border:1px solid #006688;border-radius:6px;cursor:pointer;">🎨Skins</button>
+        <button onclick="score=Math.max(0,score-1e9);updateUI();toast('-1B!','red')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#330000;color:#ff4444;border:1px solid #550000;border-radius:6px;cursor:pointer;">-1B pts</button>
+        <button onclick="score*=2;totalEarned*=2;updateUI();toast('Score×2!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#443300;color:#ffdd00;border:1px solid #776600;border-radius:6px;cursor:pointer;">Score×2</button>
+        <button onclick="score*=10;totalEarned*=10;updateUI();toast('Score×10!','rainbow')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#553300;color:#ffcc00;border:1px solid #887700;border-radius:6px;cursor:pointer;">Score×10</button>
+        <button onclick="doPrestige();toast('Prestígio!','gold')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#330022;color:#ff00cc;border:1px solid #660044;border-radius:6px;cursor:pointer;">⭐Prestige</button>
+      </div>
+    </div>
+
+    <div style="background:#0a0000;border:2px solid #00ffdd;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#00ffdd;margin-bottom:.5rem;">🌍 GLOBAL RÁPIDO</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.25rem;">
+        <button onclick="saveScore();toast('Salvo!','green')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#003322;color:#00ffaa;border:1px solid #006644;border-radius:6px;cursor:pointer;">💾 Salvar</button>
+        <button onclick="admHappyHour()" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#003322;color:#00ff88;border:1px solid #006644;border-radius:6px;cursor:pointer;">⏰ HappyH</button>
+        <button onclick="admConfettiAll()" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#330033;color:#ff44ff;border:1px solid #550055;border-radius:6px;cursor:pointer;">🎉 Confete</button>
+        <button onclick="admDoubleAll()" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#003300;color:#00ff44;border:1px solid #005500;border-radius:6px;cursor:pointer;">×2 Todos</button>
+        <button onclick="admQuickMsg('🔥 Evento especial agora!')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#442200;color:#ff8800;border:1px solid #664400;border-radius:6px;cursor:pointer;">📢 Evento</button>
+        <button onclick="admQuickMsg('👑 Jojo diz oi!')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#443300;color:#ffdd00;border:1px solid #665500;border-radius:6px;cursor:pointer;">👑 Jojo oi</button>
+        <button onclick="abuseGodAll()" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#444400;color:#ffff00;border:1px solid #777700;border-radius:6px;cursor:pointer;">👁️ GodAll</button>
+        <button onclick="admRedAlert()" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.3rem;background:#440000;color:#ff0000;border:1px solid #660000;border-radius:6px;cursor:pointer;">🚨 Alerta</button>
+      </div>
+    </div>
+
+    <div style="background:#0a0000;border:2px solid #ff0088;border-radius:14px;padding:.8rem;margin-bottom:.6rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff0088;margin-bottom:.5rem;">🎨 VISUAIS RÁPIDOS</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;">
+        <button onclick="admEventReset()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#220033;color:#cc00ff;border:1px solid #440066;border-radius:6px;cursor:pointer;">💜Normal</button>
+        <button onclick="admMatrix()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#001100;color:#00ff44;border:1px solid #003300;border-radius:6px;cursor:pointer;">💻Matrix</button>
+        <button onclick="admNight()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#000022;color:#4488ff;border:1px solid #000044;border-radius:6px;cursor:pointer;">🌙Noite</button>
+        <button onclick="admEventXmas()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#003300;color:#ff4444;border:1px solid #006600;border-radius:6px;cursor:pointer;">🎄Natal</button>
+        <button onclick="admEventHalloween()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#221100;color:#ff8800;border:1px solid #443300;border-radius:6px;cursor:pointer;">🎃Hallo</button>
+        <button onclick="admEventBrazil()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#003300;color:#ffdd00;border:1px solid #006600;border-radius:6px;cursor:pointer;">🇧🇷Brasil</button>
+        <button onclick="admRainbow()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#000;color:#ff88ff;border:1px solid #330033;border-radius:6px;cursor:pointer;">🌈Rain</button>
+        <button onclick="admShake()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#220000;color:#ff4444;border:1px solid #440000;border-radius:6px;cursor:pointer;">📳Treme</button>
+        <button onclick="admFireworks()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#330000;color:#ff8800;border:1px solid #550000;border-radius:6px;cursor:pointer;">🎆Fogos</button>
+        <button onclick="abuseExplode()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#440000;color:#ff2244;border:1px solid #660022;border-radius:6px;cursor:pointer;">💥Explode</button>
+        <button onclick="admParty()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#330033;color:#ff44ff;border:1px solid #550055;border-radius:6px;cursor:pointer;">🥳Festa</button>
+        <button onclick="admMeteor()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#330000;color:#ffaa00;border:1px solid #550000;border-radius:6px;cursor:pointer;">☄️Meteor</button>
+        <button onclick="admEventSpace()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#000011;color:#4488ff;border:1px solid #000033;border-radius:6px;cursor:pointer;">🚀Space</button>
+        <button onclick="admClown()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#220000;color:#ff4466;border:1px solid #440022;border-radius:6px;cursor:pointer;">🤡Palhaço</button>
+        <button onclick="admFlip()" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#002200;color:#44ff66;border:1px solid #004400;border-radius:6px;cursor:pointer;">🙃Flip</button>
+        <button onclick="admWave('🔥')" style="font-family:'Boogaloo',cursive;font-size:.55rem;padding:.28rem;background:#330000;color:#ff6600;border:1px solid #550000;border-radius:6px;cursor:pointer;">🔥Onda</button>
+      </div>
+    </div>
+
+    <div style="background:#0a0000;border:2px solid #ff0000;border-radius:14px;padding:.8rem;margin-bottom:.8rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff0000;margin-bottom:.5rem;">☢️ NUKE TOTAL (CUIDADO!)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="abuseNukeRanking()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#330000,#ff0000);color:#fff;border:none;border-radius:8px;cursor:pointer;">☢️ NUKE RANKING</button>
+        <button onclick="abuseNukeAll()" style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.38rem;background:linear-gradient(135deg,#220000,#880000);color:#ff4444;border:2px solid #550000;border-radius:8px;cursor:pointer;">💀 NUKE TOTAL</button>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('abuseOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:#0a0000;color:#660022;border:2px solid #440011;border-radius:10px;cursor:pointer;">FECHAR 😈</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  toast('😈 ADMIN ABUSADO ATIVADO!','red');
+}
+
+// FUNÇÕES DO ADMIN ABUSADO
+function abuseInfPts(v){score+=v;totalEarned+=v;updateUI();sfx('jackpot');toast('💀 +'+fmt(v)+' pts!','rainbow');}
+function abuseInfMult(){globalMult=1e100;updateUI();sfx('prestige');toast('✖️ MULT INFINITO!','rainbow');}
+function abuseInfClick(){clickPower=1e100;updateUI();sfx('prestige');toast('👆 CLICK INFINITO!','rainbow');}
+function abuseEverything(){
+  score=1e300;totalEarned=1e300;clickPower=1e100;autoPerSec=1e100;globalMult=1e100;prestigeStars=99999;
+  SKINS.forEach(s=>ownedSkins.add(s.id));
+  ALL.forEach(u=>{if(!owned.has(u.id)&&['PERM','AUTO'].includes(u.tag)){owned.add(u.id);try{u.eff();}catch(e){}}});
+  updateUI();rAll();renderSkins();checkMS();sfx('prestige');admConfetti();
+  toast('😈 TUDO INFINITO!! GOD MODE TOTAL!!','rainbow');
+}
+async function abuseGivePts(give){
+  const name=document.getElementById('abusePlayerName')?.value.trim();
+  const pts=parseFloat(document.getElementById('abusePtsValue')?.value)||0;
+  if(!pts){toast('Coloca os pontos!','red');return;}
+  // aplica localmente se for o mesmo jogador
+  if(!name||( playerName&&name.toLowerCase()===playerName.toLowerCase())){
+    if(give){score+=pts;totalEarned+=pts;}else{score=Math.max(0,score-pts);}
+    updateUI();toast((give?'💰 +':'💀 -')+fmt(pts)+' pts!',give?'gold':'red');sfx(give?'jackpot':'error');return;
+  }
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>{
+      const cur=doc.data().score||0;
+      batch.update(doc.ref,{score:give?cur+pts:Math.max(0,cur-pts),updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+    });
+    await batch.commit();
+    toast((give?'💰 +':'💀 -')+fmt(pts)+' pts para '+name+'!',give?'gold':'red');sfx(give?'jackpot':'error');
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+async function abuseResetPlayer(){
+  const name=document.getElementById('abusePlayerName')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('Não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{score:0,totalCliques:0,prestígios:0,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();
+    toast('🔄 '+name+' resetado!','red');sfx('error');
+  }catch(e){toast('Erro!','red');}
+}
+async function abuseDeletePlayer(){
+  const name=document.getElementById('abusePlayerName')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('Não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.delete(doc.ref));
+    await batch.commit();
+    toast('🗑️ Conta de '+name+' DELETADA!','red');sfx('error');
+  }catch(e){toast('Erro!','red');}
+}
+async function abuseRenamePlayer(){
+  const name=document.getElementById('abusePlayerName')?.value.trim();
+  const newName=document.getElementById('abuseNewName')?.value.trim();
+  if(!name||!newName){toast('Preenche nome atual e novo!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('Não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{nome:newName}));
+    await batch.commit();
+    toast('✏️ '+name+' → '+newName,'green');sfx('milestone');
+  }catch(e){toast('Erro!','red');}
+}
+async function abuseBanForever(){
+  const name=document.getElementById('abusePlayerName')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('Não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{banido:true,banForever:true,score:0}));
+    await batch.commit();
+    await db.collection('banidos_forever').add({nome:name,ts:firebase.firestore.FieldValue.serverTimestamp()});
+    toast('⛔ '+name+' BANIDO PARA SEMPRE!','red');sfx('error');
+  }catch(e){toast('Erro!','red');}
+}
+async function abuseSpy(){
+  const name=document.getElementById('abuseSpyName')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const d=snap.docs[0].data();
+    const sk=SKINS.find(s=>s.id===(d.skin||'sk_default'));
+    const ts=d.updatedAt?.toMillis?.()??0;
+    const ago=Math.floor((Date.now()-ts)/1000);
+    const ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+    ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0005;border:4px solid #ff8800;border-radius:22px;padding:1.4rem;max-width:380px;width:90%;box-shadow:0 0 50px #ff880044;animation:gpPop .3s;text-align:center;">
+      <div style="font-size:2.5rem;">${sk?.emoji||'👆'}</div>
+      <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#ff8800;margin-bottom:.5rem;">${d.nome||'?'}</div>
+      <div style="background:#000;border-radius:10px;padding:.7rem;font-size:.52rem;color:#aa8866;text-align:left;line-height:2.2;">
+        💰 Score: <b style="color:#ffdd00">${fmt(d.score||0)}</b><br>
+        👆 Cliques: <b style="color:#ff88cc">${(d.totalCliques||0).toLocaleString()}</b><br>
+        ⭐ Prestígios: <b style="color:#ffaa00">${d.prestígios||0}</b><br>
+        🎨 Skin: <b style="color:#00ffdd">${sk?.name||'Padrão'}</b><br>
+        ⏱️ Última atividade: <b style="color:#88ccff">${ago<60?ago+'s atrás':Math.floor(ago/60)+'min atrás'}</b><br>
+        🔴 Banido: <b style="color:${d.banido?'#ff4444':'#44ff88'}">${d.banForever?'FOREVER':d.banido?'SIM':'NÃO'}</b><br>
+        🆔 ID: <b style="color:#664466;font-size:.42rem;">${d.id||'?'}</b>
+      </div>
+      <button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.38rem;background:#0a0000;color:#660022;border:2px solid #440011;border-radius:10px;cursor:pointer;margin-top:.6rem;">FECHAR</button>
+    </div>`;
+    ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+    document.body.appendChild(ov);sfx('hover');
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+const abuseCustomCodes={};
+function abuseCreateCode(){
+  const code=document.getElementById('abuseNewCode')?.value.trim().toLowerCase();
+  const action=document.getElementById('abuseCodeAction')?.value;
+  if(!code){toast('Coloca o código!','red');return;}
+  const actions={
+    pts1m:()=>{score+=1e6;totalEarned+=1e6;updateUI();toast('💰 +1M pts!','gold');},
+    pts1b:()=>{score+=1e9;totalEarned+=1e9;updateUI();toast('💰 +1B pts!','rainbow');},
+    mult:()=>{globalMult*=1000;updateUI();toast('✖️ Mult ×1000!','rainbow');},
+    godmode:()=>admGodMode(),
+    allskins:()=>admUnlockSkins(),
+    stars50:()=>{prestigeStars+=50;updateUI();toast('⭐ +50 estrelas!','gold');},
+    confetti:()=>admConfetti(),
+  };
+  abuseCustomCodes[code]=actions[action];
+  SECRET_CODES[code]=()=>{abuseCustomCodes[code]();};
+  const list=document.getElementById('abuseCodeList');
+  if(list)list.innerHTML+=`<div style="color:#884499;padding:.2rem 0;">✅ "${code}" → ${action}</div>`;
+  document.getElementById('abuseNewCode').value='';
+  toast('🔑 Código "'+code+'" criado!','rainbow');sfx('milestone');
+}
+async function abuseNukeRanking(){
+  try{
+    const snap=await db.collection('jogadores').get();
+    const batch=db.batch();snap.forEach(doc=>batch.delete(doc.ref));
+    await batch.commit();
+    toast('☢️ RANKING DESTRUÍDO!','red');sfx('error');
+  }catch(e){toast('Erro!','red');}
+}
+// ── NOVAS FUNÇÕES ADMIN ABUSADO
+async function abuseViewOnline(){
+  const list=document.getElementById('abuseOnlineList');
+  if(list)list.innerHTML='<span style="color:#446655">Carregando...</span>';
+  try{
+    const snap=await db.collection('jogadores').get();
+    const agora=Date.now();
+    let html2='';let online=0;
+    snap.forEach(doc=>{
+      const d=doc.data();
+      const ts=d.updatedAt?.toMillis?.()??0;
+      const ago=Math.floor((agora-ts)/1000);
+      const isOnline=ago<300;
+      if(isOnline)online++;
+      const sk=SKINS.find(s=>s.id===(d.skin||'sk_default'));
+      html2+=`<div style="color:${isOnline?'#00ff88':'#334433'};padding:.15rem 0;">${isOnline?'🟢':'⚫'} ${sk?.emoji||'👆'} ${d.nome||'?'} — ${fmt(d.score||0)} pts${isOnline?' ('+ago+'s atrás)':''}</div>`;
+    });
+    if(list)list.innerHTML=`<div style="color:#00ff88;font-weight:700;margin-bottom:.3rem;">🟢 ${online} online de ${snap.size} total</div>`+html2||'<span>Nenhum jogador</span>';
+    sfx('hover');
+  }catch(e){if(list)list.innerHTML='<span style="color:#ff4444">Erro ao carregar</span>';}
+}
+
+async function abuseSteal(){
+  const name=document.getElementById('abuseStealName')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const d=snap.docs[0].data();
+    const stolen=Math.floor((d.score||0)/2);
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{score:Math.floor((doc.data().score||0)/2),updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();
+    score+=stolen;totalEarned+=stolen;updateUI();
+    toast('💸 ROUBOU '+fmt(stolen)+' pts de '+name+'!','rainbow');sfx('jackpot');
+  }catch(e){toast('Erro!','red');}
+}
+
+async function abuseClone(){
+  const name=document.getElementById('abuseStealName')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const d=snap.docs[0].data();
+    score=d.score||score;
+    totalEarned=d.score||totalEarned;
+    if(d.prestígios)prestigeStars+=d.prestígios;
+    updateUI();
+    toast('👥 Stats de '+name+' clonados!','rainbow');sfx('prestige');
+  }catch(e){toast('Erro!','red');}
+}
+
+async function abuseGiveRank(){
+  const name=document.getElementById('abuseRankName')?.value.trim();
+  const rank=document.getElementById('abuseRankTitle')?.value||'👑 LENDA';
+  if(!name){toast('Coloca o nome!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{rankEspecial:rank,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}));
+    await batch.commit();
+    await db.collection('avisos').doc('global').set({msg:'👑 '+name+' recebeu o rank '+rank+' do ADM!',ts:firebase.firestore.FieldValue.serverTimestamp()});
+    toast('👑 Rank '+rank+' dado pra '+name+'!','rainbow');sfx('prestige');
+  }catch(e){toast('Erro!','red');}
+}
+
+async function abuseCreateFake(){
+  const name=document.getElementById('abuseFakeName')?.value.trim()||'FakePlayer'+Math.floor(Math.random()*9999);
+  const pts=parseFloat(document.getElementById('abuseFakePts')?.value)||999999999;
+  try{
+    await db.collection('jogadores').add({
+      nome:name,id:'fake_'+Date.now(),score:pts,
+      totalCliques:Math.floor(Math.random()*100000),
+      prestígios:Math.floor(Math.random()*10),
+      skin:'sk_default',fake:true,
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('👻 Jogador falso "'+name+'" criado com '+fmt(pts)+' pts!','rainbow');sfx('milestone');
+    document.getElementById('abuseFakeName').value='';
+    document.getElementById('abuseFakePts').value='';
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+
+async function abuseGodAll(){admNotify('deu GOD MODE pra TODOS! 👁️');
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'👁️ ADM ATIVOU GOD MODE PRA TODOS!! ×1.000.000 por 60s!!',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+  atmp(1000000,60);
+  admGodMode();
+  toast('👁️ GOD MODE PRA TODOS por 60s!!','rainbow');sfx('prestige');admConfetti();
+}
+
+function abuseExplode(){
+  // EXPLOSÃO VISUAL NA TELA
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      const x=Math.random()*100,y=Math.random()*100;
+      el.style.cssText=`position:fixed;left:${x}%;top:${y}%;z-index:999;font-size:${2+Math.random()*3}rem;pointer-events:none;animation:gpPop .4s ease-out forwards;`;
+      el.textContent=['💥','🔥','⚡','💢','🌟'][Math.floor(Math.random()*5)];
+      document.body.appendChild(el);setTimeout(()=>el.remove(),500);
+    },i*60);
+  }
+  document.body.style.animation='cardShake .1s ease-in-out 10';
+  setTimeout(()=>document.body.style.animation='',1200);
+  score+=1000000;totalEarned+=1000000;updateUI();
+  sfx('chaos');toast('💥 EXPLOSÃO! +1M pts!','rainbow');
+}
+
+async function abuseExplodePlayer(){
+  const name=document.getElementById('abuseStealName')?.value.trim();
+  if(!name){toast('Coloca o nome no campo alvo!','red');return;}
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'💥 '+name+' foi EXPLODIDO pelo ADM!! 😈',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('💥 '+name+' explodido!','red');sfx('chaos');
+  }catch(e){toast('Erro!','red');}
+}
+
+async function abuseFreezeAll(){
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'🧊 O ADM CONGELOU TODOS por 10 segundos!!',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+  }catch(e){}
+  const orig=autoPerSec;autoPerSec=0;updateUI();
+  toast('🧊 AUTO CONGELADO por 10s!','red');sfx('error');
+  setTimeout(()=>{autoPerSec=orig;updateUI();toast('🧊 Descongelado!','green');},10000);
+}
+
+function abuseNukeAll(){
+  score=0;totalEarned=0;clickPower=1;autoPerSec=0;globalMult=1;
+  prestigeCount=0;prestigeStars=0;totalClicks=0;owned.clear();
+  rAll();updateUI();checkPrestige();
+  document.getElementById('abuseOv')?.remove();
+  toast('💀 NUKE TOTAL! TUDO ZERADO!','red');sfx('error');
+}
+
+// ══ MODO ATUALIZANDO 🔄 ══
+function openModoAtualizando(){
+  if(document.getElementById('updateOv'))return;
+  sfx('milestone');
+  // envia pra Firebase pra todo mundo ver
+  try{db.collection('avisos').doc('global').set({
+    msg:'__ATUALIZANDO__',
+    tipo:'update',
+    ts:firebase.firestore.FieldValue.serverTimestamp()
+  });}catch(e){}
+  _showUpdateScreen();}
+function _showUpdateScreen(){
+  if(document.getElementById('updateOv'))return;
+  const ov=document.createElement('div');
+  ov.id='updateOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:800;background:#000000cc;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
+  ov.innerHTML=`
+  <div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #4488ff;border-radius:24px;padding:1.8rem;text-align:center;max-width:380px;width:92%;box-shadow:0 0 60px #4488ff55;animation:gpPop .4s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:3rem;animation:gpBounce 1s ease-in-out infinite;margin-bottom:.4rem;">🔄</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.3rem;color:#4488ff;letter-spacing:3px;margin-bottom:.2rem;">ATUALIZAÇÃO</div>
+    <div style="font-size:.55rem;color:#446688;letter-spacing:2px;margin-bottom:.8rem;">uma nova versão está chegando!</div>
+    <div style="background:#0d0022;border:2px solid #224466;border-radius:12px;padding:.8rem;margin-bottom:.9rem;">
+      <div id="updateCountdown" style="font-family:'Boogaloo',cursive;font-size:3rem;color:#ffdd00;text-shadow:0 0 20px #ffdd0088;">10</div>
+      <div style="font-size:.5rem;color:#446688;letter-spacing:2px;">segundos para atualizar</div>
+      <div style="background:#1a1428;border-radius:8px;height:8px;margin-top:.5rem;overflow:hidden;">
+        <div id="updateBar" style="height:100%;background:linear-gradient(90deg,#4488ff,#00ffdd);width:100%;transition:width 1s linear;border-radius:6px;"></div>
+      </div>
+    </div>
+    <div style="font-size:.5rem;color:#334455;margin-bottom:.8rem;">salve seu progresso agora! 💾</div>
+    <div style="display:flex;gap:.4rem;">
+      <button onclick="saveScore();toast('💾 Score salvo!','green')" style="flex:1;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:10px;cursor:pointer;">💾 SALVAR</button>
+      <button onclick="document.getElementById('updateOv').remove()" style="font-family:'Boogaloo',cursive;font-size:.78rem;padding:.42rem .8rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
+    </div>
+  </div>`;
+  document.body.appendChild(ov);
+  let t=10;
+  const iv=setInterval(()=>{
+    t--;
+    const el=document.getElementById('updateCountdown');
+    const bar=document.getElementById('updateBar');
+    if(el){el.textContent=t;el.style.color=t<=3?'#ff2244':'#ffdd00';}
+    if(bar)bar.style.width=(t/10*100)+'%';
+    sfx('hover');
+    if(t<=0){
+      clearInterval(iv);
+      const ov2=document.getElementById('updateOv');
+      if(ov2)ov2.innerHTML=`
+      <div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #00ff88;border-radius:24px;padding:1.8rem;text-align:center;max-width:380px;width:92%;box-shadow:0 0 60px #00ff8855;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+        <div style="font-size:3rem;animation:gpBounce 1s ease-in-out infinite;margin-bottom:.4rem;">✅</div>
+        <div style="font-family:'Boogaloo',cursive;font-size:1.3rem;color:#00ff88;letter-spacing:3px;margin-bottom:.3rem;">ATUALIZADO!</div>
+        <div style="font-size:.55rem;color:#446655;margin-bottom:.7rem;">Clicker Master v4.1 🎉</div>
+        <div style="font-size:.5rem;color:#334433;margin-bottom:.9rem;">nada mudou de verdade kkkk 😂</div>
+        <button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.85rem;padding:.45rem;background:linear-gradient(135deg,#003322,#00ff88);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;">🎮 JOGAR!</button>
+      </div>`;
+      sfx('prestige');score+=10000;totalEarned+=10000;updateUI();
+      toast('✅ Atualizado! +10K bônus!','green');
+    }
+  },1000);
+}
+
+// ══ MODO TELA PRETA 🌑 (pra todos menos você) ══
+async function openModoTelaPreta(){admNotify('mandou tela preta pra todos! 🌑');
+  sfx('chaos');
+  // manda Firebase pra todo mundo ficar com tela preta
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'__BLACKOUT__',
+      tipo:'blackout',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('🌑 Tela preta enviada pra TODOS! 😈','red');
+  }catch(e){
+    toast('🌑 Sem Firebase, só local!','red');
+  }
+}
+
+// ══ MODO ERRO FALSO 💻 (aparece automaticamente) ══
+let erroFalsoAtivo=false;
+let erroSize=1;
+function openModoErroFalso(){admNotify('ativou o Modo Erro Falso! 💻');
+  if(erroFalsoAtivo)return;
+  erroFalsoAtivo=true;
+  erroSize=1;
+  sfx('error');
+  spawnErro();
+  toast('💻 MODO ERRO ativado! 😈','red');
+}
+function spawnErro(){
+  if(!erroFalsoAtivo)return;
+  const ov=document.createElement('div');
+  ov.className='erroFalso';
+  const s=Math.min(erroSize,3);
+  ov.style.cssText=`position:fixed;z-index:${900+erroSize};background:#c0c0c0;border:3px solid #000;border-radius:0;
+    width:${200*s}px;max-width:90vw;
+    left:${10+Math.random()*50}%;top:${10+Math.random()*50}%;
+    transform:translate(-50%,-50%);
+    box-shadow:3px 3px 0 #000;font-family:Arial,sans-serif;`;
+  ov.innerHTML=`
+    <div style="background:linear-gradient(90deg,#000088,#1084d0);padding:4px 8px;display:flex;align-items:center;justify-content:space-between;cursor:move;">
+      <span style="color:#fff;font-size:${11*s}px;font-weight:bold;">⚠️ Erro do Sistema</span>
+      <button onclick="erroFalsoAtivo=false;document.querySelectorAll('.erroFalso').forEach(e=>e.remove());toast('✅ Erro fechado... será?','green')"
+        style="background:#c0c0c0;border:2px outset #fff;width:${16*s}px;height:${14*s}px;font-size:${9*s}px;cursor:pointer;font-weight:bold;line-height:1;">✕</button>
+    </div>
+    <div style="padding:${12*s}px;text-align:center;">
+      <div style="font-size:${28*s}px;margin-bottom:${6*s}px;">💻</div>
+      <div style="font-size:${11*s}px;margin-bottom:${8*s}px;color:#000;">
+        <b>ERRO CRÍTICO DO SISTEMA</b><br>
+        Código: 0x000${Math.floor(Math.random()*9999)}<br>
+        <span style="font-size:${9*s}px;color:#444;">Clicker Master parou de funcionar</span>
+      </div>
+      <button onclick="erroSize++;this.parentElement.parentElement.remove();setTimeout(spawnErro,100);setTimeout(spawnErro,300);sfx('error')"
+        style="background:#c0c0c0;border:2px outset #fff;padding:${4*s}px ${12*s}px;font-size:${11*s}px;cursor:pointer;margin:${3*s}px;font-family:Arial;">
+        OK
+      </button>
+      <button onclick="erroSize+=2;this.parentElement.parentElement.remove();setTimeout(spawnErro,50);setTimeout(spawnErro,150);setTimeout(spawnErro,300);sfx('error')"
+        style="background:#c0c0c0;border:2px outset #fff;padding:${4*s}px ${12*s}px;font-size:${11*s}px;cursor:pointer;margin:${3*s}px;font-family:Arial;">
+        Cancelar
+      </button>
+    </div>`;
+  document.body.appendChild(ov);
+
+  // para depois de ficar muito grande
+  if(erroSize>6){
+    setTimeout(()=>{
+      erroFalsoAtivo=false;
+      document.querySelectorAll('.erroFalso').forEach(e=>e.remove());
+      score+=500000;totalEarned+=500000;updateUI();
+      sfx('prestige');admConfetti();
+      toast('💻 Você sobreviveu ao ERRO! +500K pts!','rainbow');
+    },3000);
+  }
+}
+
 rAll();
 rMS();
 updateUI();
 checkPrestige();
 renderSkins();
 renderChaosGrid();
+function openADM321(){
+  if(document.getElementById('adm321Ov'))return;
+  const ov=document.createElement('div');
+  ov.id='adm321Ov';
+  ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+  ov.innerHTML=`
+  <div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #00ffdd;border-radius:24px;padding:1.8rem;text-align:center;max-width:400px;width:92%;box-shadow:0 0 80px #00ffdd44;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:2.5rem;margin-bottom:.3rem;">🎮</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.4rem;color:#00ffdd;letter-spacing:3px;margin-bottom:.2rem;">PAINEL 321</div>
+    <div style="font-size:.48rem;color:#446655;margin-bottom:1.2rem;letter-spacing:2px;">modos especiais do ADM 🔑</div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;margin-bottom:1rem;">
+      <button onclick="document.getElementById('adm321Ov').remove();openModoAtualizando();"
+        style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.6rem 1rem;background:linear-gradient(135deg,#001133,#4488ff);color:#fff;border:none;border-radius:14px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 15px #4488ff44,0 4px 0 #001133;">
+        🔄 MODO ATUALIZANDO
+      </button>
+      <button onclick="document.getElementById('adm321Ov').remove();openModoTelaPreta();"
+        style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.6rem 1rem;background:linear-gradient(135deg,#000000,#222222);color:#888;border:2px solid #333;border-radius:14px;cursor:pointer;letter-spacing:2px;box-shadow:0 3px 0 #000;">
+        🌑 TELA PRETA PRA TODOS 😈
+      </button>
+      <button onclick="document.getElementById('adm321Ov').remove();openModoErroFalso();"
+        style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.6rem 1rem;background:#c0c0c0;color:#000;border:3px outset #fff;border-radius:4px;cursor:pointer;letter-spacing:1px;font-family:Arial;">
+        💻 MODO ERRO FALSO
+      </button>
+      <button onclick="document.getElementById('adm321Ov').remove();openModoHacker();"
+        style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.6rem 1rem;background:linear-gradient(135deg,#001100,#00ff44);color:#00ff44;border:2px solid #00ff44;border-radius:4px;cursor:pointer;letter-spacing:2px;font-family:monospace;box-shadow:0 0 15px #00ff4444;">
+        👾 MODO HACKER
+      </button>
+      <button onclick="document.getElementById('adm321Ov').remove();openModoTeleporte();"
+        style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.6rem 1rem;background:linear-gradient(135deg,#220044,#aa00ff,#ff00cc);color:#fff;border:none;border-radius:14px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 15px #aa00ff44,0 4px 0 #110022;animation:gpPop .3s;">
+        ⚡ MODO TELETRANSPORTE
+      </button>
+    </div>
+    <button onclick="document.getElementById('adm321Ov').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.42rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  sfx('hover');toast('🎮 Painel 321!','green');
+}
+
+// ══ MODO HACKER 👾 ══
+function openModoHacker(){admNotify('ativou o Modo Hacker! 👾');
+  if(document.getElementById('hackerOv'))return;
+  sfx('chaos');
+
+  // visual matrix verde
+  document.documentElement.style.setProperty('--bg','#000500');
+  document.documentElement.style.setProperty('--card','#001500');
+  document.documentElement.style.setProperty('--accent','#00ff44');
+  document.documentElement.style.setProperty('--text','#00ff44');
+  document.documentElement.style.setProperty('--sub','#006622');
+
+  // chuva de código
+  const hackerStyle=document.createElement('style');
+  hackerStyle.id='hackerStyle';
+  hackerStyle.textContent=`
+    @keyframes hackerRain{0%{transform:translateY(-100%);opacity:1}100%{transform:translateY(110vh);opacity:.3}}
+    .hacker-char{position:fixed;font-family:monospace;color:#00ff44;pointer-events:none;z-index:1;font-size:.7rem;animation:hackerRain linear infinite;text-shadow:0 0 5px #00ff44;}
+    body{font-family:monospace!important;}
+  `;
+  document.head.appendChild(hackerStyle);
+
+  // spawna caracteres caindo
+  const chars='01アイウエオカキクケコ{}[]<>/\\|!@#$%^&*';
+  const hackerIv=setInterval(()=>{
+    const el=document.createElement('div');
+    el.className='hacker-char';
+    el.style.left=Math.random()*100+'%';
+    el.style.animationDuration=(2+Math.random()*4)+'s';
+    el.style.fontSize=(.5+Math.random()*.8)+'rem';
+    el.textContent=chars[Math.floor(Math.random()*chars.length)];
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),6000);
+  },80);
+
+  // overlay
+  const ov=document.createElement('div');
+  ov.id='hackerOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:500;pointer-events:none;';
+  document.body.appendChild(ov);
+
+  // aviso
+  const msg=document.createElement('div');
+  msg.style.cssText='position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:600;background:#000;border:2px solid #00ff44;border-radius:8px;padding:.5rem 1.2rem;font-family:monospace;font-size:.7rem;color:#00ff44;letter-spacing:2px;box-shadow:0 0 15px #00ff4444;pointer-events:none;';
+  msg.innerHTML='👾 MODO HACKER ATIVADO <span id="hackerPts" style="color:#ffdd00"></span>';
+  document.body.appendChild(msg);
+
+  // cada clique ganha bônus extra
+  let hackerClicks=0;
+  const hackerClickFn=()=>{
+    hackerClicks++;
+    const bonus=Math.floor(clickPower*gm()*3);
+    score+=bonus;totalEarned+=bonus;updateUI();
+    const el=document.getElementById('hackerPts');
+    if(el)el.textContent=' | +'+fmt(bonus)+' HACK';
+    if(hackerClicks===100&&!ownedSkins.has('sk_hacker')){
+      ownedSkins.add('sk_hacker');buySkinFixed('sk_hacker');
+      sfx('prestige');toast('👾 SKIN HACKER DESBLOQUEADA!!','green');
+    }
+  };
+  document.getElementById('bigBtn')?.addEventListener('click',hackerClickFn);
+
+  // botão fechar
+  const closeBtn=document.createElement('button');
+  closeBtn.style.cssText='position:fixed;bottom:15px;right:15px;z-index:700;font-family:monospace;font-size:.7rem;padding:.35rem .8rem;background:#001100;color:#00ff44;border:2px solid #00ff44;border-radius:6px;cursor:pointer;letter-spacing:1px;';
+  closeBtn.textContent='[SAIR]';
+  closeBtn.onclick=()=>{
+    clearInterval(hackerIv);
+    document.getElementById('bigBtn')?.removeEventListener('click',hackerClickFn);
+    document.querySelectorAll('.hacker-char').forEach(e=>e.remove());
+    document.getElementById('hackerOv')?.remove();
+    document.getElementById('hackerStyle')?.remove();
+    msg.remove();closeBtn.remove();
+    document.documentElement.style.setProperty('--bg','#04000e');
+    document.documentElement.style.setProperty('--card','#0a0018');
+    document.documentElement.style.setProperty('--accent','#cc00ff');
+    document.documentElement.style.setProperty('--text','#f0d0ff');
+    document.documentElement.style.setProperty('--sub','#664477');
+    toast('👾 Modo Hacker encerrado!','green');
+  };
+  document.body.appendChild(closeBtn);
+  toast('👾 MODO HACKER! Clique 100x para skin exclusiva!','green');
+
+  // add hacker skin if not exists
+  if(!SKINS.find(s=>s.id==='sk_hacker')){
+    SKINS.push({id:'sk_hacker',name:'HACKER',emoji:'👾',
+      bg:'radial-gradient(circle at 38% 32%,#003300,#000500)',
+      border:'#00ff44',cost:0,free:true,secret:true});
+  }
+}
+
+// ══ MODO TELETRANSPORTE ⚡ ══
+function openModoTeleporte(){admNotify('ativou o Modo Teletransporte! ⚡');
+  if(document.getElementById('teleOv'))return;
+  sfx('prestige');
+
+  // add teleport skin if not exists
+  if(!SKINS.find(s=>s.id==='sk_teleporte')){
+    SKINS.push({id:'sk_teleporte',name:'TELETRANSPORTE',emoji:'⚡',
+      bg:'radial-gradient(circle at 38% 32%,#440088,#ff00cc,#00ccff)',
+      border:'#aa00ff',cost:0,free:true,secret:true});
+  }
+
+  // desbloqueia skin imediatamente
+  if(!ownedSkins.has('sk_teleporte')){
+    ownedSkins.add('sk_teleporte');skinsBought++;
+  }
+  buySkinFixed('sk_teleporte');
+
+  // efeito: botão fica teletransportando
+  const btn=document.getElementById('bigBtn');
+  const positions=[
+    {top:'20%',left:'10%'},{top:'20%',right:'10%'},
+    {top:'60%',left:'5%'},{top:'60%',right:'5%'},
+    {top:'40%',left:'50%',transform:'translateX(-50%)'},
+  ];
+  let posIdx=0;
+  const teleIv=setInterval(()=>{
+    posIdx=(posIdx+1)%positions.length;
+    const pos=positions[posIdx];
+    btn.style.position='fixed';
+    btn.style.top=pos.top||'auto';
+    btn.style.left=pos.left||'auto';
+    btn.style.right=pos.right||'auto';
+    btn.style.transform=pos.transform||'';
+    btn.style.transition='all .3s cubic-bezier(.34,1.56,.64,1)';
+    // flash effect
+    btn.style.filter='brightness(3)';
+    setTimeout(()=>btn.style.filter='',200);
+  },1500);
+
+  // overlay aviso
+  const ov=document.createElement('div');
+  ov.id='teleOv';
+  ov.style.cssText='position:fixed;top:15px;left:50%;transform:translateX(-50%);z-index:700;background:#110022;border:2px solid #aa00ff;border-radius:12px;padding:.5rem 1.2rem;text-align:center;pointer-events:none;box-shadow:0 0 15px #aa00ff44;';
+  ov.innerHTML=`<div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#aa00ff;letter-spacing:2px;">⚡ TELETRANSPORTE ATIVO — clique onde aparecer!</div>`;
+  document.body.appendChild(ov);
+
+  // botão fechar
+  const closeBtn=document.createElement('button');
+  closeBtn.style.cssText='position:fixed;bottom:15px;right:15px;z-index:800;font-family:"Boogaloo",cursive;font-size:.75rem;padding:.35rem .8rem;background:#110022;color:#aa00ff;border:2px solid #aa00ff;border-radius:10px;cursor:pointer;';
+  closeBtn.textContent='PARAR ⚡';
+  closeBtn.onclick=()=>{
+    clearInterval(teleIv);
+    btn.style.position='';btn.style.top='';btn.style.left='';
+    btn.style.right='';btn.style.transform='';btn.style.transition='';btn.style.filter='';
+    document.getElementById('teleOv')?.remove();
+    closeBtn.remove();
+    toast('⚡ Teletransporte encerrado!','green');
+  };
+  document.body.appendChild(closeBtn);
+  toast('⚡ MODO TELETRANSPORTE! Skin exclusiva desbloqueada!','rainbow');
+  admConfetti();
+}
 
 // make sure boosts tab is active on start
 document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('on'));

@@ -336,7 +336,7 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
   <h1 id="mainTitle">⚡ CLICKER MASTER</h1>
   <p>CLIQUE • EVOLUA • DOMINE O UNIVERSO</p>
   <div class="hbtns">
-    <a class="btn-yt" href="https://youtube.com/shorts/u8x3dYkoKDM" target="_blank" onclick="sfx('wen')">
+    <a class="btn-yt" href="https://www.youtube.com/watch?v=DMNlzf8PiEM" target="_blank" onclick="sfx('wen')">
       <span class="ptri"></span>ASSISTIR VÍDEO
     </a>
     <button onclick="openRegOrProfile()" id="btnUser" style="font-family:'Boogaloo',cursive;font-size:.9rem;padding:.42rem 1rem;background:linear-gradient(135deg,#220044,#8800cc);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;box-shadow:0 0 15px #8800cc44,0 4px 0 #110022;transition:.12s;">👤 ENTRAR</button>
@@ -1519,6 +1519,8 @@ const SECRET_CODES={
   'colegioluizblanco': ()=>openColegio(),
   'pingpongg': ()=>openPingPong(),
   'neve': ()=>openNeve(),
+  'vegeta': ()=>openModoVegeta(),
+  'infinito': ()=>openModoInfinito(),
 };
 const MAX_CODE_LEN=Math.max(...Object.keys(SECRET_CODES).map(k=>k.length));
 let kBuffer='';let kTimer=null;
@@ -1533,60 +1535,99 @@ document.addEventListener('keydown',e=>{
 });
 
 // ══ ADM DIRETO (sem senha extra) ══
+function admSection(title,color,content){
+  return `<div style="background:#110022;border:2px solid ${color};border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
+    <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:${color};margin-bottom:.5rem;">${title}</div>
+    ${content}</div>`;
+}
+function admBtn(label,bg,color,fn){
+  return `<button onclick="${fn}" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.42rem;background:${bg};color:${color};border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;margin-bottom:.3rem;">${label}</button>`;
+}
+function admInput(id,placeholder,color){
+  return `<input id="${id}" type="text" placeholder="${placeholder}" onclick="event.stopPropagation()" style="width:100%;background:#0a0018;border:2px solid ${color};border-radius:8px;padding:.4rem .7rem;color:${color};font-size:.78rem;outline:none;margin-bottom:.4rem;"/>`;
+}
+function admInputNum(id,placeholder,color){
+  return `<input id="${id}" type="number" placeholder="${placeholder}" onclick="event.stopPropagation()" style="width:100%;background:#0a0018;border:2px solid ${color};border-radius:8px;padding:.4rem .7rem;color:${color};font-size:.78rem;outline:none;margin-bottom:.4rem;"/>`;
+}
+
 function openADM(){
   const admOv=document.createElement('div');
   admOv.id='admOv';
-  admOv.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);overflow-y:auto;';
+  admOv.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:flex-start;justify-content:center;backdrop-filter:blur(8px);overflow-y:auto;padding:1rem 0;';
   admOv.innerHTML=`
-  <div style="background:#0a0018;border:4px solid #ffdd00;border-radius:24px;padding:1.6rem 1.4rem;text-align:center;max-width:440px;width:92%;box-shadow:0 0 80px #ffdd0066;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);margin:1rem auto;">
-    <div style="font-size:2.5rem;margin-bottom:.3rem;">🔑</div>
-    <div style="font-family:'Boogaloo',cursive;font-size:1.4rem;color:#ffdd00;letter-spacing:3px;margin-bottom:.15rem;">MODO ADM</div>
-    <div style="font-size:.48rem;color:#886600;margin-bottom:1rem;letter-spacing:2px;">painel do administrador 👑</div>
+  <div style="background:#0a0018;border:4px solid #ffdd00;border-radius:24px;padding:1.4rem;text-align:center;max-width:460px;width:92%;box-shadow:0 0 80px #ffdd0066;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:2rem;margin-bottom:.2rem;">🔑</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.3rem;color:#ffdd00;letter-spacing:3px;margin-bottom:.1rem;">MODO ADM</div>
+    <div style="font-size:.45rem;color:#886600;margin-bottom:.9rem;letter-spacing:2px;">painel completo do administrador 👑</div>
 
-    <!-- DAR PONTOS -->
-    <div style="background:#110022;border:2px solid #554400;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
-      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ffdd00;margin-bottom:.5rem;">💰 DAR PONTOS</div>
-      <input id="admPtsInput" type="number" placeholder="Quantidade de pontos..." onclick="event.stopPropagation()"
-        style="width:100%;background:#0a0018;border:2px solid #554400;border-radius:8px;padding:.4rem .7rem;color:#ffdd00;font-size:.8rem;outline:none;margin-bottom:.4rem;"/>
-      <button onclick="admCustomPts()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:linear-gradient(135deg,#664400,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">✅ DAR PONTOS</button>
-    </div>
+    ${admSection('💰 DAR PONTOS','#ffdd00',
+      admInputNum('admPtsInput','Quantidade de pontos...','#ffdd00')+
+      admBtn('✅ DAR PONTOS','linear-gradient(135deg,#664400,#ffdd00)','#000','admCustomPts()')
+    )}
 
-    <!-- DAR ESTRELAS -->
-    <div style="background:#110022;border:2px solid #880033;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
-      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff88aa;margin-bottom:.5rem;">⭐ DAR ESTRELAS DE PRESTÍGIO</div>
-      <input id="admStarsInput" type="number" placeholder="Quantidade de estrelas..." onclick="event.stopPropagation()"
-        style="width:100%;background:#0a0018;border:2px solid #880033;border-radius:8px;padding:.4rem .7rem;color:#ff88aa;font-size:.8rem;outline:none;margin-bottom:.4rem;"/>
-      <button onclick="admCustomStars()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:linear-gradient(135deg,#880033,#ff0088);color:#fff;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">✅ DAR ESTRELAS</button>
-    </div>
+    ${admSection('⭐ DAR ESTRELAS','#ff88aa',
+      admInputNum('admStarsInput','Quantidade de estrelas...','#ff88aa')+
+      admBtn('✅ DAR ESTRELAS','linear-gradient(135deg,#880033,#ff0088)','#fff','admCustomStars()')
+    )}
 
-    <!-- REMOVER JOGADOR -->
-    <div style="background:#110022;border:2px solid #880000;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
-      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#ff4444;margin-bottom:.5rem;">🚫 REMOVER DO RANKING</div>
-      <input id="admRemoveInput" type="text" placeholder="Nome do jogador..." onclick="event.stopPropagation()"
-        style="width:100%;background:#0a0018;border:2px solid #880000;border-radius:8px;padding:.4rem .7rem;color:#ff4444;font-size:.8rem;outline:none;margin-bottom:.4rem;"/>
-      <div style="display:flex;gap:.4rem;">
-        <button onclick="admRemovePlayer(false)" style="flex:1;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.38rem;background:linear-gradient(135deg,#550000,#cc2200);color:#fff;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">🗑️ REMOVER</button>
-        <button onclick="admRemovePlayer(true)" style="flex:1;font-family:'Boogaloo',cursive;font-size:.72rem;padding:.38rem;background:linear-gradient(135deg,#330000,#880000);color:#ff4444;border:2px solid #880000;border-radius:8px;cursor:pointer;letter-spacing:1px;">⛔ BANIR</button>
+    ${admSection('🚫 REMOVER / BANIR JOGADOR','#ff4444',
+      admInput('admRemoveInput','Nome do jogador...','#ff4444')+
+      `<div style="display:flex;gap:.3rem;">
+        <button onclick="admRemovePlayer(false)" style="flex:1;font-family:'Boogaloo',cursive;font-size:.7rem;padding:.35rem;background:linear-gradient(135deg,#550000,#cc2200);color:#fff;border:none;border-radius:8px;cursor:pointer;">🗑️ REMOVER</button>
+        <button onclick="admRemovePlayer(true)" style="flex:1;font-family:'Boogaloo',cursive;font-size:.7rem;padding:.35rem;background:linear-gradient(135deg,#330000,#880000);color:#ff4444;border:2px solid #880000;border-radius:8px;cursor:pointer;">⛔ BANIR</button>
+        <button onclick="admBanTemp()" style="flex:1;font-family:'Boogaloo',cursive;font-size:.7rem;padding:.35rem;background:linear-gradient(135deg,#441100,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">⏱️ BANIR 24H</button>
+      </div>`
+    )}
+
+    ${admSection('📢 MENSAGEM GLOBAL','#44aaff',
+      admInput('admMsgInput','Mensagem pra todos... 👋','#44aaff')+
+      admBtn('📨 ENVIAR PARA TODOS','linear-gradient(135deg,#001133,#0044cc)','#fff','admSendMsg()')+
+      admBtn('🎉 CHUVA DE EMOJIS PRA TODOS','linear-gradient(135deg,#330044,#ff00cc)','#fff','admConfettiAll()')
+    )}
+
+    ${admSection('🎮 PODER','#00ff88',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admGive(0,'mult')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004422,#00ff88);color:#000;border:none;border-radius:8px;cursor:pointer;">✖️ MULT ×1000</button>
+        <button onclick="admGive(0,'click')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440088,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">👆 CLICK ×1000</button>
+        <button onclick="admGive(0,'megamult')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004400,#00ffaa);color:#000;border:none;border-radius:8px;cursor:pointer;">✖️ MULT ×1M</button>
+        <button onclick="admAutoClick()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#000044,#4488ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🤖 AUTO +1M/seg</button>
+        <button onclick="admGive(0,'all')" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330000,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">🌟 TUDO ×1000</button>
+        <button onclick="admChaos()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440000,#ff2244);color:#fff;border:none;border-radius:8px;cursor:pointer;">💀 ATIVAR CAOS</button>
+      </div>`
+    )}
+
+    ${admSection('🎁 TRAPAÇA','#ffaaff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;">
+        <button onclick="admUnlockSkins()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#004455,#00ffdd);color:#000;border:none;border-radius:8px;cursor:pointer;">🎨 TODAS SKINS</button>
+        <button onclick="admUnlockUpgrades()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#440044,#ff88ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">⚡ TODOS UPGRADES</button>
+        <button onclick="admTopRanking()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#443300,#ffdd00);color:#000;border:none;border-radius:8px;cursor:pointer;">🏆 VIRAR #1</button>
+        <button onclick="admResetRanking()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#880000);color:#ff4444;border:2px solid #550000;border-radius:8px;cursor:pointer;">🗑️ RESET RANKING</button>
+      </div>`
+    )}
+
+    ${admSection('🎨 CUSTOMIZAR','#cc88ff',
+      admInput('admBtnTxtInput','Novo texto do botão...','#cc88ff')+
+      admInput('admBtnEmojiInput','Novo emoji do botão (ex: 🔥)','#cc88ff')+
+      admInput('admWelcomeInput','Nova mensagem de boas vindas...','#cc88ff')+
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admChangeBtnTxt()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#cc00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">✏️ MUDAR TEXTO</button>
+        <button onclick="admChangeBtnEmoji()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220033,#ff44ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">😀 MUDAR EMOJI</button>
+        <button onclick="admChangeWelcome()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001133,#4488ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">👋 MUDAR BOAS VINDAS</button>
+        <button onclick="admChangeColor()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330033,#ff00ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎨 COR ALEATÓRIA</button>
       </div>
-    </div>
+      <button onclick="admShake()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#330022,#ff0088);color:#fff;border:none;border-radius:8px;cursor:pointer;margin-bottom:.3rem;">📳 FAZER TREMER</button>
+      <button onclick="admConfetti()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#221100,#ff8800);color:#fff;border:none;border-radius:8px;cursor:pointer;">🎉 CONFETE LOCAL</button>
+    `)}
 
-    <!-- MENSAGEM GLOBAL -->
-    <div style="background:#110022;border:2px solid #004488;border-radius:14px;padding:.8rem;margin-bottom:.6rem;text-align:left;">
-      <div style="font-family:'Boogaloo',cursive;font-size:.75rem;color:#44aaff;margin-bottom:.5rem;">📢 MENSAGEM GLOBAL</div>
-      <input id="admMsgInput" type="text" placeholder="Ex: Oi a todos! 👋" onclick="event.stopPropagation()" maxlength="80"
-        style="width:100%;background:#0a0018;border:2px solid #004488;border-radius:8px;padding:.4rem .7rem;color:#44aaff;font-size:.8rem;outline:none;margin-bottom:.4rem;"/>
-      <button onclick="admSendMsg()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:linear-gradient(135deg,#001133,#0044cc);color:#fff;border:none;border-radius:8px;cursor:pointer;letter-spacing:1px;">📨 ENVIAR PARA TODOS</button>
-    </div>
+    ${admSection('📊 CONTROLE','#88ccff',
+      `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.3rem;margin-bottom:.3rem;">
+        <button onclick="admViewFeedbacks()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#001122,#0066ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">💬 VER FEEDBACKS</button>
+        <button onclick="admViewOnline()" style="font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#002200,#00cc44);color:#fff;border:none;border-radius:8px;cursor:pointer;">🟢 VER ONLINE</button>
+      </div>
+      <button onclick="admReset()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.68rem;padding:.38rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:2px solid #440000;border-radius:8px;cursor:pointer;">🔄 RESET MEU JOGO</button>
+    `)}
 
-    <!-- AÇÕES RÁPIDAS -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem;margin-bottom:.8rem;">
-      <button onclick="admGive(0,'mult')" style="font-family:'Boogaloo',cursive;font-size:.72rem;padding:.42rem;background:linear-gradient(135deg,#004422,#00ff88);color:#000;border:none;border-radius:10px;cursor:pointer;">✖️ MULT ×1000</button>
-      <button onclick="admGive(0,'click')" style="font-family:'Boogaloo',cursive;font-size:.72rem;padding:.42rem;background:linear-gradient(135deg,#440088,#cc00ff);color:#fff;border:none;border-radius:10px;cursor:pointer;">👆 CLICK ×1000</button>
-      <button onclick="admGive(0,'all')" style="font-family:'Boogaloo',cursive;font-size:.72rem;padding:.42rem;background:linear-gradient(135deg,#330000,#ff8800);color:#fff;border:none;border-radius:10px;cursor:pointer;">🌟 TUDO ×1000</button>
-      <button onclick="admReset()" style="font-family:'Boogaloo',cursive;font-size:.72rem;padding:.42rem;background:linear-gradient(135deg,#220000,#660000);color:#ff4444;border:2px solid #660000;border-radius:10px;cursor:pointer;">🔄 RESET JOGO</button>
-    </div>
-
-    <button onclick="document.getElementById('admOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.42rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
+    <button onclick="document.getElementById('admOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.3rem;">FECHAR</button>
   </div>`;
   admOv.addEventListener('click',e=>{if(e.target===admOv)admOv.remove();});
   document.body.appendChild(admOv);
@@ -1640,22 +1681,197 @@ async function admSendMsg(){
   }catch(e){toast('Erro ao enviar!','red');}
 }
 function admReset(){
-  if(!confirm('Tem certeza? Isso vai resetar o jogo!'))return;
-  score=0;totalEarned=0;clickPower=1;autoPerSec=0;globalMult=1;
-  prestigeCount=0;prestigeStars=0;totalClicks=0;
-  owned.clear();
-  rAll();updateUI();checkPrestige();
-  toast('🔄 Jogo resetado!','red');sfx('error');
-  document.getElementById('admOv')?.remove();
+  // usar overlay em vez de confirm() que não funciona no celular
+  const c=document.createElement('div');
+  c.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+  c.innerHTML=`<div style="background:#0a0018;border:4px solid #ff2244;border-radius:20px;padding:1.4rem;text-align:center;max-width:320px;width:90%;box-shadow:0 0 40px #ff224466;">
+    <div style="font-size:2rem;margin-bottom:.3rem;">⚠️</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:.95rem;color:#ff2244;letter-spacing:2px;margin-bottom:.4rem;">RESETAR O JOGO?</div>
+    <div style="font-size:.5rem;color:#884444;margin-bottom:.9rem;">Isso vai zerar tudo — pontos, upgrades, estrelas!</div>
+    <div style="display:flex;gap:.5rem;">
+      <button onclick="score=0;totalEarned=0;clickPower=1;autoPerSec=0;globalMult=1;prestigeCount=0;prestigeStars=0;totalClicks=0;owned.clear();rAll();updateUI();checkPrestige();document.getElementById('admOv')?.remove();this.parentElement.parentElement.parentElement.remove();toast('🔄 Jogo resetado!','red');sfx('error');"
+        style="flex:1;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:linear-gradient(135deg,#660000,#ff2244);color:#fff;border:none;border-radius:10px;cursor:pointer;">SIM, RESETAR</button>
+      <button onclick="this.parentElement.parentElement.parentElement.remove()"
+        style="flex:1;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">CANCELAR</button>
+    </div>
+  </div>`;
+  document.body.appendChild(c);
 }
 
 function admGive(pts,type){
   if(pts>0){score+=pts;totalEarned+=pts;toast('💰 +'+fmt(pts)+' pts!','gold');}
   if(type==='mult'){globalMult*=1000;toast('✖️ MULT ×1000!','gold');}
+  if(type==='megamult'){globalMult*=1000000;toast('✖️ MULT ×1.000.000!!','rainbow');}
   if(type==='click'){clickPower*=1000;toast('👆 CLICK ×1000!','gold');}
   if(type==='pres'){prestigeStars+=50;toast('⭐ +50 estrelas!','gold');}
   if(type==='all'){score+=1e12;totalEarned+=1e12;globalMult*=1000;clickPower*=1000;prestigeStars+=100;toast('🌟 TUDO DADO!!','rainbow');}
   sfx('jackpot');updateUI();checkMS();checkPrestige();
+}
+function admAutoClick(){autoPerSec+=1000000;updateUI();toast('🤖 +1M/seg ativado!','gold');sfx('jackpot');}
+function admChaos(){if(!chaosActive)toggleChaos();toast('💀 Caos ativado!','red');}
+function admUnlockSkins(){SKINS.forEach(s=>ownedSkins.add(s.id));renderSkins();skinsBought=SKINS.length;toast('🎨 Todas as skins desbloqueadas!','rainbow');sfx('milestone');}
+function admUnlockUpgrades(){
+  // só upgrades PERM/AUTO — evita efeitos cumulativos de temp/inst
+  const safe=['PERM','AUTO','⭐','SORTE','COMBO'];
+  ALL.forEach(u=>{
+    if(owned.has(u.id))return;
+    if(!safe.includes(u.tag))return;
+    owned.add(u.id);
+    try{u.eff();}catch(e){}
+  });
+  updateUI();rAll();checkMS();
+  toast('⚡ Upgrades permanentes desbloqueados!','rainbow');sfx('prestige');
+}
+async function admTopRanking(){
+  if(!playerName){toast('Entra na conta primeiro! (botão ENTRAR)','red');return;}
+  score=1e15;totalEarned=1e15;updateUI();
+  try{
+    await db.collection('jogadores').doc(playerId).set({
+      nome:playerName,id:playerId,score:1e15,
+      totalCliques:totalClicks,prestígios:prestigeCount,
+      skin:activeSkin||'sk_default',
+      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('🏆 Você é o #1 do ranking!!','rainbow');sfx('prestige');
+  }catch(e){toast('🏆 Score atualizado! (sem internet p/ salvar)','gold');}
+}
+async function admResetRanking(){
+  const c=document.createElement('div');
+  c.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+  c.innerHTML=`<div style="background:#0a0018;border:4px solid #ff2244;border-radius:20px;padding:1.4rem;text-align:center;max-width:320px;width:90%;">
+    <div style="font-family:'Boogaloo',cursive;font-size:.95rem;color:#ff2244;margin-bottom:.4rem;">⚠️ RESETAR RANKING INTEIRO?</div>
+    <div style="font-size:.5rem;color:#884444;margin-bottom:.9rem;">Remove TODOS os jogadores. Não tem volta!</div>
+    <div style="display:flex;gap:.5rem;">
+      <button onclick="(async()=>{try{const s=await db.collection('jogadores').get();s.forEach(async d=>await db.collection('jogadores').doc(d.id).delete());toast('🗑️ Ranking resetado!','red');sfx('error');}catch(e){toast('Erro: '+e.message,'red');}this.parentElement.parentElement.parentElement.remove();})()"
+        style="flex:1;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:linear-gradient(135deg,#660000,#ff2244);color:#fff;border:none;border-radius:10px;cursor:pointer;">SIM</button>
+      <button onclick="this.parentElement.parentElement.parentElement.remove()"
+        style="flex:1;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">NÃO</button>
+    </div>
+  </div>`;
+  document.body.appendChild(c);
+}
+async function admBanTemp(){
+  const name=document.getElementById('admRemoveInput')?.value.trim();
+  if(!name){toast('Coloca o nome do jogador!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('Jogador "'+name+'" não encontrado no ranking!','red');return;}
+    const expire=Date.now()+86400000;
+    const batch=db.batch();
+    snap.forEach(doc=>batch.update(doc.ref,{banido:true,banExpire:expire,score:0}));
+    await batch.commit();
+    toast('⏱️ '+name+' banido por 24h!','red');sfx('error');
+    document.getElementById('admRemoveInput').value='';
+  }catch(e){toast('Erro ao banir: '+e.message,'red');}
+}
+async function admSendMsg(){
+  const msg=document.getElementById('admMsgInput')?.value.trim();
+  if(!msg){toast('Escreve uma mensagem!','red');return;}
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'📢 ADM: '+msg,
+      tipo:'msg',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('📢 Mensagem enviada pra todos!','green');sfx('milestone');
+    document.getElementById('admMsgInput').value='';
+  }catch(e){
+    // show locally even if Firebase fails
+    toast('📢 ADM: '+msg,'green');sfx('milestone');
+    document.getElementById('admMsgInput').value='';
+  }
+}
+async function admViewFeedbacks(){
+  document.getElementById('admOv')?.remove();
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+  let html2=`<div style="background:#0a0018;border:4px solid #8800ff;border-radius:22px;padding:1.4rem;max-width:440px;width:92%;max-height:80vh;overflow-y:auto;box-shadow:0 0 40px #8800ff44;animation:gpPop .3s;">
+    <div style="font-family:'Boogaloo',cursive;font-size:1rem;color:#cc88ff;letter-spacing:3px;text-align:center;margin-bottom:.7rem;">💬 FEEDBACKS</div>`;
+  try{
+    const snap=await db.collection('feedbacks').orderBy('data','desc').limit(20).get();
+    if(snap.empty){html2+='<div style="text-align:center;font-size:.55rem;color:#664477;padding:1rem;">Nenhum feedback ainda! 🎮</div>';}
+    snap.forEach(doc=>{
+      const d=doc.data();
+      html2+=`<div style="background:#150030;border:1px solid #330055;border-radius:10px;padding:.5rem .7rem;margin-bottom:.4rem;">
+        <div style="font-size:.5rem;color:#cc88ff;font-weight:700;">${d.nome||'?'} ${d.stars?'⭐'.repeat(Math.min(d.stars,5)):''}</div>
+        <div style="font-size:.58rem;color:#c0a0dd;margin-top:.1rem;">${d.texto||''}</div>
+      </div>`;
+    });
+  }catch(e){
+    // show local feedbacks if Firebase fails
+    if(fbSuggs.length===0){html2+='<div style="text-align:center;font-size:.55rem;color:#664477;padding:1rem;">Nenhum feedback ainda!</div>';}
+    fbSuggs.forEach(s=>{
+      html2+=`<div style="background:#150030;border:1px solid #330055;border-radius:10px;padding:.5rem .7rem;margin-bottom:.4rem;">
+        <div style="font-size:.5rem;color:#cc88ff;font-weight:700;">${s.name} ${s.stars?'⭐'.repeat(s.stars):''}</div>
+        <div style="font-size:.58rem;color:#c0a0dd;margin-top:.1rem;">${s.text}</div>
+      </div>`;
+    });
+  }
+  html2+=`<button onclick="this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-top:.5rem;">FECHAR</button></div>`;
+  ov.innerHTML=html2;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+function admConfetti(){
+  for(let i=0;i<25;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText=`position:fixed;font-size:${1+Math.random()*1.5}rem;left:${Math.random()*95}%;top:-5%;z-index:999;pointer-events:none;animation:crownFall ${1.2+Math.random()*2}s ease-in forwards;`;
+      el.textContent=['🎉','🎊','✨','⭐','🌟','💫','🎈'][Math.floor(Math.random()*7)];
+      document.body.appendChild(el);setTimeout(()=>el.remove(),4000);
+    },i*60);
+  }
+  sfx('milestone');toast('🎉 Confete!','green');
+}
+async function admConfettiAll(){
+  admConfetti();
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'🎉 CONFETE DO ADM!!',tipo:'confetti',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('🎉 Confete enviado pra todos!','rainbow');
+  }catch(e){toast('🎉 Confete local!','green');}
+}
+function admChangeBtnTxt(){
+  const v=document.getElementById('admBtnTxtInput')?.value.trim();
+  if(!v){toast('Escreve o novo texto!','red');return;}
+  document.getElementById('btnLbl').textContent=v;
+  toast('✏️ Texto alterado para: '+v,'green');
+}
+function admChangeBtnEmoji(){
+  const v=document.getElementById('admBtnEmojiInput')?.value.trim();
+  if(!v){toast('Coloca um emoji!','red');return;}
+  document.getElementById('bE').textContent=v;
+  toast('😀 Emoji alterado!','green');
+}
+function admChangeWelcome(){
+  const v=document.getElementById('admWelcomeInput')?.value.trim();
+  if(!v){toast('Escreve a mensagem!','red');return;}
+  toast('👋 '+v,'rainbow');sfx('milestone');
+}
+function admChangeColor(){
+  const hue=Math.floor(Math.random()*360);
+  document.documentElement.style.setProperty('--accent',`hsl(${hue},100%,60%)`);
+  document.documentElement.style.setProperty('--accent2',`hsl(${(hue+60)%360},100%,60%)`);
+  toast('🎨 Cor aleatória ativada!','rainbow');sfx('hover');
+}
+function admShake(){
+  document.body.style.animation='cardShake .4s ease-in-out 4';
+  setTimeout(()=>document.body.style.animation='',2000);
+  sfx('chaos');toast('📳 TREMEU!!','red');
+}
+async function admViewOnline(){  try{
+    const snap=await db.collection('jogadores').get();
+    const agora=Date.now();
+    let online=0,total=0;
+    snap.forEach(doc=>{
+      total++;
+      const ts=doc.data().updatedAt?.toMillis?.()??0;
+      if(agora-ts<300000)online++;
+    });
+    toast('🟢 '+online+' online agora · '+total+' total','green');sfx('milestone');
+  }catch(e){toast('🟢 1 online (você!) · sem acesso ao Firebase','green');}
 }
 
 // Listen for global ADM messages
@@ -2334,7 +2550,140 @@ function endNeve(venceu,tempo){
 // Conquistas dos modos
 MS.push({id:'ms_pp',label:'🏓 <strong>PING PONG MASTER</strong>',goal:1,jojo:true,bonus:()=>{prestigeStars+=5;score+=50000;},rew:'+5⭐ +50K pts',icon:'🏓',desc:'sobreviveu no Modo Ping Pong!'});
 
-// Ping Pong e Neve no menu do celular — adicionados no INIT
+// ══ MODO TURBO ⚡ ══
+// Digita: turbo
+// Por 30 segundos tudo é ×100 mas depois os pontos são divididos por 2
+// ══ MODO VEGETA 🌿 ══
+// Digita: vegeta
+// A Vegeta (planta) aparece na tela por 60 segundos falando frases
+function openModoVegeta(){
+  if(document.getElementById('vegetaOv'))return;
+  sfx('milestone');
+  toast('🌿 A VEGETA APARECEU!!','green');
+
+  // visual verde
+  document.documentElement.style.setProperty('--bg','#001a00');
+  document.documentElement.style.setProperty('--card','#002200');
+  document.documentElement.style.setProperty('--accent','#44ff44');
+  document.documentElement.style.setProperty('--text','#ccffcc');
+
+  const vegStyle=document.createElement('style');
+  vegStyle.id='vegetaStyle';
+  vegStyle.textContent=`
+    @keyframes vegetaShake{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+    @keyframes vegetaFloat{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+    #vegetaChar{animation:vegetaFloat 2s ease-in-out infinite;}
+  `;
+  document.head.appendChild(vegStyle);
+
+  const VEGETA_FRASES=[
+    'EU SOU A VEGETA!! 🌿','mjaaaau! sou uma planta!',
+    'água!! preciso de água!!','o sol tá quente hoje 🌞',
+    'MAIS DE 9000 FOLHAS!!','sou a planta do caos! 🌱',
+    'click mais rápido!!','que terra gostosa 🪴',
+    'cresce! cresce! cresce!','EU SOU INCRÍVEL!! 🌿',
+    'photossíntese ativada ☀️','me rega pleaseee 💧',
+  ];
+
+  let fraseIdx=0;
+  const ov=document.createElement('div');
+  ov.id='vegetaOv';
+  ov.style.cssText='position:fixed;bottom:20px;right:20px;z-index:600;text-align:center;';
+  ov.innerHTML=`
+    <div id="vegetaFrase" style="background:#002200;border:3px solid #44ff44;border-radius:14px 14px 14px 2px;padding:.4rem .8rem;font-family:'Boogaloo',cursive;font-size:.7rem;color:#44ff44;margin-bottom:.4rem;box-shadow:0 0 12px #44ff4444;max-width:180px;letter-spacing:1px;animation:gpPop .3s;">EU SOU A VEGETA!! 🌿</div>
+    <div id="vegetaChar" style="font-size:4rem;cursor:pointer;display:block;" title="clique na Vegeta!">🌿</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:.5rem;color:#44ff44;letter-spacing:2px;margin-top:.2rem;">VEGETA</div>
+    <div id="vegetaTimer" style="font-family:'Boogaloo',cursive;font-size:.7rem;color:#88ff88;">60s</div>`;
+  document.body.appendChild(ov);
+
+  // click vegeta for bonus
+  document.getElementById('vegetaChar')?.addEventListener('click',()=>{
+    const bonus=Math.floor(clickPower*gm()*3);
+    score+=bonus;totalEarned+=bonus;updateUI();
+    sfx('buy');
+    const f=document.getElementById('vegetaFrase');
+    if(f){f.textContent='+'+fmt(bonus)+' pts! obrigada! 🌿';
+      setTimeout(()=>{f.textContent=VEGETA_FRASES[Math.floor(Math.random()*VEGETA_FRASES.length)];},1000);}
+  });
+
+  // change frase every 4s
+  const fraseIv=setInterval(()=>{
+    const f=document.getElementById('vegetaFrase');
+    if(f){fraseIdx=(fraseIdx+1)%VEGETA_FRASES.length;f.style.animation='none';void f.offsetWidth;f.style.animation='gpPop .3s';f.textContent=VEGETA_FRASES[fraseIdx];}
+  },4000);
+
+  // countdown
+  let timeLeft=60;
+  const timerIv=setInterval(()=>{
+    timeLeft--;
+    const t=document.getElementById('vegetaTimer');
+    if(t)t.textContent=timeLeft+'s';
+    if(timeLeft<=0){
+      clearInterval(timerIv);clearInterval(fraseIv);
+      document.getElementById('vegetaOv')?.remove();
+      document.getElementById('vegetaStyle')?.remove();
+      document.documentElement.style.setProperty('--bg','#04000e');
+      document.documentElement.style.setProperty('--card','#0a0018');
+      document.documentElement.style.setProperty('--accent','#cc00ff');
+      document.documentElement.style.setProperty('--text','#f0d0ff');
+      toast('🌿 A Vegeta foi embora...','green');
+    }
+  },1000);
+}
+
+// ══ MODO INFINITO ♾️ ══
+// Digita: infinito
+// Todos os upgrades ficam disponíveis de graça por 20 segundos — compre TUDO!
+function openModoInfinito(){
+  if(document.getElementById('infOv'))return;
+  sfx('prestige');
+
+  // make everything free temporarily
+  const origBuy=buy;
+  window._origBuyInf=buy;
+  buy=function(id){
+    const up=ALL.find(u=>u.id===id);if(!up)return;
+    if(owned.has(id)&&!up.inst)return;
+    owned.add(id);up.eff();
+    sfx('buy');updateUI();rAll();checkMS();
+  };
+
+  let timeLeft=20;
+  const ov=document.createElement('div');
+  ov.id='infOv';
+  ov.style.cssText='position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:600;background:#001a33ee;border:3px solid #00ffdd;border-radius:14px;padding:.5rem 1.2rem;text-align:center;pointer-events:none;';
+  ov.innerHTML=`
+    <div style="font-family:'Boogaloo',cursive;font-size:.9rem;color:#00ffdd;letter-spacing:3px;">♾️ MODO INFINITO — TUDO GRÁTIS!</div>
+    <div id="infTimer" style="font-family:'Boogaloo',cursive;font-size:1.4rem;color:#ffdd00;">20s</div>
+  `;
+  document.body.appendChild(ov);
+
+  // highlight all cards as free
+  const infStyle=document.createElement('style');
+  infStyle.id='infStyle';
+  infStyle.textContent=`.ucard:not(.uowned){border-color:#00ffdd!important;box-shadow:0 0 10px #00ffdd44!important;animation:cIn .3s;}`;
+  document.head.appendChild(infStyle);
+
+  rAll();
+  toast('♾️ MODO INFINITO! Tudo grátis por 20s! CORRA!','rainbow');
+
+  const iv=setInterval(()=>{
+    timeLeft--;
+    const el=document.getElementById('infTimer');
+    if(el)el.textContent=timeLeft+'s';
+    if(el)el.style.color=timeLeft<=5?'#ff2244':'#ffdd00';
+    if(timeLeft<=0){
+      clearInterval(iv);
+      buy=window._origBuyInf;
+      document.getElementById('infOv')?.remove();
+      document.getElementById('infStyle')?.remove();
+      rAll();
+      sfx('milestone');
+      toast('♾️ Modo Infinito acabou! Veja o que você pegou!','green');
+    }
+  },1000);
+}
+
 // ══ INIT ══
 rAll();
 rMS();
@@ -2361,9 +2710,18 @@ try{
     neveBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#001133,#88ddff);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
     neveBtn.textContent='❄️ MODO NEVE';
     neveBtn.onclick=()=>{holdMenu.style.display='none';openNeve();};
+    const turboBtn=document.createElement('button');
+    turboBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#660000,#ff4400);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
+    turboBtn.textContent='⚡ MODO TURBO';
+    turboBtn.onclick=()=>{holdMenu.style.display='none';openModoVegeta();};
+    turboBtn.textContent='🌿 MODO VEGETA';
+    turboBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#002200,#44ff44);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
+    const infBtn=document.createElement('button');
+    infBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#001a33,#00ffdd);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
+    infBtn.textContent='♾️ MODO INFINITO';
+    infBtn.onclick=()=>{holdMenu.style.display='none';openModoInfinito();};
     const fecharBtn=holdInner.querySelector('button:last-child');
-    holdInner.insertBefore(ppBtn,fecharBtn);
-    holdInner.insertBefore(neveBtn,fecharBtn);
+    [ppBtn,neveBtn,turboBtn,infBtn].forEach(b=>holdInner.insertBefore(b,fecharBtn));
   }
 }catch(e){}
 

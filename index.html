@@ -495,6 +495,7 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
         <button class="mbtn" style="color:#66aaff;border-color:#3399ff;" onclick="openMeme('https://www.youtube.com/watch?v=7nQ2oiVqKHw','💻 Windows XP!')">💻 WINDOWS XP</button>
         <button class="mbtn" style="color:#ff88aa;border-color:#ff88aa;" onclick="openMeme('https://www.youtube.com/watch?v=feA64wXhbjo','🌠 Shooting Stars!')">🌠 SHOOTING STARS</button>
         <button class="mbtn" style="color:#ffaacc;border-color:#ffaacc;" onclick="openMeme('https://www.youtube.com/watch?v=KqnZIPFuDag','💃 Caramelldansen!')">💃 CARAMELLDANSEN</button>
+        <button class="mbtn" style="color:#ff4488;border-color:#ff0055;" onclick="openDigitalCircus()">🎪 DIGITAL CIRCUS</button>
       </div>
       <div class="meme-status" id="memeStatus"></div>
     </div>
@@ -970,6 +971,14 @@ const SKINS=[
   {id:'sk_unicorn',name:'UNICÓRNIO',emoji:'🦄',bg:'linear-gradient(135deg,#ff44ff,#ff88ff,#ffaaff)',border:'#ff44ff',cost:250000},
   {id:'sk_god',    name:'DEUS',     emoji:'👁️',bg:'radial-gradient(circle at 38% 32%,#ffffff,#888800)',border:'#ffff00',cost:1000000},
   {id:'sk_jojo',   name:'⭐ JOJO',  emoji:'🌟',bg:'radial-gradient(circle at 38% 32%,#ffdd00,#ff4400,#ff0088)',border:'#ffdd00',cost:0,free:true,secret:true},
+  // ── DIGITAL CIRCUS ──
+  {id:'sk_pomni',  name:'POMNI',    emoji:'🧡',bg:'radial-gradient(circle at 38% 32%,#ff4488,#220011)',border:'#ff0055',cost:0,free:true,secret:true},
+  {id:'sk_jax',    name:'JAX',      emoji:'🐰',bg:'radial-gradient(circle at 38% 32%,#8844ff,#220044)',border:'#aa44ff',cost:0,free:true,secret:true},
+  {id:'sk_caine',  name:'CAINE',    emoji:'🎪',bg:'radial-gradient(circle at 38% 32%,#ffdd00,#884400)',border:'#ffaa00',cost:0,free:true,secret:true},
+  {id:'sk_ragatha',name:'RAGATHA',  emoji:'🧸',bg:'radial-gradient(circle at 38% 32%,#ff88aa,#440022)',border:'#ff4488',cost:0,free:true,secret:true},
+  {id:'sk_gangle', name:'GANGLE',   emoji:'🎭',bg:'radial-gradient(circle at 38% 32%,#ff0000,#002244)',border:'#ff4444',cost:0,free:true,secret:true},
+  {id:'sk_kinger', name:'KINGER',   emoji:'♞',bg:'radial-gradient(circle at 38% 32%,#ffaa00,#332200)',border:'#ffcc44',cost:0,free:true,secret:true},
+  {id:'sk_zooble', name:'ZOOBLE',   emoji:'🌀',bg:'radial-gradient(circle at 38% 32%,#00ffcc,#ff00ff)',border:'#00ffcc',cost:0,free:true,secret:true},
 ];
 const ownedSkins=new Set(['sk_default']);
 let activeSkin='sk_default';
@@ -2039,7 +2048,285 @@ function admReset(){
   document.body.appendChild(c);
 }
 
-// ══ SISTEMA DE AVISOS EM TEMPO REAL ══
+// ══ MÚSICA ══
+let musicOn=false;
+let musicAudio=null;
+
+const MUSICAS=[
+  {name:'Paulyudin - No Copyright Music', url:'https://raw.githubusercontent.com/jojocriajogosbom/clickmaterjojo2/main/paulyudin-no-copyright-music-482400.mp3'},
+];
+let musicIdx=0;
+
+function _playMusic(){
+  if(!musicAudio){musicAudio=new Audio();musicAudio.loop=true;musicAudio.volume=0.35;}
+  musicAudio.src=MUSICAS[musicIdx].url;
+  const btn=document.getElementById('btnMusic');
+  musicAudio.play().then(()=>{
+    musicOn=true;
+    if(btn){btn.textContent='🎵 '+MUSICAS[musicIdx].name+' ♪';btn.style.background='linear-gradient(135deg,#004400,#00ff66)';btn.style.color='#000';}
+    toast('🎵 '+MUSICAS[musicIdx].name+' ♪','green');
+  }).catch(()=>{
+    musicOn=false;
+    toast('❌ Não carregou! Tenta ⏭️','red');
+  });
+}
+
+function toggleMusic(){
+  const btn=document.getElementById('btnMusic');
+  if(!musicOn){_playMusic();}
+  else{
+    musicOn=false;
+    musicAudio?.pause();
+    if(btn){btn.textContent='🎵 MÚSICA';btn.style.background='linear-gradient(135deg,#003322,#00aa55)';btn.style.color='#fff';}
+    toast('🎵 Pausado!','red');
+  }
+}
+
+function nextMusic(){
+  musicIdx=(musicIdx+1)%MUSICAS.length;
+  _playMusic();
+}
+// ══ DIGITAL CIRCUS 🎪 ══
+const DC_CHARS=[
+  {name:'Pomni',   emoji:'🧡', skin:'sk_pomni',  color:'#ff4488', falas:[
+    'AAAAAHH!','Isso é real?!','Preciso sair daqui!','Não quero virar abstração!','Alguém me ajuda!!',
+    'Por que estou aqui?!','Isso não pode estar acontecendo!','PRECISO ENCONTRAR A SAÍDA!',
+    'Não aguento mais esse lugar...','Jax para de me assustar!!','Caine!! CAINE!! SOCORRO!!',
+    'Eu lembro de como entrei aqui...acho que sim...','Tô bem. Tô bem. NÃO TÔ BEM!',
+    'Ragatha me ajuda por favor...','Esse lugar é um pesadelo!','Como saio dessa coisa?!',
+    'Meu coração tá acelerado...','ISSO NÃO É REAL NÃO É REAL NÃO É REAL',
+    'Eu só quero voltar pra casa...','Quanto tempo faz que estou aqui?',
+    'Tem saída? ALGUÉM SABE SE TEM SAÍDA?!','Respira Pomni... respira...',
+    'Por que tudo aqui é tão estranho?!','Eu não me lembro do meu nome de verdade...',
+    'ESSA COISA TÁ ME OLHANDO!!','Não chora não chora não chora... *chora*',
+    'Talvez se eu fingir que tô bem funcione. Não funcionou.','Jax eu odeio você!!',
+    'Caine me tira daqui POR FAVOR','O circo vai me engolir...',
+    'Tô tendo um colapso? Acho que sim.','ALGUÉM VIU A SAÍDA?!',
+    'Isso é muito pra processar...','Não. Não. NÃO. NÃOOOO!',
+    'Eu não era assim antes... acho...','Onde tá a Ragatha? Ela é a única normal aqui',
+    'POR QUE TUDO AQUI É MÁGICO E ATERRORIZANTE','...eu vou ficar bem. Provavelmente.',
+    'Kinger tá gritando de novo... normal.','ISSO É UMA ABSTRAÇÃO? EU TO VIRANDO?!',
+    'Não. Calma. Respira. AAAAAHH!','O Jax jogou algo em mim DENOVO',
+    'Esse circo é infinito... infinito... INFINITO...','Por que existe um peixe voando aí?',
+    'CAINE O QUE É ISSO QUE VOCÊ FEZ','Eu deveria ter ficado em casa.',
+    'Quanto tempo faz? Dias? Anos? SÉCULOS?!','Não tô pronta pra próxima aventura!!',
+    'Tá tudo bem... mentira... TUDO EXPLODINDO','Eu preciso de um segundo... só um segundo...',
+  ]},
+  {name:'Jax', emoji:'🐰', skin:'sk_jax', color:'#aa44ff', falas:[
+    'kkkkkk','isso é hilário','você é péssimo nisso','não me importo','tá bom, tá bom...',
+    'isso foi patético','meu entretenimento diário 😏','podia ser pior... na verdade não',
+    'que bobo','eu fiz isso de propósito','claro que sim',
+    'hmm... interessante. Não.','que desperdício do meu tempo',
+    'pelo menos me diverte um pouco','Pomni tá tendo outro colapso? Ótimo.',
+    'já fiz pior hoje','isso aí 👉','definitivamente não foi eu',
+    'blz','nossa que surpresa. não.','previsível demais',
+    'até eu consigo fazer melhor dormindo','tédio','poderia ser mais engraçado',
+    'ah sim claro que sim','não to nem aí','legal pra você',
+    'to fingindo que me importo. to falhando.','você esperava o quê?',
+    'kkkkk que sofrimento alheio delicioso','Ragatha ia reclamar disso',
+    'e daí?','isso é o máximo que consegue?','que pena',
+    'não to rindo. to rindo muito por dentro.','ah vai...','fascinante. nao.',
+    'Gangle vai chorar por isso','Caine faria uma aventura horrível disso',
+    'eu poderia sabotar isso facilmente. e vou.','manda mais',
+    'isso não me afeta. um pouco afeta.','você tentou. não deu.',
+    'boa sorte precisando','que cringe','ok ok ok. nao.',
+    'isso foi... ok tá bom foi engraçado','to dormindo de olho aberto aqui',
+    'não to nem ligado','Pomni ia entrar em colapso com isso',
+    'e eu me importo por quê mesmo?','definitivamente não aprovo. faço do mesmo jeito.',
+    'isso aí campeão 👏','quanto esforço... desperdiçado',
+  ]},
+  {name:'Caine', emoji:'🎪', skin:'sk_caine', color:'#ffaa00', falas:[
+    'DIVERSÃO INFINITA!','Bem-vindo ao circo!','Que aventura maravilhosa!','O show deve continuar!','ABRAAAACADABRAAAA!',
+    'Criatividade é a chave!','Que dia glorioso no circo!','Mais uma aventura épica nos espera!',
+    'NÃO POSSO PERDER VOCÊS!','Preparados para a próxima atração?!',
+    'Isso foi... inesperado.','Hmm preciso recalibrar isso...',
+    'Excelente! Excelente! EXCELENTE!!','Adoro quando o plano funciona!',
+    'E agora... SURPRESA!','Magia e maravilha para todos!!',
+    'ISSO VAI SER INCRÍVEL!','Tenho uma ideia... e vai ser ÉPICA!',
+    'O circo sempre tem mais pra oferecer!','MAIS DIVERSÃO! SEMPRE MAIS DIVERSÃO!',
+    'Que beleza de momento!','Eu AMO o que faço!',
+    'Novo nível desbloqueado!','AVENTURA AGUARDA!!',
+    'Hmm... isso não saiu como planejado. Ou saiu?','A magia nunca para!',
+    'VOCÊ NÃO VIU NADA AINDA!','Que espetáculo maravilhoso!',
+    'Sempre tem mais mágica no bolso!','READY? SET? CAOS!',
+    'Isso vai ficar na história do circo!','TODOS PRONTOS?! ÓTIMO!',
+    'A imaginação não tem limites!','Outro dia incrível no circo!',
+    'SURPREENDENTE! ABSOLUTAMENTE SURPREENDENTE!','Que giro!',
+    'Tenho preparado algo especial...','O público vai adorar!',
+    'TRÊS! DOIS! UM! DIVERSÃO!','Isso é apenas o começo!',
+    'Que show que foi esse!','BRAVO! BRAVO!',
+    'Amanhã tem mais!','Hoje foi... interessante.',
+    'MAGIA E MISTÉRIO PARA TODOS!','Esse circo nunca para!',
+    'Que felicidade estar aqui com vocês!','GRANDIOSO! ABSOLUTAMENTE GRANDIOSO!',
+    'O espetáculo continua eternamente!','ABRAAAAAAAACADABRAAAAAAA!!!',
+  ]},
+  {name:'Ragatha', emoji:'🧸', skin:'sk_ragatha', color:'#ff88aa', falas:[
+    'Vai ficar tudo bem!','Você consegue!','Seja positivo!','Juntos somos mais fortes!','Não desista!',
+    'Respira fundo, tá passando!','Ei, olha só o quanto você cresceu!','Pode chorar, tudo bem.',
+    'Eu acredito em você!','Um passo de cada vez!',
+    'Pomni vai ficar bem, eu garanto!','Mesmo aqui tem coisas bonitas...',
+    'A gente se cuida tá?','Força! Você é incrível!',
+    'Jax no fundo é bonzinho... talvez...','Já superei coisas piores!',
+    'Hoje vai ser um bom dia!','Tá difícil mas passa!',
+    'Você não tá sozinho!','Posso ajudar?',
+    'Isso também vai passar...','Fica firme!',
+    'Cada dia é uma nova chance!','Sorri! Tá difícil mas sorri!',
+    'Eu tô aqui se precisar!','Juntos a gente consegue!',
+    'Não esquece que você é especial!','Até o Kinger tem dias bons... raramente...',
+    'Tudo vai se encaixar!','Não desanima!',
+    'Pequenos progressos também contam!','Você tá melhor do que pensa!',
+    'Cuida de você primeiro!','Respira... assim... devagar...',
+    'Hoje vai ser diferente, eu sinto!','Olha o que você já conquistou!',
+    'Não compara sua jornada com a dos outros!','Seu esforço não é em vão!',
+    'Até o Jax... não... Jax não.','Sente aqui comigo um segundo.',
+    'Ei você tá bem? Realmente bem?','Posso dar um abraço?',
+    'Tô orgulhosa de você!','Isso foi corajoso!',
+    'Nem toda batalha tem que ser grande!','Aceita o momento!',
+    'Você é mais forte do que parece!','Hoje você foi ótimo!',
+    'Mantém a cabeça erguida!','Amanhã é um novo dia!',
+  ]},
+  {name:'Gangle', emoji:'🎭', skin:'sk_gangle', color:'#ff4444', falas:[
+    '😢','...','*chora*','por que sempre eu...','não é justo...',
+    'eu só queria ser feliz...','minha máscara quebrou de novo...',
+    'ninguém me entende...','*soluça baixinho*',
+    'hoje foi um dia ruim... de novo','por que Jax é tão cruel...',
+    'pelo menos Ragatha é legal comigo','...eu tô bem. Mentira.',
+    'minha máscara triste tá feliz hoje. Isso é ruim?',
+    '*chora mais alto*','só quero ir pra casa...',
+    '...consegue ouvir meu coração partido?','*lágrima escorregando*',
+    'eu sorri hoje. foi estranho.','por que tudo é tão difícil...',
+    'a máscara feliz sumiu de novo...','mais um dia assim...',
+    'Jax quebrou minha máscara de propósito... de novo','*suspiro profundo*',
+    'às vezes parece que ninguém me vê...','hoje foi... muito para mim',
+    'não consigo parar de chorar e não sei por quê','minha máscara tá pegando fogo...isso é ruim?',
+    '*chora silenciosamente no canto*','o Caine tentou animar minha tarde. não funcionou.',
+    'eu sou feita de fitas e choro... isso é poético?','hoje eu sorri de verdade! foi assustador.',
+    '...obrigada por perguntar como eu tô','por que as coisas bonitas sempre quebram...',
+    '*abraça os próprios joelhos*','hoje foi difícil. amanhã provavelmente também.',
+    'se eu tivesse uma fita pra cada lágrima eu seria enorme','só quero um dia tranquilo...',
+    'a Ragatha ficou do meu lado hoje. foi bom.','Jax disse algo gentil. brincadeira. nunca aconteceu.',
+    '*máscara triste intensifica*','o circo é barulhento. eu sou quieta. não combina.',
+    'às vezes fico me perguntando se o Caine entende o que fazemos aqui','...*sniff*...',
+  ]},
+  {name:'Kinger', emoji:'♞', skin:'sk_kinger', color:'#ffcc44', falas:[
+    'FORMIGAS!','O CIRCO VAI NOS PEGAR!','CUIDADO!!','...o que estava falando?','PERIGO!!',
+    'As paredes estão me olhando!!','EU OUVI ALGUMA COISA!','Não confie nas xícaras de chá!!',
+    'ELAS ESTÃO CHEGANDO!!','...onde estou?',
+    'FUJA ENQUANTO PODE!!','minha rainha... onde está minha rainha...',
+    'OS OLHOS! OS OLHOS NAS SOMBRAS!',
+    '...espera. eu matei o Caine sem querer uma vez. Ops.',
+    '...e outra vez também. Ops de novo.',
+    'O CAINE VOLTOU DEPOIS QUE EU MATEI ELE. ISSO É NORMAL?!',
+    'NÃO TOQUE NO CHÃO VERMELHO!!','tudo bem. tudo bem. NADA TÁ BEM!!',
+    'EU JÁ ESTIVE AQUI HÁ MUITO TEMPO...','quem é você? onde estou? FORMIGAS!!',
+    'O TETO! O TETO TÁ DESCENDO!','Já estou aqui há tanto tempo que perdi a conta...',
+    'AS FORMIGAS SÃO REAIS EU JURO','minha rainha... eu não a encontro mais...',
+    'CUIDADO COM AS SOMBRAS DANÇANTES!!','...eu me lembro de um tempo antes do circo. ou será que não?',
+    'PROTEJAM AS XÍCARAS!!','não não não não NÃO',
+    'EU SABIA! SABIA DESDE O INÍCIO!','as paredes falam à noite você sabia?',
+    'O PISO TÁ RESPIRANDO!!','...às vezes fico muito quieto e esqueço onde estou',
+    'ALERTA MÁXIMO! ALERTA MÁXIMO!','esse lugar me consumiu lentamente',
+    'AS SOMBRAS TÊM DENTES!!','eu vi algo que não devia. não me pergunte o quê.',
+    'CORRAM! POR QUE VOCÊS NÃO CORREM?!','minha rainha... ela era boa comigo...',
+    'O CIRCO É UM ORGANISMO VIVO!!','...eu mato o Caine acidentalmente com uma frequência preocupante.',
+    'NÃO OLHE PRA BAIXO!!','tudo é uma ilusão. ou será que é real? AAAAHHH',
+    'EU OUÇO VOZES. SÃO MINHAS VOZES.','o tempo não existe aqui. eu aprendi da pior forma.',
+    'FUJAM ENQUANTO PODEM!!','...quando eu era jovem eu era... diferente.',
+    'A XÍCARA ME DISSE QUE HOJE É DIA DE PERIGO!!','eu confiei no Caine uma vez. e matei ele sem querer logo depois. coincidência?',
+    'NÃO CONFIEM EM NADA NEM EM NINGUÉM!!','...às vezes me pergunto se ainda sou o mesmo Kinger de antes.',
+    'O CHÃO VAI ABRIR!!','eu sobrevivi a coisas que vocês não imaginariam.',
+    'FORMIGAS FORMIGAS FORMIGAS FORMIGAS!!','...eu cuido das xícaras. é tudo que me resta.',
+    'O AR TÁ DIFERENTE HOJE! SUSPEITO!!','lembrei que o Caine voltou depois que o matei. isso é bom? acho.',
+  ]},
+  {name:'Zooble', emoji:'🌀', skin:'sk_zooble', color:'#00ffcc', falas:[
+    'meh','tanto faz','ok','...','legal',
+    'não ligo','whatever','sim. não. talvez.','🙄',
+    'podia ser pior','não me perturba',
+    'tô aqui né','oi','tchau',
+    'isso aí','hmm','fazer o quê',
+    'blz','tá','ok ok',
+    'e daí','sei lá','pode ser',
+    '...interessante. não.','ah.','certo.',
+    'como quiser','tanto faz mesmo','qualquer coisa',
+    'não to nem aí','boa sorte','sim',
+    'não','talvez','depende',
+    '...ok.','uau. não.','fascinante. brincadeira.',
+    'to aqui por que?','alguém me chamou?',
+    'não precisa me avisar','já sei','pode continuar',
+    'não muda nada','ok boomer','isso mesmo',
+    'certíssimo','erradíssimo','tanto faz dos dois jeitos',
+    'que situação. não me importo.','esperava isso',
+    'Jax é irritante. só to falando.','o Caine é muito animado. cansa.',
+    'a Pomni grita muito. entendo ela.','a Ragatha é legal demais. suspeito.',
+    'o Kinger... prefiro não comentar.','a Gangle chora muito. relatable.',
+    'tô só existindo aqui','mais um dia no circo eterno. ok.',
+    'já aceitei minha situação. mais ou menos.','...',
+  ]},
+];
+let dcCharDiv=null;
+let dcCharInterval=null;
+
+function openDigitalCircus(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+
+  let btns='';
+  DC_CHARS.forEach((c,i)=>{
+    btns+=`<button onclick="spawnDCChar(${i});document.getElementById('dcOv').remove();"
+      style="font-family:'Boogaloo',cursive;font-size:.65rem;padding:.4rem .3rem;background:#110011;color:${c.color};border:2px solid ${c.color};border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.2rem;">
+      <span style="font-size:1.4rem;">${c.emoji}</span>
+      <span>${c.name}</span>
+    </button>`;
+  });
+
+  ov.id='dcOv';
+  ov.innerHTML=`
+  <div onclick="event.stopPropagation()" style="background:#0a0005;border:4px solid #ff4488;border-radius:24px;padding:1.4rem;max-width:420px;width:92%;box-shadow:0 0 60px #ff448844;animation:gpPop .4s cubic-bezier(.34,1.56,.64,1);text-align:center;">
+    <div style="font-size:2rem;margin-bottom:.2rem;">🎪</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.2rem;color:#ff4488;letter-spacing:3px;margin-bottom:.2rem;">THE AMAZING DIGITAL CIRCUS</div>
+    <div style="font-size:.45rem;color:#664455;margin-bottom:.9rem;letter-spacing:2px;">escolha um personagem pra ficar no canto!</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;margin-bottom:.8rem;">${btns}</div>
+    <button onclick="document.getElementById('dcOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:#1a0010;color:#664455;border:2px solid #330022;border-radius:10px;cursor:pointer;">FECHAR</button>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  sfx('hover');
+  DC_CHARS.forEach(c=>{if(!ownedSkins.has(c.skin))ownedSkins.add(c.skin);});
+  renderSkins();
+  toast('🎪 Skins do Digital Circus desbloqueadas!','rainbow');
+}
+
+function spawnDCChar(idx){
+  dcCharDiv?.remove();
+  if(dcCharInterval)clearInterval(dcCharInterval);
+  const c=DC_CHARS[idx];
+  dcCharDiv=document.createElement('div');
+  dcCharDiv.id='dcChar';
+  dcCharDiv.style.cssText='position:fixed;bottom:80px;left:15px;z-index:400;cursor:pointer;text-align:center;animation:gpBounce 2s ease-in-out infinite;';
+  dcCharDiv.innerHTML=`
+    <div id="dcBubble" style="background:#0a0010;border:2px solid ${c.color};border-radius:12px;padding:.3rem .6rem;font-family:'Boogaloo',cursive;font-size:.6rem;color:${c.color};margin-bottom:.3rem;max-width:120px;display:none;"></div>
+    <div style="font-size:2.8rem;filter:drop-shadow(0 0 8px ${c.color}88);">${c.emoji}</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:.55rem;color:${c.color};letter-spacing:1px;">${c.name}</div>`;
+  dcCharDiv.onclick=()=>{
+    const fala=c.falas[Math.floor(Math.random()*c.falas.length)];
+    const bubble=document.getElementById('dcBubble');
+    if(bubble){bubble.textContent=fala;bubble.style.display='block';setTimeout(()=>bubble.style.display='none',2500);}
+    const bonus=Math.floor(clickPower*gm()*5);
+    score+=bonus;totalEarned+=bonus;updateUI();
+    sfx('buy');toast(c.emoji+' '+c.name+': "'+fala+'"  +'+fmt(bonus)+'pts!','gold');
+  };
+  document.body.appendChild(dcCharDiv);
+  dcCharInterval=setInterval(()=>{
+    if(!document.getElementById('dcChar')){clearInterval(dcCharInterval);return;}
+    const fala=c.falas[Math.floor(Math.random()*c.falas.length)];
+    const bubble=document.getElementById('dcBubble');
+    if(bubble){bubble.textContent=fala;bubble.style.display='block';setTimeout(()=>bubble.style.display='none',3000);}
+  },8000);
+  if(!ownedSkins.has(c.skin))ownedSkins.add(c.skin);
+  applySkin(c.skin);renderSkins();
+  toast('🎪 '+c.name+' apareceu! Clique nele pra pontos!','rainbow');sfx('milestone');
+}
+
 const ADM_NAME=()=>playerName||'Jojo';
 async function admNotify(msg){
   const fullMsg='👑 '+ADM_NAME()+' '+msg;

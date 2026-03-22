@@ -1775,22 +1775,26 @@ const SECRET_CODES={
 };
 const MAX_CODE_LEN=Math.max(...Object.keys(SECRET_CODES).map(k=>k.length));
 let kBuffer='';let kTimer=null;
-let kFireTimer=null;
+let kPendingFn=null;let kPendingTimer=null;
 document.addEventListener('keydown',e=>{
   if(e.key.length>1)return;
   kBuffer+=e.key.toLowerCase();
   if(kBuffer.length>MAX_CODE_LEN)kBuffer=kBuffer.slice(-MAX_CODE_LEN);
-  clearTimeout(kTimer);kTimer=setTimeout(()=>kBuffer='',3000);
-  clearTimeout(kFireTimer);
+  clearTimeout(kTimer);kTimer=setTimeout(()=>{kBuffer='';kPendingFn=null;clearTimeout(kPendingTimer);},3000);
+  clearTimeout(kPendingTimer);kPendingFn=null;
   const sortedCodes=Object.entries(SECRET_CODES).sort((a,b)=>b[0].length-a[0].length);
   const matched=sortedCodes.find(([code])=>kBuffer.endsWith(code));
   if(matched){
     const [matchedCode,matchedFn]=matched;
     const couldBeLonger=sortedCodes.some(([code])=>code.length>matchedCode.length&&code.startsWith(matchedCode));
-    if(couldBeLonger){
-      kFireTimer=setTimeout(()=>{matchedFn();kBuffer='';},600);
-    } else {
+    if(!couldBeLonger){
+      // No longer code possible — fire immediately
       matchedFn();kBuffer='';
+    } else {
+      // A longer code is possible — store this match and wait 1.5s for next key
+      // If user keeps typing and hits a longer code, the next keydown will cancel this
+      kPendingFn=()=>{matchedFn();kBuffer='';};
+      kPendingTimer=setTimeout(()=>{if(kPendingFn){kPendingFn();kPendingFn=null;}},1500);
     }
   }
 });
@@ -2266,18 +2270,7 @@ async function admRemovePlayer(ban){
     document.getElementById('admRemoveInput').value='';
   }catch(e){toast('Erro: '+e.message,'red');}
 }
-async function admSendMsg(){
-  const msg=document.getElementById('admMsgInput')?.value.trim();
-  if(!msg){toast('Escreve uma mensagem!','red');return;}
-  try{
-    await db.collection('avisos').doc('global').set({
-      msg:'📢 ADM: '+msg,
-      ts:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('📢 Mensagem enviada pra todos!','green');sfx('milestone');
-    document.getElementById('admMsgInput').value='';
-  }catch(e){toast('Erro ao enviar!','red');}
-}
+// admSendMsg definido abaixo
 function admReset(){
   // usar overlay em vez de confirm() que não funciona no celular
   const c=document.createElement('div');
@@ -3694,6 +3687,7 @@ holdMenu.innerHTML=`
     <button onclick="openRoblox();holdMenu.style.display='none'" style="font-family:'Nunito',sans-serif;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#004488,#00b2ff);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;">🎮 IR PRO ROBLOX</button>
   </div>
   <div style="font-size:.46rem;color:#330044;margin-bottom:.65rem;">🤫 não conta pra ninguém</div>
+  <button id="btnMusic" onclick="toggleMusic();holdMenu.style.display='none'" style="width:100%;font-family:'Nunito',sans-serif;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#003322,#00aa55);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.45rem;">🎵 MÚSICA</button>
   <button onclick="holdMenu.style.display='none'" style="font-family:'Nunito',sans-serif;font-size:.8rem;padding:.4rem 1.2rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
 </div>`;
 document.body.appendChild(holdMenu);
@@ -3803,7 +3797,7 @@ function crownClick(){
 
 // ══ VEGETA NO CAOS ══
 const vegetaOv=document.createElement('div');
-vegetaOv.id='vegetaOv';
+vegetaOv.id='vegetaChaosOv';
 vegetaOv.style.cssText='display:none;position:fixed;bottom:20px;right:20px;z-index:998;animation:gpPop .5s cubic-bezier(.34,1.56,.64,1);cursor:pointer;';
 vegetaOv.title='Clique para fechar';
 vegetaOv.innerHTML=`
@@ -4262,10 +4256,32 @@ function shareWhatsApp(text){
 
 async function doRegister(){
   const name=document.getElementById('regNameInput').value.trim();
-  const pass=document.getElementById('regPassInput')?.value.trim();
+  const passEl=document.getElementById('regPassInput');
+  const pass=passEl?passEl.value.trim():'';
   if(!name){toast('Coloca um nome!','red');return;}
   if(name.length<2){toast('Nome muito curto!','red');return;}
   if(!pass||pass.length<3){toast('Senha muito curta! Mínimo 3 caracteres.','red');return;}
+
+  // Mostrar loading no botão
+  const btn=document.querySelector('#regOv .reg-btn');
+  if(btn){btn.textContent='⏳ Entrando...';btn.disabled=true;}
+
+  // Verificar se nome já existe no Firebase
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).limit(1).get();
+    if(!snap.empty){
+      const existing=snap.docs[0].data();
+      // Se o ID já é o mesmo (mesmo jogador voltando), ok. Se é outro, bloqueia.
+      if(!playerId||existing.id!==playerId){
+        toast('Nome já em uso! Escolha outro.','red');sfx('error');
+        if(btn){btn.textContent='🎮 ENTRAR!';btn.disabled=false;}
+        return;
+      }
+    }
+  }catch(e){
+    // Firebase offline — continua sem verificar nome duplicado
+  }
+
   playerName=name;
   if(!playerId){playerId='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);}
   const passHash=hashPass(pass);
@@ -4286,7 +4302,10 @@ async function doRegister(){
       skin:activeSkin||'sk_default',
       updatedAt:firebase.firestore.FieldValue.serverTimestamp()
     });
-  }catch(e){}
+  }catch(e){
+    toast('Cadastro salvo só localmente (sem internet)','gold');
+  }
+  if(btn){btn.textContent='🎮 ENTRAR!';btn.disabled=false;}
   closeReg();updateUserBtn();sfx('prestige');
   // SHOW SUCCESS CONFIRMATION
   const ov=document.createElement('div');
@@ -4322,21 +4341,7 @@ async function doRegister(){
   document.body.appendChild(ov);
 }
 
-// SAVE SCORE
-async function saveScore(){
-  if(!playerName){openRegOrProfile();return;}
-  try{
-    await db.collection('jogadores').doc(playerId).set({
-      nome:playerName,id:playerId,
-      score:Math.floor(score),
-      totalCliques:totalClicks,
-      prestígios:prestigeCount,
-      skin:activeSkin||'sk_default',
-      updatedAt:firebase.firestore.FieldValue.serverTimestamp()
-    });
-    toast('💾 Score salvo! '+fmt(score)+' pts','green');sfx('buy');
-  }catch(e){toast('Erro ao salvar 😢','red');}
-}
+// saveScore definido abaixo
 
 // RANKING
 function openRank(){
@@ -4345,37 +4350,7 @@ function openRank(){
 }
 function closeRank(){document.getElementById('rankOv').classList.remove('open');}
 
-async function loadRanking(){
-  const L=document.getElementById('rankListGlobal');
-  L.innerHTML='<div style="text-align:center;font-size:.55rem;color:var(--sub);padding:1rem;">Carregando... 🔄</div>';
-  try{
-    const snap=await db.collection('jogadores').where('banido','!=',true).orderBy('banido').orderBy('score','desc').limit(20).get()
-      .catch(()=>db.collection('jogadores').orderBy('score','desc').limit(20).get());
-    if(snap.empty){L.innerHTML='<div style="text-align:center;font-size:.55rem;color:var(--sub);padding:1rem;">Nenhum jogador ainda! 🎮</div>';return;}
-    L.innerHTML='';
-    const medals=['🥇','🥈','🥉'];
-    snap.forEach((doc,i)=>{
-      const d=doc.data();
-      if(d.banido)return;
-      const isMe=d.id===playerId;
-      // get skin emoji for this player
-      const skData=SKINS.find(s=>s.id===(d.skin||'sk_default'));
-      const skinEmoji=skData?skData.emoji:'👆';
-      const row=document.createElement('div');
-      row.className='rank-row'+(isMe?' me':'');
-      row.style.cssText+=isMe?'border-color:var(--accent);':'';
-      row.innerHTML=`
-        <div class="rank-pos">${medals[i]||('#'+(i+1))}</div>
-        <div style="font-size:1.4rem;min-width:1.6rem;text-align:center;">${skinEmoji}</div>
-        <div class="rank-info">
-          <div class="rank-name">${d.nome||'?'}${isMe?' <span style="color:var(--accent);font-size:.5rem;">← VOCÊ</span>':''}</div>
-          <div class="rank-pts">${d.totalCliques||0} cliques · ${d.prestígios||0} prestígios</div>
-        </div>
-        <div class="rank-score">${fmt(d.score||0)}</div>`;
-      L.appendChild(row);
-    });
-  }catch(e){L.innerHTML='<div style="text-align:center;font-size:.55rem;color:var(--red);padding:1rem;">Erro ao carregar 😢<br><span style="color:var(--sub)">Verifique sua conexão</span></div>';}
-}
+
 
 // AUTO SAVE every 60s if logged in
 setInterval(()=>{if(playerName&&score>0)saveScore();},60000);
@@ -4403,8 +4378,7 @@ function getSkinEmoji(skinId){
   return sk?sk.emoji:'👆';
 }
 
-// update loadRanking to show skin
-const _origLoadRanking=loadRanking;
+// loadRanking unificada (versão final com skin)
 loadRanking=async function(){
   const L=document.getElementById('rankListGlobal');
   L.innerHTML='<div style="text-align:center;font-size:.55rem;color:var(--sub);padding:1rem;">Carregando... 🔄</div>';
@@ -4435,7 +4409,6 @@ loadRanking=async function(){
 };
 
 // save skin when saving score
-const _origSaveScore=saveScore;
 saveScore=async function(){
   if(!playerName){openRegOrProfile();return;}
   try{
@@ -4682,7 +4655,7 @@ MS.push({id:'ms_pp',label:'🏓 <strong>PING PONG MASTER</strong>',goal:1,jojo:t
 // Digita: vegeta
 // A Vegeta (planta) aparece na tela por 60 segundos falando frases
 function openModoVegeta(){admNotify('invocou a Vegeta! 🌿');
-  if(document.getElementById('vegetaOv'))return;
+  if(document.getElementById('vegetaChaosOv'))return;
   sfx('milestone');
   toast('🌿 A VEGETA APARECEU!!','green');
 
@@ -5963,7 +5936,7 @@ function openModoTeleporte(){sfx("portal");admNotify('ativou o Modo Teletranspor
 
   // botão fechar
   const closeBtn=document.createElement('button');
-  closeBtn.style.cssText='position:fixed;bottom:15px;right:15px;z-index:800;font-family:'Nunito',sans-serif;font-size:.75rem;padding:.35rem .8rem;background:#110022;color:#aa00ff;border:2px solid #aa00ff;border-radius:10px;cursor:pointer;';
+  closeBtn.style.cssText=`position:fixed;bottom:15px;right:15px;z-index:800;font-family:'Nunito',sans-serif;font-size:.75rem;padding:.35rem .8rem;background:#110022;color:#aa00ff;border:2px solid #aa00ff;border-radius:10px;cursor:pointer;`;
   closeBtn.textContent='PARAR ⚡';
   closeBtn.onclick=()=>{
     clearInterval(teleIv);

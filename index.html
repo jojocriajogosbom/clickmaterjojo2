@@ -1775,27 +1775,38 @@ const SECRET_CODES={
 };
 const MAX_CODE_LEN=Math.max(...Object.keys(SECRET_CODES).map(k=>k.length));
 let kBuffer='';let kTimer=null;
-let kPendingFn=null;let kPendingTimer=null;
+let kPendingTimer=null;
 document.addEventListener('keydown',e=>{
   if(e.key.length>1)return;
   kBuffer+=e.key.toLowerCase();
   if(kBuffer.length>MAX_CODE_LEN)kBuffer=kBuffer.slice(-MAX_CODE_LEN);
-  clearTimeout(kTimer);kTimer=setTimeout(()=>{kBuffer='';kPendingFn=null;clearTimeout(kPendingTimer);},3000);
-  clearTimeout(kPendingTimer);kPendingFn=null;
+  // Reset idle-clear timer
+  clearTimeout(kTimer);
+  kTimer=setTimeout(()=>{kBuffer='';},3000);
+
   const sortedCodes=Object.entries(SECRET_CODES).sort((a,b)=>b[0].length-a[0].length);
+
+  // Find the longest code that matches end of buffer
   const matched=sortedCodes.find(([code])=>kBuffer.endsWith(code));
-  if(matched){
-    const [matchedCode,matchedFn]=matched;
-    const couldBeLonger=sortedCodes.some(([code])=>code.length>matchedCode.length&&code.startsWith(matchedCode));
-    if(!couldBeLonger){
-      // No longer code possible — fire immediately
-      matchedFn();kBuffer='';
-    } else {
-      // A longer code is possible — store this match and wait 1.5s for next key
-      // If user keeps typing and hits a longer code, the next keydown will cancel this
-      kPendingFn=()=>{matchedFn();kBuffer='';};
-      kPendingTimer=setTimeout(()=>{if(kPendingFn){kPendingFn();kPendingFn=null;}},1500);
-    }
+  if(!matched)return;
+
+  const [matchedCode,matchedFn]=matched;
+
+  // Check if any longer code STARTS WITH the matched code (user might still type more)
+  const couldBeLonger=sortedCodes.some(([code])=>code.length>matchedCode.length&&code.startsWith(matchedCode));
+
+  if(!couldBeLonger){
+    // Nothing longer possible — fire right away
+    clearTimeout(kPendingTimer);
+    matchedFn();kBuffer='';
+  } else {
+    // A longer code exists — wait to see if user types more
+    // Cancel any previous pending and set a new one for the current match
+    clearTimeout(kPendingTimer);
+    kPendingTimer=setTimeout(()=>{
+      // Time's up — fire the best match we have
+      if(kBuffer.endsWith(matchedCode)){matchedFn();kBuffer='';}
+    },1000);
   }
 });
 

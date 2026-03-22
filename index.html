@@ -2,8 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Clicker Master">
+<meta name="theme-color" content="#04000e">
 <title>⚡ CLICKER MASTER</title>
+<!-- ÍCONE -->
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0018'/><text y='.9em' font-size='80' x='10'>⚡</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0018'/><text y='.9em' font-size='80' x='10'>⚡</text></svg>">
 <!-- FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -16,14 +23,28 @@ const firebaseConfig={
   messagingSenderId:"368256146757",
   appId:"1:368256146757:web:787aefa86c25c0b140b22c"
 };
-firebase.initializeApp(firebaseConfig);
-const db=firebase.firestore();
-db.settings({experimentalForceLongPolling:true,merge:true});
+let db=null;
+try{
+  firebase.initializeApp(firebaseConfig);
+  db=firebase.firestore();
+  db.settings({experimentalForceLongPolling:true,merge:true});
+}catch(e){console.warn('Firebase init error:',e);}
 </script>
 <style>
+/* ══ SPLASH SCREEN ══ */
+#splash{position:fixed;inset:0;z-index:9999;background:#04000e;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .8s ease-out;}
+#splash.hide{opacity:0;pointer-events:none;}
+.splash-emoji{font-size:5rem;animation:splashBounce 1s ease-in-out infinite;}
+.splash-title{font-family:'Boogaloo',cursive;font-size:2.5rem;color:#00ff44;letter-spacing:4px;text-shadow:0 0 40px #cc00ff,0 0 80px #ff00cc88;margin:.5rem 0;}
+.splash-sub{font-family:'Boogaloo',cursive;font-size:.75rem;color:#664488;letter-spacing:3px;margin-bottom:1.5rem;}
+.splash-bar-wrap{width:200px;height:8px;background:#110022;border-radius:10px;overflow:hidden;border:2px solid #330055;}
+.splash-bar{height:100%;background:linear-gradient(90deg,#cc00ff,#ff00cc,#ffdd00);border-radius:8px;width:0%;transition:width .1s linear;}
+.splash-tip{font-family:'Boogaloo',cursive;font-size:.55rem;color:#443355;margin-top:.8rem;letter-spacing:2px;}
+@keyframes splashBounce{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.1) rotate(5deg)}}
+
 @import url('https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;900&display=swap');
 :root{
-  --bg:#04000e;--card:#0a0018;--border:#2a0055;
+  --bg:#03000c;--card:#080015;--border:#2a0055;
   --accent:#cc00ff;--accent2:#ff00cc;--yellow:#ffdd00;
   --green:#00ffaa;--orange:#ff6600;--red:#ff2244;
   --blue:#00ccff;--text:#f0d0ff;--sub:#664477;
@@ -38,17 +59,17 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);min-height:100vh;color
 
 /* HEADER */
 header{text-align:center;padding:1rem 0 .4rem;}
-h1{font-family:'Boogaloo',cursive;font-size:clamp(2rem,7vw,3.8rem);color:#00ff44;
-  text-shadow:0 0 40px var(--accent),0 0 80px var(--accent2)88,5px 5px 0 #1a0033;
+h1{font-family:'Boogaloo',cursive;font-size:clamp(2.2rem,8vw,4rem);color:#00ff44;
+  text-shadow:0 0 40px #00ff4488,0 0 80px #cc00ff55,4px 4px 0 #001a00;
   letter-spacing:4px;animation:hW 3s ease-in-out infinite;cursor:pointer;}
 @keyframes hW{0%,100%{transform:rotate(-.7deg)}50%{transform:rotate(.7deg)}}
 header p{font-size:.65rem;color:var(--sub);letter-spacing:4px;margin-top:.2rem;}
 
 /* HEADER BUTTONS */
-.hbtns{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem;}
-.btn-yt{display:inline-flex;align-items:center;gap:.4rem;font-family:'Boogaloo',cursive;font-size:.9rem;
-  padding:.42rem 1.1rem;background:linear-gradient(135deg,#cc0000,#ff7700);color:#fff;
-  border:none;border-radius:12px;cursor:pointer;letter-spacing:2px;text-decoration:none;
+.hbtns{display:flex;gap:.4rem;justify-content:center;flex-wrap:wrap;margin-top:.6rem;}
+.btn-yt{display:inline-flex;align-items:center;gap:.4rem;font-family:'Boogaloo',cursive;font-size:clamp(.8rem,3vw,.95rem);
+  padding:.5rem 1.1rem;background:linear-gradient(135deg,#cc0000,#ff7700);color:#fff;
+  border:none;border-radius:14px;cursor:pointer;letter-spacing:2px;text-decoration:none;
   box-shadow:0 0 20px #ff440055,0 4px 0 #880000;transition:.12s;animation:ytP 2s ease-in-out infinite;}
 @keyframes ytP{0%,100%{box-shadow:0 0 20px #ff440055,0 4px 0 #880000}50%{box-shadow:0 0 35px #ff4400aa,0 4px 0 #880000}}
 .btn-yt:hover{transform:scale(1.07) translateY(-2px);filter:brightness(1.15);}
@@ -56,7 +77,7 @@ header p{font-size:.65rem;color:var(--sub);letter-spacing:4px;margin-top:.2rem;}
 
 /* LANG BUTTONS */
 .lang-row{display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center;margin-top:.4rem;}
-.lbtn{font-family:'Boogaloo',cursive;font-size:.65rem;padding:.25rem .55rem;
+.lbtn{font-family:'Boogaloo',cursive;font-size:clamp(.6rem,2.5vw,.7rem);padding:.3rem .6rem;
   border:2px solid var(--border);border-radius:8px;cursor:pointer;
   background:var(--card);color:var(--sub);transition:.12s;}
 .lbtn:hover{border-color:var(--accent);color:var(--text);}
@@ -64,33 +85,33 @@ header p{font-size:.65rem;color:var(--sub);letter-spacing:4px;margin-top:.2rem;}
 
 /* STATS */
 .stats{display:flex;gap:.38rem;flex-wrap:wrap;justify-content:center;margin:.5rem 0;}
-.chip{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:.26rem .55rem;text-align:center;min-width:65px;}
-.cv{font-family:'Boogaloo',cursive;font-size:.88rem;}
-.cl{font-size:.35rem;color:var(--sub);letter-spacing:1px;}
+.chip{background:var(--card);border:2px solid var(--border);border-radius:12px;padding:.3rem .6rem;text-align:center;min-width:70px;}
+.cv{font-family:'Boogaloo',cursive;font-size:.92rem;}
+.cl{font-size:.36rem;color:var(--sub);letter-spacing:1px;}
 
 /* PRESTIGE BAR */
-.pbar{background:var(--card);border:2px solid #550033;border-radius:12px;
-  padding:.5rem .9rem;margin:.4rem 0;position:relative;overflow:hidden;
-  display:flex;align-items:center;gap:.6rem;}
+.pbar{background:var(--card);border:2px solid #550033;border-radius:14px;
+  padding:.55rem .9rem;margin:.4rem 0;position:relative;overflow:hidden;
+  display:flex;align-items:center;gap:.6rem;box-shadow:0 0 10px #55003322;}
 .pbg{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#330022,#990055,#ff0088);
-  transition:width .6s;border-radius:10px;opacity:.4;}
-.ptxt{position:relative;font-size:.5rem;color:#ff88cc;letter-spacing:2px;font-weight:700;flex:1;}
-.pstars{position:relative;font-family:'Boogaloo',cursive;font-size:.82rem;color:#ffdd00;white-space:nowrap;}
-.pbtn{position:relative;font-family:'Boogaloo',cursive;font-size:.68rem;padding:.25rem .8rem;
-  background:linear-gradient(135deg,#770033,#cc0055);color:#fff;border:none;border-radius:8px;
+  transition:width .6s;border-radius:12px;opacity:.4;}
+.ptxt{position:relative;font-size:.52rem;color:#ff88cc;letter-spacing:2px;font-weight:700;flex:1;}
+.pstars{position:relative;font-family:'Boogaloo',cursive;font-size:.85rem;color:#ffdd00;white-space:nowrap;}
+.pbtn{position:relative;font-family:'Boogaloo',cursive;font-size:clamp(.65rem,2.5vw,.75rem);padding:.32rem .9rem;
+  background:linear-gradient(135deg,#770033,#cc0055);color:#fff;border:none;border-radius:10px;
   cursor:pointer;letter-spacing:1px;box-shadow:0 0 10px #cc005544,0 3px 0 #440011;transition:.12s;white-space:nowrap;}
 .pbtn:hover:not(:disabled){filter:brightness(1.3);transform:scale(1.05);}
 .pbtn:disabled{opacity:.3;cursor:not-allowed;}
 
 /* SCORE */
 .score-area{text-align:center;margin:.4rem 0;}
-.snum{font-family:'Boogaloo',cursive;font-size:clamp(2.4rem,10vw,4.8rem);
-  color:var(--yellow);text-shadow:0 0 24px var(--yellow)88,3px 3px 0 #443300;line-height:1;display:inline-block;}
+.snum{font-family:'Boogaloo',cursive;font-size:clamp(2.6rem,11vw,5rem);
+  color:var(--yellow);text-shadow:0 0 30px var(--yellow)88,3px 3px 0 #443300;line-height:1;display:inline-block;}
 .snum.pop{animation:sPop .13s cubic-bezier(.34,1.56,.64,1);}
 @keyframes sPop{0%{transform:scale(1)}50%{transform:scale(1.18)}100%{transform:scale(1)}}
-.slabel{font-size:.6rem;color:var(--sub);letter-spacing:4px;}
-.cpsL{font-size:.58rem;color:var(--accent);letter-spacing:2px;margin-top:.12rem;font-weight:700;}
-.comb{text-align:center;font-family:'Boogaloo',cursive;font-size:.88rem;height:22px;letter-spacing:2px;}
+.slabel{font-size:.62rem;color:var(--sub);letter-spacing:4px;}
+.cpsL{font-size:.6rem;color:var(--accent);letter-spacing:2px;margin-top:.12rem;font-weight:700;}
+.comb{text-align:center;font-family:'Boogaloo',cursive;font-size:.9rem;height:22px;letter-spacing:2px;}
 .comb.on{color:var(--orange);text-shadow:0 0 12px var(--orange);animation:cP .3s ease-in-out;}
 @keyframes cP{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
 
@@ -102,20 +123,20 @@ header p{font-size:.65rem;color:var(--sub);letter-spacing:4px;margin-top:.2rem;}
 
 /* BIG BUTTON */
 .czone{display:flex;justify-content:center;margin:.55rem 0;}
-.bigbtn{width:clamp(125px,27vw,185px);height:clamp(125px,27vw,185px);border-radius:50%;
+.bigbtn{width:clamp(140px,30vw,200px);height:clamp(140px,30vw,200px);border-radius:50%;
   background:radial-gradient(circle at 38% 32%,#ff55ff,#550088);
   border:6px solid var(--accent);
-  box-shadow:0 0 45px var(--accent)88,0 0 90px var(--accent2)33,inset 0 0 30px #00000055;
+  box-shadow:0 0 50px var(--accent)88,0 0 100px var(--accent2)33,inset 0 0 30px #00000055;
   cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:4px;transition:transform .08s,box-shadow .08s;position:relative;overflow:hidden;
   user-select:none;-webkit-tap-highlight-color:transparent;}
 .bigbtn::before{content:'';position:absolute;top:10%;left:16%;width:38%;height:22%;
   background:#ffffff2a;border-radius:50%;transform:rotate(-20deg);pointer-events:none;}
-.bigbtn:hover{box-shadow:0 0 65px var(--accent),0 0 110px var(--accent2)55,inset 0 0 30px #00000055;}
-.bigbtn:active{transform:scale(.88);}
-.be{font-size:clamp(2.2rem,6vw,3.6rem);pointer-events:none;}
-.bl{font-family:'Boogaloo',cursive;font-size:clamp(.7rem,2.2vw,.92rem);color:#fff;letter-spacing:2px;pointer-events:none;}
-.bpc{font-size:.5rem;color:#ffaaff;letter-spacing:1px;pointer-events:none;}
+.bigbtn:hover{box-shadow:0 0 70px var(--accent),0 0 120px var(--accent2)55,inset 0 0 30px #00000055;}
+.bigbtn:active{transform:scale(.86);}
+.be{font-size:clamp(2.4rem,7vw,3.8rem);pointer-events:none;}
+.bl{font-family:'Boogaloo',cursive;font-size:clamp(.75rem,2.5vw,1rem);color:#fff;letter-spacing:2px;pointer-events:none;}
+.bpc{font-size:.52rem;color:#ffaaff;letter-spacing:1px;pointer-events:none;}
 
 /* CLICK FX */
 .cfx{position:fixed;pointer-events:none;z-index:200;font-family:'Boogaloo',cursive;
@@ -123,73 +144,87 @@ header p{font-size:.65rem;color:var(--sub);letter-spacing:4px;margin-top:.2rem;}
 @keyframes fxU{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-80px) scale(1.5)}}
 
 /* TABS */
-.tabs{display:flex;gap:.28rem;flex-wrap:wrap;justify-content:center;margin:.5rem 0;}
-.tab{font-family:'Boogaloo',cursive;font-size:.68rem;padding:.3rem .65rem;
+.tabs{display:flex;gap:.3rem;flex-wrap:wrap;justify-content:center;margin:.5rem 0;}
+.tab{font-family:'Boogaloo',cursive;font-size:clamp(.65rem,2.8vw,.75rem);padding:.38rem .75rem;
   border:2px solid var(--border);background:var(--card);color:var(--sub);
-  border-radius:10px;cursor:pointer;letter-spacing:1px;transition:.12s;}
+  border-radius:12px;cursor:pointer;letter-spacing:1px;transition:.15s;}
 .tab:hover{border-color:var(--accent);color:var(--text);}
-.tab.on{border-color:var(--accent);color:var(--accent);background:#150025;box-shadow:0 0 10px var(--accent)44;}
+.tab.on{border-color:var(--accent);color:var(--accent);background:#150025;box-shadow:0 0 12px var(--accent)44;}
 .tpanel{display:none;}
 .tpanel.on{display:block;}
 
 /* SECTION TITLE */
-.stitle{font-family:'Boogaloo',cursive;font-size:1rem;color:var(--accent2);letter-spacing:3px;
+.stitle{font-family:'Boogaloo',cursive;font-size:1.05rem;color:var(--accent2);letter-spacing:3px;
   text-align:center;margin:.5rem 0 .4rem;text-shadow:0 0 12px var(--accent2);
   display:flex;align-items:center;justify-content:center;gap:.5rem;}
 .stitle::before,.stitle::after{content:'';flex:1;height:2px;
   background:linear-gradient(to right,transparent,var(--accent2)88,transparent);}
 
 /* UPGRADE GRID */
-.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:.42rem;}
-.ucard{background:var(--card);border:2px solid var(--border);border-radius:12px;
-  padding:.58rem .52rem;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
+.ugrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(120px,28vw,150px),1fr));gap:.45rem;}
+.ucard{background:var(--card);border:2px solid var(--border);border-radius:14px;
+  padding:.65rem .55rem;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;}
 .ucard::before{content:'';position:absolute;inset:0;
   background:radial-gradient(circle at 50% 0%,#ffffff07,transparent 55%);pointer-events:none;}
-.ucard:hover:not(.uowned){border-color:var(--accent);transform:translateY(-3px);box-shadow:0 5px 14px var(--accent)33;}
+.ucard:hover:not(.uowned){border-color:var(--accent);transform:translateY(-3px);box-shadow:0 5px 16px var(--accent)33;}
 .ucard:active:not(.uowned){transform:scale(.95);}
 .uowned{cursor:default;}
 .uowned::after{content:'✓';position:absolute;top:4px;right:7px;font-size:.72rem;color:var(--green);}
 .utag{position:absolute;top:4px;left:6px;font-size:.35rem;letter-spacing:1px;padding:.06rem .28rem;border-radius:5px;font-weight:700;}
-.uico{font-size:1.6rem;margin-bottom:.2rem;display:block;}
-.uname{font-size:.54rem;font-weight:900;color:var(--text);margin-bottom:.1rem;}
-.udesc{font-size:.45rem;color:var(--sub);line-height:1.4;margin-bottom:.26rem;}
-.ucost{font-size:.56rem;font-weight:700;}
+.uico{font-size:1.7rem;margin-bottom:.2rem;display:block;}
+.uname{font-size:.56rem;font-weight:900;color:var(--text);margin-bottom:.1rem;}
+.udesc{font-size:.46rem;color:var(--sub);line-height:1.4;margin-bottom:.26rem;}
+.ucost{font-size:.58rem;font-weight:700;}
 
 /* SKINS */
-.skin-card{background:var(--card);border:2px solid var(--border);border-radius:12px;
-  padding:.6rem .5rem;cursor:pointer;transition:all .15s;text-align:center;}
+.skin-card{background:var(--card);border:2px solid var(--border);border-radius:14px;
+  padding:.65rem .55rem;cursor:pointer;transition:all .15s;text-align:center;}
 .skin-card:hover{transform:translateY(-3px);box-shadow:0 5px 14px #00ffdd33;}
-.skin-preview{width:70px;height:70px;border-radius:50%;margin:.3rem auto;border:3px solid;
-  display:flex;align-items:center;justify-content:center;font-size:1.8rem;transition:.3s;}
-.skin-name{font-size:.56rem;font-weight:900;margin:.2rem 0 .1rem;color:var(--text);}
-.skin-cost{font-size:.52rem;font-weight:700;}
+.skin-preview{width:72px;height:72px;border-radius:50%;margin:.3rem auto;border:3px solid;
+  display:flex;align-items:center;justify-content:center;font-size:1.9rem;transition:.3s;}
+.skin-name{font-size:.58rem;font-weight:900;margin:.2rem 0 .1rem;color:var(--text);}
+.skin-cost{font-size:.54rem;font-weight:700;}
 
 /* MILESTONES */
-.mslist{display:flex;flex-direction:column;gap:.36rem;}
+.mslist{display:flex;flex-direction:column;gap:.38rem;}
 .msrow{display:flex;align-items:center;gap:.58rem;background:var(--card);
-  border:2px solid var(--border);border-radius:10px;padding:.38rem .62rem;transition:border-color .3s;}
+  border:2px solid var(--border);border-radius:12px;padding:.42rem .65rem;transition:border-color .3s;}
 .msrow.done{border-color:var(--green);background:#001a0e;}
-.msico{font-size:.95rem;}
-.mstxt{flex:1;font-size:.52rem;color:var(--sub);}
+.msico{font-size:.98rem;}
+.mstxt{flex:1;font-size:.53rem;color:var(--sub);}
 .mstxt strong{color:var(--text);}
-.msrew{font-size:.52rem;color:var(--yellow);font-weight:700;}
+.msrew{font-size:.53rem;color:var(--yellow);font-weight:700;}
 .msbar{height:3px;background:var(--border);border-radius:2px;margin-top:2px;overflow:hidden;}
 .msfill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--green));border-radius:2px;transition:width .4s;}
 .msdesc{font-size:.42rem;color:#443355;margin-top:1px;font-style:italic;}
 
 .rrow{display:flex;align-items:center;gap:.65rem;background:var(--card);
-  border:2px solid var(--border);border-radius:12px;padding:.52rem .75rem;transition:all .3s;margin-bottom:.38rem;}
+  border:2px solid var(--border);border-radius:14px;padding:.55rem .8rem;transition:all .3s;margin-bottom:.38rem;}
 .rrow.cur{border-width:3px;}
 .rrow.done{opacity:.55;}
 .rico{font-size:1.5rem;min-width:1.8rem;text-align:center;}
 .rinfo{flex:1;}
-.rname{font-family:'Boogaloo',cursive;font-size:.78rem;letter-spacing:2px;}
+.rname{font-family:'Boogaloo',cursive;font-size:.8rem;letter-spacing:2px;}
 .rreq{font-size:.44rem;letter-spacing:1px;margin-top:1px;}
 .rrew{font-size:.48rem;font-weight:700;text-align:right;white-space:nowrap;}
 
 /* CHAOS */
-.chaos-banner{background:#0a0008;border:3px solid #ff2244;border-radius:14px;
-  padding:.85rem;margin-bottom:.65rem;text-align:center;}
+.chaos-banner{background:#0a0008;border:3px solid #ff2244;border-radius:16px;
+  padding:.9rem;margin-bottom:.65rem;text-align:center;box-shadow:0 0 15px #ff224422;}
+
+/* MOBILE */
+@media(max-width:480px){
+  .wrap{padding:.6rem .7rem;}
+  .hbtns{gap:.3rem;}
+  .btn-yt,.hbtns button{font-size:.82rem;padding:.48rem .85rem;}
+  .tab{font-size:.7rem;padding:.38rem .6rem;}
+  .ugrid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));gap:.35rem;}
+  .uico{font-size:1.5rem;}
+  .uname{font-size:.52rem;}
+  .bigbtn{width:clamp(150px,42vw,180px);height:clamp(150px,42vw,180px);}
+  .chip{min-width:58px;}
+  .cv{font-size:.82rem;}
+}
 
 /* TOAST */
 .toast{position:fixed;bottom:16px;right:12px;z-index:500;background:var(--card);
@@ -273,9 +308,41 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
 @keyframes btnChaosAnim{0%{filter:hue-rotate(0deg)}100%{filter:hue-rotate(360deg)}}
 @keyframes tabChaos{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes cardShake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ══ MOBILE MELHORADO ══ */
+@media(max-width:600px){
+  /* botões maiores no celular */
+  .tab{font-size:.72rem;padding:.4rem .7rem;}
+  .hbtns button,.btn-yt{font-size:.8rem;padding:.5rem .9rem;}
+  .reg-btn{font-size:.9rem;padding:.55rem;}
+  .reg-input{font-size:.9rem;padding:.5rem .8rem;}
+  .mbtn{font-size:.72rem;padding:.4rem .72rem;}
+  .ucard{padding:.55rem .5rem;}
+  .pbtn{font-size:.72rem;padding:.38rem .8rem;}
+  /* score maior */
+  .snum{font-size:clamp(1.8rem,9vw,3.5rem);}
+  /* botão principal maior */
+  .bigbtn{min-width:180px;min-height:180px;font-size:4.5rem;}
+  /* wrap com menos padding lateral */
+  .wrap{padding:.5rem .6rem;}
+  /* header compacto */
+  header{padding:.6rem 0 .2rem;}
+  /* tabs com scroll horizontal */
+  .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;padding-bottom:.3rem;}
+  .tabs::-webkit-scrollbar{display:none;}
+}
 </style>
 </head>
 <body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <div class="splash-emoji">⚡</div>
+  <div class="splash-title">CLICKER MASTER</div>
+  <div class="splash-sub">FEITO POR JOJO · 9 ANOS</div>
+  <div class="splash-bar-wrap"><div class="splash-bar" id="splashBar"></div></div>
+  <div class="splash-tip" id="splashTip">carregando...</div>
+</div>
 <div id="wp"><canvas id="wpC"></canvas></div>
 <div class="scan"></div><div class="vig"></div>
 
@@ -418,13 +485,17 @@ footer{text-align:center;padding:.9rem;font-size:.5rem;color:var(--border);lette
   <div class="pbg" id="pFill" style="width:0%"></div>
   <div class="ptxt" id="pTxt">Ganhe pontos para prestigiar</div>
   <div class="pstars" id="pStars">0 prest.</div>
-  <button class="pbtn" id="btnPres" onclick="doPrestige()" disabled id="lPres">⭐ PRESTIGIAR</button>
+  <button class="pbtn" id="btnPres" onclick="doPrestige()" disabled>⭐ PRESTIGIAR</button>
 </div>
 
 <!-- BOTÃO TECLADO SECRETO -->
-<button id="btnKeyboard" onclick="openAdmKeyboard()" style="position:fixed;left:12px;top:50%;transform:translateY(-50%);z-index:500;background:#110022;border:2px solid #330055;border-radius:12px;padding:.5rem .4rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.2rem;box-shadow:0 0 10px #33005555;transition:.2s;" onmouseover="this.style.borderColor='#cc00ff';this.style.boxShadow='0 0 15px #cc00ff55'" onmouseout="this.style.borderColor='#330055';this.style.boxShadow='0 0 10px #33005555'">
-  <span style="font-size:1.1rem;">🔑</span>
-  <span style="font-family:'Boogaloo',cursive;font-size:.45rem;color:#664488;letter-spacing:1px;writing-mode:vertical-lr;">ADM</span>
+<button id="btnKeyboard" onclick="openAdmKeyboard()" style="position:fixed;right:10px;bottom:70px;z-index:500;background:#110022cc;border:2px solid #330055;border-radius:12px;padding:.4rem .35rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.15rem;box-shadow:0 0 8px #33005544;transition:.2s;opacity:.6;" onmouseover="this.style.opacity='1';this.style.borderColor='#cc00ff'" onmouseout="this.style.opacity='.6';this.style.borderColor='#330055'">
+  <span style="font-size:.9rem;">🔑</span>
+  <span style="font-family:'Boogaloo',cursive;font-size:.38rem;color:#664488;">ADM</span>
+</button>
+<button id="btnLogout" onclick="logoutAccount()" style="position:fixed;right:10px;bottom:20px;z-index:500;background:#110011cc;border:2px solid #330022;border-radius:12px;padding:.4rem .35rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.15rem;box-shadow:0 0 8px #33002244;transition:.2s;opacity:.6;" onmouseover="this.style.opacity='1';this.style.borderColor='#ff0044'" onmouseout="this.style.opacity='.6';this.style.borderColor='#330022'">
+  <span style="font-size:.9rem;">🚪</span>
+  <span style="font-family:'Boogaloo',cursive;font-size:.38rem;color:#662233;">SAIR</span>
 </button>
 
 <!-- SCORE -->
@@ -680,9 +751,9 @@ const LANGS={
   eua:{flag:'🇺🇸',click:'CLICK!',pts:'POINTS',cps:'PTS/SEC',clk:'PTS/CLICK',clicks:'CLICKS',pres:'⭐ PRESTIGE',
     tabs:['🚀 BOOSTS','⭐ PRESTIGE','🏅 RANKED','🎉 FUN','🎨 SKINS','💀 CHAOS','🏆 ACHIEVEMENTS']},
   mex:{flag:'🇲🇽',click:'¡CLIC!',pts:'PUNTOS',cps:'PTS/SEG',clk:'PTS/CLIC',clicks:'CLICS',pres:'⭐ PRESTIGIAR',
-    tabs:['🚀 BOOSTS','⭐ PRESTIGIO','🏅 RANKEADO','🎉 DIVERSIÓN','🎨 SKINS','💀 CAOS','🏆 LOGROS']},
+    tabs:['🚀 BOOSTS','⭐ PRESTIGIO','🏅 RANKEADO','🎉 DIVERSÃO','🎨 SKINS','💀 CAOS','🏆 LOGROS']},
   es:{flag:'🇪🇸',click:'¡CLIC!',pts:'PUNTOS',cps:'PTS/SEG',clk:'PTS/CLIC',clicks:'CLICS',pres:'⭐ PRESTIGIAR',
-    tabs:['🚀 BOOSTS','⭐ PRESTIGIO','🏅 CLASIFICADO','🎉 DIVERSIÓN','🎨 SKINS','💀 CAOS','🏆 LOGROS']},
+    tabs:['🚀 BOOSTS','⭐ PRESTIGIO','🏅 CLASIFICADO','🎉 DIVERSÃO','🎨 SKINS','💀 CAOS','🏆 LOGROS']},
 };
 function setLang(code,btn){
   const L=LANGS[code];if(!L)return;
@@ -1594,6 +1665,7 @@ function rMSbars(){
 }
 
 // Fix toast notification system — ensure it always works
+let toastT;
 function toast(msg,type=''){
   let t=document.getElementById('toast');
   if(!t){t=document.createElement('div');t.id='toast';t.className='toast';document.body.appendChild(t);}
@@ -1703,13 +1775,23 @@ const SECRET_CODES={
 };
 const MAX_CODE_LEN=Math.max(...Object.keys(SECRET_CODES).map(k=>k.length));
 let kBuffer='';let kTimer=null;
+let kFireTimer=null;
 document.addEventListener('keydown',e=>{
   if(e.key.length>1)return;
   kBuffer+=e.key.toLowerCase();
   if(kBuffer.length>MAX_CODE_LEN)kBuffer=kBuffer.slice(-MAX_CODE_LEN);
   clearTimeout(kTimer);kTimer=setTimeout(()=>kBuffer='',3000);
-  for(const [code,fn] of Object.entries(SECRET_CODES)){
-    if(kBuffer.endsWith(code)){fn();kBuffer='';break;}
+  clearTimeout(kFireTimer);
+  const sortedCodes=Object.entries(SECRET_CODES).sort((a,b)=>b[0].length-a[0].length);
+  const matched=sortedCodes.find(([code])=>kBuffer.endsWith(code));
+  if(matched){
+    const [matchedCode,matchedFn]=matched;
+    const couldBeLonger=sortedCodes.some(([code])=>code.length>matchedCode.length&&code.startsWith(matchedCode));
+    if(couldBeLonger){
+      kFireTimer=setTimeout(()=>{matchedFn();kBuffer='';},600);
+    } else {
+      matchedFn();kBuffer='';
+    }
   }
 });
 
@@ -3527,7 +3609,7 @@ async function admViewOnline(){  try{
 // Listen for global ADM messages
 // ══ LISTENER GLOBAL UNIFICADO ══
 let lastMsgTs=null;
-try{
+if(db)try{
   db.collection('avisos').doc('global').onSnapshot(doc=>{
     if(!doc.exists)return;
     const d=doc.data();
@@ -3829,6 +3911,7 @@ function openProfilePanel(){
     <div style="font-size:.45rem;color:#664488;margin-bottom:.8rem;">jogador cadastrado ✅</div>
     <button onclick="saveScore();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#004422,#00cc66);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">💾 SALVAR MEU SCORE</button>
     <button onclick="openRank();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">🏆 VER RANKING</button>
+    <button onclick="openFriends();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#003344,#0088ff);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">👥 AMIGOS</button>
     <button onclick="openShare();this.parentElement.parentElement.remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem;background:linear-gradient(135deg,#003322,#00cc66);color:#fff;border:none;border-radius:10px;cursor:pointer;margin-bottom:.4rem;letter-spacing:1px;">📤 COMPARTILHAR</button>
     <button onclick="playerName=null;playerId=null;localStorage.removeItem('cmPlayerName');localStorage.removeItem('cmPlayerId');localStorage.removeItem('cmPassHash');updateUserBtn();this.parentElement.parentElement.remove();toast('Saiu da conta!','red');" style="width:100%;font-family:'Boogaloo',cursive;font-size:.75rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;margin-bottom:.4rem;">SAIR / TROCAR CONTA</button>
     <button onclick="this.parentElement.parentElement.remove()" style="font-family:'Boogaloo',cursive;font-size:.75rem;padding:.35rem .9rem;background:#0a0018;color:#664477;border:2px solid #220033;border-radius:10px;cursor:pointer;">FECHAR</button>
@@ -3836,6 +3919,26 @@ function openProfilePanel(){
   ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
   document.body.appendChild(ov);
 }
+function closeReg(){document.getElementById('regOv').classList.remove('open');}
+
+function logoutAccount(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:1100;background:#000000ee;display:flex;align-items:center;justify-content:center;';
+  ov.innerHTML=`<div onclick="event.stopPropagation()" style="background:#0a0005;border:4px solid #ff0044;border-radius:20px;padding:1.4rem;text-align:center;max-width:320px;width:90%;box-shadow:0 0 40px #ff004466;">
+    <div style="font-size:2rem;margin-bottom:.3rem;">🚪</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:.95rem;color:#ff0044;letter-spacing:2px;margin-bottom:.3rem;">SAIR DA CONTA</div>
+    <div style="font-size:.5rem;color:#664444;margin-bottom:.9rem;">${playerName?'Sair de <b style="color:#ff4466">'+playerName+'</b>?':'Nenhuma conta ativa. Limpar dados locais?'}</div>
+    <div style="display:flex;gap:.5rem;">
+      <button onclick="playerName=null;playerId=null;['cmPlayerName','cmPlayerId','cmPassHash','cmAvatar','cmColor'].forEach(k=>localStorage.removeItem(k));updateUserBtn();this.parentElement.parentElement.parentElement.remove();toast('🚪 Saiu da conta!','red');sfx('error');"
+        style="flex:1;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:linear-gradient(135deg,#660000,#ff0044);color:#fff;border:none;border-radius:10px;cursor:pointer;">✅ SAIR</button>
+      <button onclick="this.parentElement.parentElement.parentElement.remove()"
+        style="flex:1;font-family:'Boogaloo',cursive;font-size:.8rem;padding:.45rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">CANCELAR</button>
+    </div>
+  </div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+}
+
 // ══ CADASTRO MELHORADO ══
 let selectedAvatar='👾';
 let selectedColor='#cc00ff';
@@ -3872,7 +3975,241 @@ function selectProfileColor(color){
   sfx('hover');
 }
 
-// ══ COMPARTILHAR ══
+// ══ SISTEMA DE AMIGOS 👥 ══
+function getFriends(){return JSON.parse(localStorage.getItem('cmFriends')||'[]');}
+function saveFriends(f){localStorage.setItem('cmFriends',JSON.stringify(f));}
+
+async function openFriends(){
+  if(!playerName){toast('Entra na conta primeiro!','red');return;}
+  const ov=document.createElement('div');
+  ov.id='friendsOv';
+  ov.style.cssText='position:fixed;inset:0;z-index:800;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
+
+  ov.innerHTML=`
+  <div onclick="event.stopPropagation()" style="background:#0a0018;border:4px solid #0088ff;border-radius:24px;padding:1.4rem;max-width:420px;width:92%;max-height:88vh;overflow-y:auto;box-shadow:0 0 60px #0088ff44;animation:gpPop .4s cubic-bezier(.34,1.56,.64,1);">
+    <div style="font-size:1.8rem;margin-bottom:.2rem;">👥</div>
+    <div style="font-family:'Boogaloo',cursive;font-size:1.2rem;color:#0088ff;letter-spacing:3px;margin-bottom:.8rem;">AMIGOS</div>
+
+    <!-- ADICIONAR -->
+    <div style="background:#0d0022;border:2px solid #0044aa;border-radius:12px;padding:.7rem;margin-bottom:.7rem;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.65rem;color:#0088ff;margin-bottom:.4rem;">➕ ADICIONAR AMIGO</div>
+      <div style="display:flex;gap:.3rem;">
+        <input id="friendAddInput" type="text" placeholder="Nome do jogador..." onclick="event.stopPropagation()"
+          style="flex:1;background:#060015;border:2px solid #0044aa;border-radius:8px;padding:.38rem .6rem;color:#88ccff;font-size:.75rem;outline:none;"/>
+        <button onclick="addFriend()" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.38rem .7rem;background:linear-gradient(135deg,#003388,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">➕ ADD</button>
+      </div>
+    </div>
+
+    <!-- SOLICITAÇÕES PENDENTES -->
+    <div id="friendRequests" style="margin-bottom:.5rem;"></div>
+
+    <!-- LISTA DE AMIGOS -->
+    <div id="friendsList" style="margin-bottom:.7rem;">
+      <div style="text-align:center;font-size:.5rem;color:#334455;padding:.5rem;">Carregando amigos... 🔄</div>
+    </div>
+
+    <!-- MENSAGENS -->
+    <div id="friendMsgs" style="background:#0d0022;border:2px solid #0044aa;border-radius:12px;padding:.7rem;margin-bottom:.7rem;display:none;">
+      <div style="font-family:'Boogaloo',cursive;font-size:.65rem;color:#0088ff;margin-bottom:.4rem;">💬 CONVERSA COM <span id="friendMsgName"></span></div>
+      <div id="friendMsgList" style="max-height:120px;overflow-y:auto;margin-bottom:.4rem;"></div>
+      <div style="display:flex;gap:.3rem;">
+        <input id="friendMsgInput" type="text" placeholder="Mensagem..." onclick="event.stopPropagation()" maxlength="80"
+          style="flex:1;background:#060015;border:2px solid #0044aa;border-radius:8px;padding:.35rem .6rem;color:#88ccff;font-size:.72rem;outline:none;"
+          onkeydown="if(event.key==='Enter')sendFriendMsg()"/>
+        <button onclick="sendFriendMsg()" style="font-family:'Boogaloo',cursive;font-size:.7rem;padding:.35rem .7rem;background:linear-gradient(135deg,#003388,#0088ff);color:#fff;border:none;border-radius:8px;cursor:pointer;">📨</button>
+      </div>
+    </div>
+
+    <button onclick="document.getElementById('friendsOv').remove()" style="width:100%;font-family:'Boogaloo',cursive;font-size:.78rem;padding:.4rem;background:#1a0030;color:#886699;border:2px solid #330055;border-radius:10px;cursor:pointer;">FECHAR</button>
+  </div>`;
+
+  ov.addEventListener('click',e=>{if(e.target===ov)ov.remove();});
+  document.body.appendChild(ov);
+  await loadFriendsList();
+  await loadFriendRequests();
+  sfx('hover');
+}
+
+let currentChatFriend=null;
+
+async function addFriend(){
+  const name=document.getElementById('friendAddInput')?.value.trim();
+  if(!name){toast('Coloca o nome!','red');return;}
+  if(name.toLowerCase()===playerName.toLowerCase()){toast('Você não pode se adicionar!','red');return;}
+  try{
+    const snap=await db.collection('jogadores').where('nome','==',name).get();
+    if(snap.empty){toast('"'+name+'" não encontrado!','red');return;}
+    const friends=getFriends();
+    if(friends.find(f=>f.nome===name)){toast(name+' já é seu amigo!','red');return;}
+    // salva solicitação no Firebase
+    await db.collection('amizades').add({
+      de:playerName,para:name,
+      status:'pendente',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('friendAddInput').value='';
+    toast('✅ Solicitação enviada pra '+name+'!','green');sfx('milestone');
+  }catch(e){toast('Erro: '+e.message,'red');}
+}
+
+async function loadFriendRequests(){
+  const el=document.getElementById('friendRequests');
+  if(!el)return;
+  try{
+    const snap=await db.collection('amizades')
+      .where('para','==',playerName)
+      .where('status','==','pendente').get();
+    if(snap.empty){el.innerHTML='';return;}
+    let html='<div style="background:#0d001a;border:2px solid #aa00ff;border-radius:12px;padding:.7rem;margin-bottom:.5rem;">';
+    html+='<div style="font-family:\'Boogaloo\',cursive;font-size:.65rem;color:#aa44ff;margin-bottom:.4rem;">🔔 SOLICITAÇÕES ('+snap.size+')</div>';
+    snap.forEach(doc=>{
+      const d=doc.data();
+      html+=`<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.3rem;">
+        <span style="flex:1;font-family:'Boogaloo',cursive;font-size:.7rem;color:#cc88ff;">👤 ${d.de}</span>
+        <button onclick="acceptFriend('${doc.id}','${d.de}')" style="font-family:'Boogaloo',cursive;font-size:.6rem;padding:.28rem .6rem;background:linear-gradient(135deg,#003300,#00ff44);color:#000;border:none;border-radius:6px;cursor:pointer;">✅ Aceitar</button>
+        <button onclick="rejectFriend('${doc.id}')" style="font-family:'Boogaloo',cursive;font-size:.6rem;padding:.28rem .6rem;background:linear-gradient(135deg,#330000,#ff0044);color:#fff;border:none;border-radius:6px;cursor:pointer;">❌ Recusar</button>
+      </div>`;
+    });
+    html+='</div>';
+    el.innerHTML=html;
+  }catch(e){el.innerHTML='';}
+}
+
+async function acceptFriend(docId,name){
+  try{
+    await db.collection('amizades').doc(docId).update({status:'aceito'});
+    // salva localmente
+    const friends=getFriends();
+    if(!friends.find(f=>f.nome===name)){friends.push({nome:name});saveFriends(friends);}
+    toast('👥 '+name+' é seu amigo agora!','green');sfx('prestige');
+    await loadFriendsList();await loadFriendRequests();
+  }catch(e){toast('Erro!','red');}
+}
+
+async function rejectFriend(docId){
+  try{
+    await db.collection('amizades').doc(docId).delete();
+    toast('❌ Solicitação recusada','red');
+    await loadFriendRequests();
+  }catch(e){}
+}
+
+async function loadFriendsList(){
+  const el=document.getElementById('friendsList');
+  if(!el)return;
+  const friends=getFriends();
+  if(!friends.length){
+    // verifica se tem amizades aceitas no Firebase
+    try{
+      const snap=await db.collection('amizades')
+        .where('de','==',playerName).where('status','==','aceito').get();
+      const snap2=await db.collection('amizades')
+        .where('para','==',playerName).where('status','==','aceito').get();
+      const names=new Set();
+      snap.forEach(d=>names.add(d.data().para));
+      snap2.forEach(d=>names.add(d.data().de));
+      if(names.size>0){
+        const arr=[...names].map(n=>({nome:n}));
+        saveFriends(arr);
+        renderFriendsList(arr);return;
+      }
+    }catch(e){}
+    el.innerHTML='<div style="text-align:center;font-size:.5rem;color:#334455;padding:.8rem;">Nenhum amigo ainda!<br>Adicione alguém pelo nome 👆</div>';
+    return;
+  }
+  renderFriendsList(friends);
+}
+
+async function renderFriendsList(friends){
+  const el=document.getElementById('friendsList');
+  if(!el)return;
+  let html='<div style="font-family:\'Boogaloo\',cursive;font-size:.65rem;color:#0088ff;margin-bottom:.4rem;">👥 SEUS AMIGOS ('+friends.length+')</div>';
+  for(const f of friends){
+    let score_f='?';let online=false;
+    try{
+      const snap=await db.collection('jogadores').where('nome','==',f.nome).get();
+      if(!snap.empty){
+        const d=snap.docs[0].data();
+        score_f=fmt(d.score||0);
+        const ts=d.updatedAt?.toMillis?.()??0;
+        online=Date.now()-ts<300000;
+      }
+    }catch(e){}
+    html+=`<div style="display:flex;align-items:center;gap:.5rem;background:#0d0022;border:1px solid #0033aa;border-radius:10px;padding:.45rem .6rem;margin-bottom:.3rem;">
+      <span style="font-size:.75rem;">${online?'🟢':'⚫'}</span>
+      <span style="flex:1;font-family:'Boogaloo',cursive;font-size:.75rem;color:#88ccff;">${f.nome}</span>
+      <span style="font-family:'Boogaloo',cursive;font-size:.6rem;color:#ffdd00;">${score_f}</span>
+      <button onclick="openChat('${f.nome}')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.25rem .5rem;background:linear-gradient(135deg,#003388,#0088ff);color:#fff;border:none;border-radius:6px;cursor:pointer;">💬</button>
+      <button onclick="challengeFriend('${f.nome}')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.25rem .5rem;background:linear-gradient(135deg,#443300,#ffaa00);color:#000;border:none;border-radius:6px;cursor:pointer;">⚔️</button>
+      <button onclick="removeFriend('${f.nome}')" style="font-family:'Boogaloo',cursive;font-size:.58rem;padding:.25rem .5rem;background:linear-gradient(135deg,#330000,#880000);color:#ff4444;border:1px solid #550000;border-radius:6px;cursor:pointer;">🗑️</button>
+    </div>`;
+  }
+  el.innerHTML=html;
+}
+
+async function openChat(name){
+  currentChatFriend=name;
+  const box=document.getElementById('friendMsgs');
+  const nameEl=document.getElementById('friendMsgName');
+  if(box){box.style.display='block';}
+  if(nameEl)nameEl.textContent=name;
+  await loadMessages(name);
+  document.getElementById('friendMsgInput')?.focus();
+}
+
+async function loadMessages(name){
+  const el=document.getElementById('friendMsgList');
+  if(!el)return;
+  try{
+    const snap=await db.collection('mensagens')
+      .where('para','in',[name,playerName])
+      .orderBy('ts','desc').limit(20).get();
+    let html='';
+    const msgs=[];
+    snap.forEach(d=>msgs.push(d.data()));
+    msgs.reverse().forEach(m=>{
+      if((m.de===playerName&&m.para===name)||(m.de===name&&m.para===playerName)){
+        const mine=m.de===playerName;
+        html+=`<div style="text-align:${mine?'right':'left'};margin-bottom:.3rem;">
+          <span style="display:inline-block;background:${mine?'#003388':'#220044'};border-radius:8px;padding:.25rem .5rem;font-size:.58rem;color:${mine?'#88ccff':'#cc88ff'};max-width:80%;">${mine?'':m.de+': '}${m.msg}</span>
+        </div>`;
+      }
+    });
+    el.innerHTML=html||'<div style="text-align:center;font-size:.5rem;color:#334455;">Nenhuma mensagem ainda!</div>';
+    el.scrollTop=el.scrollHeight;
+  }catch(e){el.innerHTML='<div style="font-size:.5rem;color:#ff4444;">Erro ao carregar</div>';}
+}
+
+async function sendFriendMsg(){
+  const msg=document.getElementById('friendMsgInput')?.value.trim();
+  if(!msg||!currentChatFriend){return;}
+  try{
+    await db.collection('mensagens').add({
+      de:playerName,para:currentChatFriend,msg,
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('friendMsgInput').value='';
+    await loadMessages(currentChatFriend);
+    sfx('buy');
+  }catch(e){toast('Erro ao enviar!','red');}
+}
+
+async function challengeFriend(name){
+  try{
+    await db.collection('avisos').doc('global').set({
+      msg:'⚔️ '+playerName+' desafiou '+name+' pra ver quem clica mais! Aceitará o desafio?!',
+      ts:firebase.firestore.FieldValue.serverTimestamp()
+    });
+    toast('⚔️ Desafio enviado pra '+name+'!','rainbow');sfx('prestige');
+  }catch(e){toast('Erro!','red');}
+}
+
+function removeFriend(name){
+  const friends=getFriends().filter(f=>f.nome!==name);
+  saveFriends(friends);
+  toast('🗑️ '+name+' removido dos amigos','red');sfx('error');
+  loadFriendsList();
+}
 function openShare(){
   const ov=document.createElement('div');
   ov.style.cssText='position:fixed;inset:0;z-index:999;background:#000000ee;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);';
@@ -5107,6 +5444,35 @@ updateUI();
 checkPrestige();
 renderSkins();
 renderChaosGrid();
+
+// ══ SPLASH SCREEN ══
+(function(){
+  const tips=[
+    'Carregando upgrades... ⚡',
+    'Preparando o ranking... 🏆',
+    'Acordando os robôs... 🤖',
+    'Polindo os cliques... 👆',
+    'Invocando o Caos... 💀',
+    'Feito por Jojo, 9 anos! 🎮',
+    'Quase lá... ✨',
+  ];
+  const bar=document.getElementById('splashBar');
+  const tip=document.getElementById('splashTip');
+  let pct=0;let ti=0;
+  const iv=setInterval(()=>{
+    pct+=Math.random()*15+5;
+    if(pct>100)pct=100;
+    if(bar)bar.style.width=pct+'%';
+    if(tip&&ti<tips.length)tip.textContent=tips[ti++];
+    if(pct>=100){
+      clearInterval(iv);
+      setTimeout(()=>{
+        const s=document.getElementById('splash');
+        if(s){s.classList.add('hide');setTimeout(()=>s.remove(),900);}
+      },400);
+    }
+  },200);
+})();
 function openADM321(){
   if(document.getElementById('adm321Ov'))return;
   const ov=document.createElement('div');
@@ -5631,11 +5997,9 @@ try{
     neveBtn.textContent='❄️ MODO NEVE';
     neveBtn.onclick=()=>{holdMenu.style.display='none';openNeve();};
     const turboBtn=document.createElement('button');
-    turboBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#660000,#ff4400);color:#fff;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
-    turboBtn.textContent='⚡ MODO TURBO';
-    turboBtn.onclick=()=>{holdMenu.style.display='none';openModoVegeta();};
-    turboBtn.textContent='🌿 MODO VEGETA';
     turboBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#002200,#44ff44);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
+    turboBtn.textContent='🌿 MODO VEGETA';
+    turboBtn.onclick=()=>{holdMenu.style.display='none';openModoVegeta();};
     const infBtn=document.createElement('button');
     infBtn.style.cssText="width:100%;font-family:'Boogaloo',cursive;font-size:.82rem;padding:.45rem 1rem;background:linear-gradient(135deg,#001a33,#00ffdd);color:#000;border:none;border-radius:12px;cursor:pointer;letter-spacing:1px;margin-bottom:.4rem;";
     infBtn.textContent='♾️ MODO INFINITO';
